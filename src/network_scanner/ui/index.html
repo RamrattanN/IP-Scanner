@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Network Analysis Tool</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Network Analysis Tool</h1>
+      <nav>
+        <button id="btn-scan">Scan</button>
+        <button id="btn-scan-custom">Scan Custom Range</button>
+        <button id="btn-clear">Clear History</button>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <h2>History</h2>
+        <table id="history-table">
+          <thead>
+            <tr>
+              <th>Timestamp</</th>
+              <th>Network</th>
+              <th>CIDR</th>
+              <th>Duration ms</th>
+              <th>Hosts up</th>
+              <th>Website</th>
+              <th>UPnP</th>
+              <th>Bonjour</th>
+              <th>IPv6</th>
+            </tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

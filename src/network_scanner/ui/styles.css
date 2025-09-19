@@ -1,0 +1,10 @@
+* { box-sizing: border-box; font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+body { margin: 0; color: #111; background: #f7f7fb; }
+header { background: #0b1d39; color: #fff; padding: 16px; }
+h1 { margin: 0 0 8px 0; }
+nav button { margin-right: 8px; padding: 8px 12px; border: 0; border-radius: 8px; cursor: pointer; }
+main { padding: 16px; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { padding: 8px 10px; border-bottom: 1px solid #e5e7eb; }
+th { text-align: left; background: #f0f2f7; }
+tbody tr:hover { background: #f9fafb; }
