@@ -29,3 +29,60 @@
 - **Adapter detection** improved: now selects the interface with a real default gateway instead of APIPA (169.254.*).
 - **Probing** updated: added Windows ping (`ping -n 1 -w 400`) and quick HTTP HEAD checks (port 80 and 443).
 - Hosts are now marked as **P** (Pingable) and **W** (Website available) when detected.
+
+
+## v1.02 - Reachability fallback, gateway marking, details view (2025-09-19)
+### Added
+- Per scan details view in the UI.  Click a history row to see all hosts and their flags.
+### Changed
+- Probe logic now treats a host as reachable if ICMP works or a short TCP connect to 80 or 443 succeeds.
+- Scanner marks the adapter default gateway with G automatically when present.
+
+
+## v1.03 - Host flags UI, reverse DNS, auto browser (2025-09-19)
+### Added
+- Per-host table in details view with colored flag icons (G/W/U/B/P/6).
+- Reverse DNS resolution for hostnames.
+- Helper script `scripts/run_and_open.py` opens the default browser on startup.
+### Changed
+- Refactored probe logic to include reverse DNS, stubs for UPnP/Bonjour/IPv6.
+
+
+## v1.03 - Names, colored flags, and one-click start (2025-09-19)
+### Added
+- Reverse DNS name resolution for hosts when reachable.
+- Colored letter badges in details view for G, W, U, B, P, and 6.
+- `scripts/run_and_open.py` opens your default browser to the app after starting the server.
+### Notes
+- UPnP, Bonjour, and IPv6 flags remain placeholders for now.  We will wire SSDP and mDNS in the next build.
+
+
+## v1.04 - Device names and service discovery (2025-09-19)
+### Added
+- NetBIOS Node Status on UDP 137 to capture device names when available.
+- UPnP unicast SSDP on UDP 1900 with device description fetch to capture friendlyName and set U.
+- Unicast mDNS probe on UDP 5353 to set B when Bonjour is present.
+- CSV export endpoint at `/api/scan/{id}/csv` and a link in the details view.
+### Changed
+- Only reachable hosts are stored and displayed.  Empty addresses are no longer listed.
+
+
+## v1.05 - Toggle details and better device names (2025-09-19)
+### Added
+- Click a history row to expand details, click the same row again to collapse.
+### Improved
+- NetBIOS Node Status encoding and parsing to capture workstation/server names more reliably.
+- Reverse DNS timeout increased with a small retry for stubborn resolvers.
+- Details view shows '(Gateway)' next to the device name when applicable.
+
+
+## v1.06 - Windows nbtstat fallback for device names (2025-09-19)
+### Added
+- Fallback to `nbtstat -A <ip>` for device names when UDP NetBIOS parsing does not return a name.
+
+
+## v1.07 - Numeric IP sort and docs (2025-09-19)
+### Changed
+- Hosts in details are now sorted by numeric IPv4 order rather than lexicographic order.
+### Docs
+- README updated with current features and quick start instructions.
