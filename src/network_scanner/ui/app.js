@@ -61,6 +61,8 @@ const DEVICE_ICONS = {
   NAS: '<rect x="5" y="3" width="14" height="8" rx="2"></rect><rect x="5" y="13" width="14" height="8" rx="2"></rect><path d="M9 7h.01M9 17h.01M13 7h3M13 17h3"></path>',
   Mobile: '<rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path>',
   IoT: '<path d="M9 18h6M10 22h4M8.5 14.5A6 6 0 1 1 15.5 14.5C14.5 15.3 14 16 14 18h-4c0-2-.5-2.7-1.5-3.5z"></path>',
+  'Game Console': '<path d="M8 8h8a5 5 0 0 1 4.7 3.3l1 3.2a3 3 0 0 1-4.8 3.2L15 16h-6l-1.9 1.7a3 3 0 0 1-4.8-3.2l1-3.2A5 5 0 0 1 8 8zM7 11v4M5 13h4M16.5 12h.01M18.5 14h.01"></path>',
+  'Network Device': '<rect x="3" y="8" width="18" height="9" rx="2"></rect><path d="M7 12h.01M10 12h.01M13 12h.01M6 21v-4M18 21v-4M12 8V4M9 4h6"></path>',
   Other: '<circle cx="12" cy="12" r="9"></circle><path d="M9.8 9a2.4 2.4 0 1 1 3.1 2.3c-.9.4-1.4 1-1.4 2M12 17h.01"></path>',
 };
 
@@ -86,6 +88,21 @@ const formatMac = (value) => {
   const parts = value.replaceAll('-', ':').split(':');
   if (parts.length !== 6 || parts.some((part) => !/^[0-9a-f]{1,2}$/i.test(part))) return value.toUpperCase();
   return parts.map((part) => part.padStart(2, '0').toUpperCase()).join(':');
+};
+
+const macVendorCell = (host) => {
+  const td = document.createElement('td');
+  const sharedVendor = host.notes?.shared_proxy_vendor;
+  const vendor = host.mac_vendor || sharedVendor;
+  td.dataset.sortValue = vendor || '';
+  td.textContent = vendor || 'Not available';
+  if (sharedVendor) {
+    const secondary = document.createElement('span');
+    secondary.className = 'identity-source';
+    secondary.textContent = 'Shared/proxy responder';
+    td.appendChild(secondary);
+  }
+  return td;
 };
 
 const ipv4SortValue = (value) => {
@@ -176,7 +193,7 @@ function renderResults(scan) {
     const macStatus = sharedMac ? 'Shared/proxy response' : (mac ? 'Observed' : 'Not available');
     row.append(
       deviceTypeCell(host), cell(host.ip), identityCell(host), cell(product || 'Not advertised'),
-      cell(mac || 'Not available'), cell(macStatus), confidenceCell(host.confidence), cell(evidence || 'Unknown'),
+      cell(mac || 'Not available'), macVendorCell(host), cell(macStatus), confidenceCell(host.confidence), cell(evidence || 'Unknown'),
       cell(services || 'None detected'), cell(host.flags?.G ? 'Gateway' : ''),
     );
     resultsBody.appendChild(row);

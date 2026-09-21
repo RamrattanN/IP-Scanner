@@ -19,6 +19,7 @@ from .neighbors import get_neighbor_table
 from .probe import probe_host
 from .vendors import lookup_mac_vendor
 from .device_types import classify_device_type
+from .device_intelligence import infer_identity_from_direct_vendor
 
 
 FLAGS = {"G": False, "W": False, "U": False, "B": False, "P": False, "6": False}
@@ -168,6 +169,9 @@ class Scanner:
                     proxy_arp_ignored += 1
                     continue
                 host["notes"]["shared_proxy_mac"] = mac
+                shared_vendor = lookup_mac_vendor(mac)
+                if shared_vendor:
+                    host["notes"]["shared_proxy_vendor"] = shared_vendor
                 continue
             if host is None:
                 host = _empty_host(ip)
@@ -207,11 +211,14 @@ class Scanner:
                 host["flags"]["G"] = True
             if host.get("mac"):
                 host["mac"] = format_mac_address(host["mac"])
-            if not host.get("manufacturer") and host.get("mac"):
-                host["manufacturer"] = lookup_mac_vendor(host["mac"])
-                if host["manufacturer"]:
+            if host.get("mac"):
+                host["mac_vendor"] = lookup_mac_vendor(host["mac"])
+            if not host.get("manufacturer") and host.get("mac_vendor"):
+                host["manufacturer"] = host["mac_vendor"]
+                if host.get("manufacturer"):
                     host["notes"]["manufacturer_source"] = "IEEE OUI"
             _finalise_identity(host)
+            infer_identity_from_direct_vendor(host)
             host["device_type"] = classify_device_type(host)
 
         results.sort(key=lambda host: ipaddress.IPv4Address(host["ip"]))

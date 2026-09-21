@@ -127,6 +127,7 @@ def test_scanner_enriches_identity_and_filters_proxy_arp(monkeypatch):
         return "DESKTOP" if ip == "192.0.2.1" else None
 
     monkeypatch.setattr(scanner, "discover_netbios_name", netbios)
+    monkeypatch.setattr(scanner, "lookup_mac_vendor", lambda _mac: "Ubiquiti Inc")
     record = {
         "cidr": "192.0.2.0/29",
         "range": {"start": "192.0.2.1", "end": "192.0.2.7"},
@@ -143,6 +144,9 @@ def test_scanner_enriches_identity_and_filters_proxy_arp(monkeypatch):
     assert by_ip["192.0.2.3"]["name"] == "Living Room TV"
     assert by_ip["192.0.2.4"]["manufacturer"] == "ExampleCo"
     assert by_ip["192.0.2.2"]["notes"]["shared_proxy_mac"] == shared_mac
+    assert by_ip["192.0.2.2"]["notes"]["shared_proxy_vendor"] == "Ubiquiti Inc"
     assert by_ip["192.0.2.2"]["mac"] is None
+    assert by_ip["192.0.2.2"]["name"] is None
+    assert by_ip["192.0.2.2"]["device_type"] == "Other"
     assert result["stats"]["proxy_arp_ignored"] == 4
     assert result["stats"]["reserved_ignored"] == 1

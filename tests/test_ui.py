@@ -18,10 +18,14 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "inclusive starting and ending IPv4 addresses" in html
     assert "Why some values are unknown" in html
     assert "MAC status" in html
+    assert "MAC vendor" in html
     assert "Shared/proxy response" in javascript
     assert "Sort and interpret MAC details" in html
     assert "data-sort-type" in html
     assert "DEVICE_ICONS" in javascript
+    assert "Game Console" in javascript
+    assert "Network Device" in javascript
+    assert "Shared/proxy responder" in javascript
     assert "makeSortable('history-table')" in javascript
     assert "makeSortable('results-table')" in javascript
     assert "not an exhaustive port scan" in html

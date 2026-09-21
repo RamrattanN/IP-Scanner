@@ -70,6 +70,71 @@ def test_history_enriches_existing_mac_and_device_metadata(monkeypatch, tmp_path
 
     host = response.json()["scans"][0]["hosts"][0]
     assert host["mac"] == "00:11:22:33:44:55"
+    assert host["mac_vendor"] == "Example Devices"
     assert host["manufacturer"] == "Example Devices"
     assert host["notes"]["manufacturer_source"] == "IEEE OUI"
     assert host["device_type"] == "Printer"
+
+
+def test_history_labels_shared_mac_vendor_without_claiming_device_identity(monkeypatch, tmp_path):
+    monkeypatch.setattr(api, "get_app_data_dir", lambda: tmp_path)
+    monkeypatch.setattr(api, "lookup_mac_vendor", lambda _mac: "Ubiquiti Inc")
+    ensure_history_file(tmp_path)
+    save_history(
+        tmp_path,
+        {
+            "version": 1,
+            "scans": [{
+                "id": "scan-1",
+                "hosts": [{
+                    "ip": "192.168.2.102",
+                    "mac": None,
+                    "name": None,
+                    "names": [],
+                    "services": [],
+                    "flags": {},
+                    "notes": {"shared_proxy_mac": "F0:9F:C2:38:9D:53"},
+                }],
+            }],
+        },
+    )
+
+    host = TestClient(app).get("/api/history").json()["scans"][0]["hosts"][0]
+
+    assert host["name"] is None
+    assert host.get("manufacturer") is None
+    assert host.get("mac_vendor") is None
+    assert host["notes"]["shared_proxy_vendor"] == "Ubiquiti Inc"
+    assert host["device_type"] == "Other"
+
+
+def test_history_infers_nintendo_identity_and_game_console_type(monkeypatch, tmp_path):
+    monkeypatch.setattr(api, "get_app_data_dir", lambda: tmp_path)
+    monkeypatch.setattr(api, "lookup_mac_vendor", lambda _mac: "Nintendo Co.,Ltd")
+    ensure_history_file(tmp_path)
+    save_history(
+        tmp_path,
+        {
+            "version": 1,
+            "scans": [{
+                "id": "scan-1",
+                "hosts": [{
+                    "ip": "192.168.2.114",
+                    "mac": "70:48:F7:2C:73:DF",
+                    "name": None,
+                    "names": [],
+                    "services": [],
+                    "flags": {},
+                    "notes": {},
+                }],
+            }],
+        },
+    )
+
+    host = TestClient(app).get("/api/history").json()["scans"][0]["hosts"][0]
+
+    assert host["name"] == "Nintendo"
+    assert host["names"] == [{"source": "MAC vendor inference", "value": "Nintendo"}]
+    assert host["manufacturer"] == "Nintendo Co.,Ltd"
+    assert host["mac_vendor"] == "Nintendo Co.,Ltd"
+    assert host["device_type"] == "Game Console"

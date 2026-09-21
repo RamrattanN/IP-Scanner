@@ -20,4 +20,6 @@ def test_classifies_common_device_types_from_observed_evidence():
     assert classify_device_type(host("Living Room Speaker", ["RAOP"])) == "Audio"
     assert classify_device_type(host("MacBook Pro", ["SMB"])) == "Computer"
     assert classify_device_type(host("Front door camera")) == "IoT"
+    assert classify_device_type(host(manufacturer="Nintendo Co.,Ltd")) == "Game Console"
+    assert classify_device_type(host(manufacturer="Ubiquiti Inc")) == "Network Device"
     assert classify_device_type(host("Unidentified host")) == "Other"

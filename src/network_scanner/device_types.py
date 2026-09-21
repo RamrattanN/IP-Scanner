@@ -13,7 +13,13 @@ def classify_device_type(host: dict[str, Any]) -> str:
     names = [host.get("name") or ""]
     names.extend(item.get("value", "") for item in host.get("names") or [])
     text = " ".join(
-        [*names, host.get("manufacturer") or "", host.get("model") or "", *services]
+        [
+            *names,
+            host.get("manufacturer") or "",
+            host.get("model") or "",
+            host.get("mac_vendor") or "",
+            *services,
+        ]
     ).casefold()
 
     def contains(*terms: str) -> bool:
@@ -24,6 +30,13 @@ def classify_device_type(host: dict[str, Any]) -> str:
         "orbi", "nighthawk", "ex3700", "ex7000"
     ):
         return "Router"
+    if contains("nintendo", "playstation", "xbox", "steam deck", "game console"):
+        return "Game Console"
+    if contains(
+        "ubiquiti", "mikrotik", "cisco meraki", "aruba networks", "ruckus",
+        "juniper networks", "network switch", "wireless bridge"
+    ):
+        return "Network Device"
     if services.intersection({"ipp", "lpd", "printer"}) or contains("printer", "officejet", "laserjet"):
         return "Printer"
     if contains("synology", "qnap", "truenas", "diskstation", "readynas", " nas"):

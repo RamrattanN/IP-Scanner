@@ -10,6 +10,7 @@ from .scanner import Scanner, ScannerConfig
 from .device_types import classify_device_type
 from .discovery import format_mac_address, is_valid_unicast_mac
 from .vendors import lookup_mac_vendor
+from .device_intelligence import infer_identity_from_direct_vendor
 
 router = APIRouter()
 MAX_ADDRESSES = 4096
@@ -33,10 +34,14 @@ def get_history() -> Dict[str, Any]:
             notes = host.setdefault("notes", {})
             if notes.get("shared_proxy_mac"):
                 notes["shared_proxy_mac"] = format_mac_address(notes["shared_proxy_mac"])
-            if not host.get("manufacturer") and host.get("mac"):
-                host["manufacturer"] = lookup_mac_vendor(host["mac"])
-                if host["manufacturer"]:
+                notes["shared_proxy_vendor"] = lookup_mac_vendor(notes["shared_proxy_mac"])
+            if host.get("mac"):
+                host["mac_vendor"] = lookup_mac_vendor(host["mac"])
+            if not host.get("manufacturer") and host.get("mac_vendor"):
+                host["manufacturer"] = host["mac_vendor"]
+                if host.get("manufacturer"):
                     notes["manufacturer_source"] = "IEEE OUI"
+            infer_identity_from_direct_vendor(host)
             host["device_type"] = classify_device_type(host)
     return history
 
