@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#173f63" />
     <title>Ramrattan IP Scanner</title>
-    <link rel="stylesheet" href="/styles.css?v=20260921.5" />
+    <link rel="stylesheet" href="/styles.css?v=20260921.6" />
   </head>
   <body>
     <main class="page-shell">
@@ -69,8 +69,15 @@
           <div class="table-scroll">
             <table id="history-table">
               <thead><tr>
-                <th>Timestamp</th><th>Network</th><th>Range</th><th>Duration</th>
-                <th>Requested</th><th>Attempted</th><th>Confirmed</th><th>Observed</th><th>Web</th>
+                <th><button class="sort-button" data-sort-type="date">Timestamp</button></th>
+                <th><button class="sort-button" data-sort-type="text">Network</button></th>
+                <th><button class="sort-button" data-sort-type="ip">Range</button></th>
+                <th><button class="sort-button" data-sort-type="number">Duration</button></th>
+                <th><button class="sort-button" data-sort-type="number">Requested</button></th>
+                <th><button class="sort-button" data-sort-type="number">Attempted</button></th>
+                <th><button class="sort-button" data-sort-type="number">Confirmed</button></th>
+                <th><button class="sort-button" data-sort-type="number">Observed</button></th>
+                <th><button class="sort-button" data-sort-type="number">Web</button></th>
               </tr></thead>
               <tbody id="history-body"></tbody>
             </table>
@@ -105,9 +112,16 @@
           <div class="table-scroll">
             <table id="results-table">
               <thead><tr>
-                <th>IP address</th><th>Device identity</th><th>Manufacturer / model</th>
-                <th>MAC address</th><th>Confidence</th><th>Evidence</th>
-                <th>Open services</th><th>Role</th>
+                <th><button class="sort-button" data-sort-type="text">Type</button></th>
+                <th><button class="sort-button" data-sort-type="ip">IP address</button></th>
+                <th><button class="sort-button" data-sort-type="text">Device identity</button></th>
+                <th><button class="sort-button" data-sort-type="text">Manufacturer / model</button></th>
+                <th><button class="sort-button" data-sort-type="text">MAC address</button></th>
+                <th><button class="sort-button" data-sort-type="text">MAC status</button></th>
+                <th><button class="sort-button" data-sort-type="text">Confidence</button></th>
+                <th><button class="sort-button" data-sort-type="text">Evidence</button></th>
+                <th><button class="sort-button" data-sort-type="text">Open services</button></th>
+                <th><button class="sort-button" data-sort-type="text">Role</button></th>
               </tr></thead>
               <tbody id="results-body"></tbody>
             </table>
@@ -165,6 +179,16 @@
         </ul>
       </section>
       <section class="help-card">
+        <h3>Sort and interpret MAC details</h3>
+        <ul>
+          <li>Select any column heading to sort that table.  Select it again to reverse the order.</li>
+          <li>MAC addresses use uppercase colon-separated formatting.</li>
+          <li><strong>Shared/proxy response</strong> means the address was returned for multiple IPs and is not presented as the device's confirmed hardware address.</li>
+          <li>Missing manufacturers are checked against a bundled local IEEE OUI list.  Scanned MAC addresses are not sent to an external service.</li>
+          <li>The first Device Results column uses observed evidence to show Router, Computer, Printer, TV, Audio, NAS, Mobile, IoT, or Other.  Other is used when the type cannot be established.</li>
+        </ul>
+      </section>
+      <section class="help-card">
         <h3>Data and privacy</h3>
         <ul>
           <li>Scan history is stored locally on this computer.</li>
@@ -184,6 +208,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260921.5"></script>
+    <script src="/app.js?v=20260921.6"></script>
   </body>
 </html>

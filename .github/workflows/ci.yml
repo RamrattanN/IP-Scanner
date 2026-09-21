@@ -49,3 +49,4 @@ jobs:
         run: |
           .smoke-venv/bin/python -c "from network_scanner.app import app; assert app.title == 'Ramrattan IP Scanner'"
           .smoke-venv/bin/python -c "from importlib.resources import files; assert files('network_scanner').joinpath('ui/index.html').is_file()"
+          .smoke-venv/bin/python -c "from network_scanner.vendors import lookup_mac_vendor; assert lookup_mac_vendor('00:11:22:33:44:55')"

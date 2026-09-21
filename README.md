@@ -24,6 +24,10 @@ The recovery branch provides:
 - Bonjour/mDNS, UPnP, NetBIOS, and safe web-metadata identity enrichment.
 - High, Medium, and Observed confidence classifications with identity-source
   attribution.
+- Local IEEE OUI vendor enrichment for valid globally administered MAC
+  addresses, without sending scanned addresses to an external service.
+- Consistent uppercase MAC formatting, a separate shared/proxy status column,
+  evidence-based device-type icons, and sortable table columns.
 - Broadcast, multicast-MAC, and repeated proxy-ARP artifact suppression.
 - Local JSON history and rotating logs.
 - Device-level results for every discovered host, with selectable scan history.
@@ -87,10 +91,12 @@ src/network_scanner/
 ├── adapters.py       # Platform-aware adapter and default-route detection
 ├── api.py            # Local FastAPI routes
 ├── discovery.py      # mDNS, UPnP, NetBIOS, confidence primitives
+├── device_types.py   # Evidence-based device type classification
 ├── probe.py          # ICMP, TCP service, and reverse-DNS probes
 ├── neighbors.py      # Platform-aware ARP/neighbor-table evidence
 ├── scanner.py        # Concurrent IPv4 range scanning
 ├── storage.py        # Local JSON persistence
+├── vendors.py        # Local bundled IEEE OUI lookup
 └── ui/               # Shared HTML, CSS, JavaScript, and brand assets
 ```
 

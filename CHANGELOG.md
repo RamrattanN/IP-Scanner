@@ -28,6 +28,11 @@
 - Validation for incomplete, reversed, invalid, and oversized custom ranges.
 - Bonjour/mDNS, UPnP, NetBIOS, and safe web-metadata identity enrichment.
 - Identity-source attribution plus High, Medium, and Observed confidence.
+- Local IEEE OUI vendor enrichment through the bundled `mac-vendor-lookup`
+  dataset, with no per-device external requests.
+- Evidence-based device-type icons for Router, Computer, Printer, TV, Audio,
+  NAS, Mobile, IoT, and Other.
+- Sortable columns in Scan History and Device Results.
 
 ### Changed
 - Withdrew the standalone Known Devices inventory candidate after owner review.
@@ -38,6 +43,8 @@
 - Broadcast and multicast MAC addresses are rejected.
 - ARP-only entries sharing a likely proxy MAC are excluded, while actively
   responding IP addresses remain visible with the shared-MAC condition noted.
+- MAC addresses use uppercase colon-separated formatting.  Shared or proxy
+  responses appear in a separate MAC status column.
 
 ## v1.00 - Initial Build (2025-09-19)
 ### Added

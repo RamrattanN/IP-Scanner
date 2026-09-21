@@ -61,10 +61,17 @@ button:focus-visible { outline: 3px solid rgba(47, 120, 184, 0.35); outline-offs
 .confidence-high { color: #165a3b; background: #e8f6ef; }
 .confidence-medium { color: var(--navy-700); background: var(--blue-100); }
 .confidence-observed { color: #73510d; background: #fff5d8; }
+.device-type-icon { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; color: var(--navy-700); background: var(--blue-100); }
+.device-type-icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .table-scroll { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; background: #fff; }
 th, td { padding: 13px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; text-align: left; }
 th { color: var(--muted); background: #f8fafc; font-size: .78rem; letter-spacing: .02em; }
+.sort-button { display: inline-flex; align-items: center; gap: 5px; margin: -8px -10px; padding: 8px 10px; border: 0; color: inherit; background: transparent; font: inherit; font-weight: 700; letter-spacing: inherit; cursor: pointer; }
+.sort-button::after { content: "↕"; color: #8a98a5; font-size: .8rem; }
+th[aria-sort="ascending"] .sort-button::after { content: "↑"; color: var(--blue-500); }
+th[aria-sort="descending"] .sort-button::after { content: "↓"; color: var(--blue-500); }
+.sort-button:hover { color: var(--navy-700); background: var(--blue-100); }
 td { font-size: .91rem; }
 tbody tr:hover { background: #f7fbfe; }
 tbody tr:last-child td { border-bottom: 0; }

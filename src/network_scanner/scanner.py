@@ -11,11 +11,14 @@ from .discovery import (
     discover_mdns,
     discover_netbios_name,
     discover_upnp,
+    format_mac_address,
     is_valid_unicast_mac,
     subnet_reserved_addresses,
 )
 from .neighbors import get_neighbor_table
 from .probe import probe_host
+from .vendors import lookup_mac_vendor
+from .device_types import classify_device_type
 
 
 FLAGS = {"G": False, "W": False, "U": False, "B": False, "P": False, "6": False}
@@ -151,7 +154,7 @@ class Scanner:
         mdns_devices, upnp_devices = await asyncio.gather(mdns_task, upnp_task)
 
         neighbor_table = {
-            ip: mac
+            ip: format_mac_address(mac)
             for ip, mac in get_neighbor_table().items()
             if ip in requested and ip not in reserved and is_valid_unicast_mac(mac)
         }
@@ -202,7 +205,14 @@ class Scanner:
         for host in results:
             if gateway_ip and host["ip"] == gateway_ip:
                 host["flags"]["G"] = True
+            if host.get("mac"):
+                host["mac"] = format_mac_address(host["mac"])
+            if not host.get("manufacturer") and host.get("mac"):
+                host["manufacturer"] = lookup_mac_vendor(host["mac"])
+                if host["manufacturer"]:
+                    host["notes"]["manufacturer_source"] = "IEEE OUI"
             _finalise_identity(host)
+            host["device_type"] = classify_device_type(host)
 
         results.sort(key=lambda host: ipaddress.IPv4Address(host["ip"]))
         duration_ms = int((time.perf_counter() - t0) * 1000)

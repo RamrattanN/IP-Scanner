@@ -5,6 +5,7 @@ import dns.rrset
 
 from network_scanner.discovery import (
     is_valid_unicast_mac,
+    format_mac_address,
     parse_mdns_packets,
     parse_netbios_name,
     parse_ssdp_response,
@@ -13,6 +14,7 @@ from network_scanner.discovery import (
 
 
 def test_mac_and_subnet_artifact_rules():
+    assert format_mac_address("0-a-b-c-d-e") == "00:0A:0B:0C:0D:0E"
     assert is_valid_unicast_mac("00:11:22:33:44:55") is True
     assert is_valid_unicast_mac("02:11:22:33:44:55") is True
     assert is_valid_unicast_mac("FF:FF:FF:FF:FF:FF") is False

@@ -44,3 +44,25 @@ name or product description through reverse DNS, mDNS, UPnP, or NetBIOS.  A MAC
 address may show `Not available` when the device is routed, isolated, or hidden
 behind a network intermediary.  IP Scanner preserves those boundaries rather
 than presenting a guess as a discovered fact.
+
+## MAC addresses and manufacturers
+
+- MAC addresses use uppercase colon-separated formatting.
+- `Observed` in the MAC status column means the address was associated with one
+  displayed device during the scan.
+- `Shared/proxy response` means the same address appeared for multiple IPs.  It
+  remains visible as evidence but is not presented as confirmed device hardware.
+- When a valid globally administered MAC is available and the discovery
+  protocols do not publish a manufacturer, IP Scanner checks the bundled local
+  IEEE OUI list.
+- Locally administered and randomized MAC addresses are not assigned an OUI
+  manufacturer.
+- Vendor lookup happens locally.  Scanned MAC addresses are not sent to an
+  external lookup service.
+
+## Device type icons
+
+Type icons summarize observed names, services, manufacturer or model, and
+gateway role.  Supported labels are Router, Computer, Printer, TV, Audio, NAS,
+Mobile, IoT, and Other.  They are navigation aids, not authoritative identity
+claims.  Other is used when evidence is insufficient.

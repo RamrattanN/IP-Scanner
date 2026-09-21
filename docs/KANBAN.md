@@ -17,6 +17,7 @@ or approval gate.
 
 | Card | Outcome | Acceptance evidence still needed |
 | --- | --- | --- |
+| Result usability enhancements | Device-type icons, sortable columns, normalized MAC values, separate proxy status, and local vendor enrichment | Owner visual review and representative-device accuracy check |
 | Frontend cache behavior | Updated CSS and JavaScript load after a recovery update | Verify normal relaunch and hard refresh on the Intel Mac |
 | Cross-platform shared core | One source and UI behave consistently across targets | Hands-on Apple silicon Mac and Windows x64 acceptance |
 
@@ -25,10 +26,9 @@ or approval gate.
 | Priority | Card | Outcome | Done when |
 | --- | --- | --- | --- |
 | 1 | Scan comparison | Show new, missing, changed, and returning devices between scans | Changes are reproducible and false positives are controlled |
-| 2 | Offline MAC vendor lookup | Add local OUI-based manufacturer evidence without sending data away | Data source, license, update process, and confidence rules are documented |
-| 3 | Device details panel | Present all names, sources, services, notes, and first/last seen without widening the main table | Keyboard and responsive behavior are accepted |
-| 4 | Search, filter, and sort | Find devices by IP, identity, vendor, service, confidence, or change state | Controls work with keyboard and preserve numeric IP sorting |
-| 5 | Export | Export the selected scan or comparison to documented local formats | CSV schema, escaping, tests, and Help are accepted |
+| 2 | Device details panel | Present all names, sources, services, notes, and first/last seen without widening the main table | Keyboard and responsive behavior are accepted |
+| 3 | Search and filter | Find devices by IP, identity, vendor, service, confidence, or change state | Controls work with keyboard and preserve numeric IP sorting |
+| 4 | Export | Export the selected scan or comparison to documented local formats | CSV schema, escaping, tests, and Help are accepted |
 
 ## Later
 

@@ -35,6 +35,12 @@ must establish a new functional checkpoint.
   metadata when a device publishes those facts.
 - Records MAC addresses, evidence, common open services, gateway role,
   identity source, manufacturer or model when advertised, and confidence.
+- Enriches missing manufacturer values from a bundled local IEEE OUI list for
+  valid globally administered MAC addresses.
+- Formats MAC addresses consistently and separates shared/proxy status from the
+  address value.
+- Provides evidence-based device-type icons and sortable history and result
+  columns.
 - Uses High, Medium, and Observed confidence without presenting confidence as a
   security or ownership rating.
 
@@ -57,7 +63,7 @@ must establish a new functional checkpoint.
 
 ## Verification evidence
 
-- Twenty-one automated tests pass locally and in the operating-system CI matrix.
+- Twenty-five automated tests pass locally and in the operating-system CI matrix.
 - Source compilation, JavaScript syntax validation, wheel build, and isolated
   wheel installation pass.
 - GitHub Actions validates Ubuntu, macOS, and Windows on Python 3.11 and 3.12,
@@ -74,6 +80,8 @@ installers still require hands-on acceptance on each target product.
 - A firewall, client isolation, routed network, sleeping device, or disabled
   multicast can reduce the evidence available.
 - Port checks cover a selected common-service set, not every TCP or UDP port.
+- Manufacturer and device-type values depend on published registrations and
+  observed heuristics.  They are not ownership or security assertions.
 - Scans currently run as one request without progress reporting or cancellation.
 - Scan history is not a persistent reconciled device inventory.
 - CSV export, IPv6 discovery, offline MAC-vendor data, signed installers, and

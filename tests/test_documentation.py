@@ -13,6 +13,7 @@ def test_recovery_documentation_set_is_complete_and_linked():
         "UX-Guidelines.md",
         "KANBAN.md",
         "ROADMAP.md",
+        "Third-Party-Notices.md",
     }
     docs = ROOT / "docs"
     assert expected <= {path.name for path in docs.glob("*.md")}
@@ -40,3 +41,4 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "2025-09-19" in roadmap
     assert "2026-09-21" in roadmap
     assert "Inventory candidate withdrawn" in roadmap
+    assert "Result usability candidate" in roadmap

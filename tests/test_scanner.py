@@ -11,6 +11,7 @@ def disable_passive_discovery(monkeypatch):
         return None
 
     monkeypatch.setattr(scanner, "discover_netbios_name", no_netbios)
+    monkeypatch.setattr(scanner, "lookup_mac_vendor", lambda _mac: None)
 
 
 def test_scanner_keeps_reachable_hosts_and_marks_gateway(monkeypatch):
@@ -48,6 +49,7 @@ def test_scanner_keeps_reachable_hosts_and_marks_gateway(monkeypatch):
 
     assert [host["ip"] for host in result["hosts"]] == ["192.0.2.1", "192.0.2.2", "192.0.2.3"]
     assert result["hosts"][0]["flags"]["G"] is True
+    assert result["hosts"][0]["device_type"] == "Router"
     assert result["hosts"][2]["evidence"] == ["ARP"]
     assert result["stats"]["addresses_requested"] == 3
     assert result["stats"]["addresses_attempted"] == 3

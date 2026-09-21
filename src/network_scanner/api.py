@@ -7,6 +7,9 @@ from .storage import load_history, save_history, get_app_data_dir, new_scan_reco
 from .adapters import detect_active_adapter
 from .cidr import cidr_from_adapter, cidr_to_range
 from .scanner import Scanner, ScannerConfig
+from .device_types import classify_device_type
+from .discovery import format_mac_address, is_valid_unicast_mac
+from .vendors import lookup_mac_vendor
 
 router = APIRouter()
 MAX_ADDRESSES = 4096
@@ -22,7 +25,20 @@ def ping() -> Dict[str, str]:
 
 @router.get("/history")
 def get_history() -> Dict[str, Any]:
-    return load_history(get_app_data_dir())
+    history = load_history(get_app_data_dir())
+    for scan in history.get("scans") or []:
+        for host in scan.get("hosts") or []:
+            formatted_mac = format_mac_address(host.get("mac"))
+            host["mac"] = formatted_mac if is_valid_unicast_mac(formatted_mac) else None
+            notes = host.setdefault("notes", {})
+            if notes.get("shared_proxy_mac"):
+                notes["shared_proxy_mac"] = format_mac_address(notes["shared_proxy_mac"])
+            if not host.get("manufacturer") and host.get("mac"):
+                host["manufacturer"] = lookup_mac_vendor(host["mac"])
+                if host["manufacturer"]:
+                    notes["manufacturer_source"] = "IEEE OUI"
+            host["device_type"] = classify_device_type(host)
+    return history
 
 @router.post("/clear-history")
 def clear_history() -> Dict[str, Any]:

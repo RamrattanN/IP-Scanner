@@ -300,13 +300,24 @@ def discover_upnp(timeout: float = 1.5) -> dict[str, dict[str, Any]]:
     return devices
 
 
-def is_valid_unicast_mac(mac: str | None) -> bool:
-    if not mac:
-        return False
+def format_mac_address(mac: str | None) -> str | None:
+    if not isinstance(mac, str) or not mac:
+        return None
     try:
-        octets = bytes(int(part, 16) for part in mac.split(":"))
+        parts = mac.replace("-", ":").split(":")
+        if len(parts) != 6 or any(not part or len(part) > 2 for part in parts):
+            return None
+        octets = bytes(int(part, 16) for part in parts)
     except (ValueError, TypeError):
+        return None
+    return ":".join(f"{octet:02X}" for octet in octets)
+
+
+def is_valid_unicast_mac(mac: str | None) -> bool:
+    formatted = format_mac_address(mac)
+    if not formatted:
         return False
+    octets = bytes(int(part, 16) for part in formatted.split(":"))
     return len(octets) == 6 and any(octets) and octets != b"\xff" * 6 and not (octets[0] & 1)
 
 

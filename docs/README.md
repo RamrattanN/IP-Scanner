@@ -13,6 +13,7 @@ available features.
 | [In-application Help](../src/network_scanner/ui/index.html) | Provides operating and troubleshooting guidance without leaving the application | Operators |
 | [Discovery Confidence](Discovery-Confidence.md) | Explains evidence, confidence, unknown values, and artifact controls | Operators, testers |
 | [UX Guidelines](UX-Guidelines.md) | Defines the shared Ramrattan Network Tools visual and interaction system | Designers, developers |
+| [Third-Party Notices](Third-Party-Notices.md) | Records the vendor lookup package, license, and local OUI data source | Owners, maintainers |
 | [Kanban](KANBAN.md) | Tracks completed, active, next, later, and blocked work | Project team |
 | [Roadmap](ROADMAP.md) | Records project origination through the current checkpoint and future stages | Owners, project team |
 | [Recovery Baseline](Recovery-Baseline.md) | Audits the inherited `v1.07` source and records recovery decisions | Maintainers |
