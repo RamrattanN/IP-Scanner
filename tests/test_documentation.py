@@ -29,12 +29,10 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     kanban = (ROOT / "docs" / "KANBAN.md").read_text(encoding="utf-8")
     roadmap = (ROOT / "docs" / "ROADMAP.md").read_text(encoding="utf-8")
 
-    assert "Ramrattan IP Scanner v1.0.0" in baseline
-    assert "9cd37a98525acda67278d9902c6afcc28be638c4" in baseline
-    assert "47d0bc66e7af4c979e5a3c281d70148ff5f7cddb" in baseline
-    assert "Recovery Baseline 2026.09.21" in baseline
-    assert "22f2b6ec1dbfe8661daf956bc985539f3ef5c03f" in baseline
-    assert "source release" in baseline
+    assert "Ramrattan IP Scanner v1.1.0" in baseline
+    assert "1e87518bb030fa8cf5d6ca84518cd0644f3691ad" in baseline
+    assert "v1.0.0 Discovery Experience Release" in baseline
+    assert "owner-accepted unsigned desktop release" in baseline
     assert "## In Progress" in kanban
     assert "## In Review" in kanban
     assert "## Ready" in kanban
@@ -48,7 +46,8 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "Result usability and visualization" in roadmap
     assert "Discovery Experience Baseline" in roadmap
     assert "Standalone desktop applications" in roadmap
-    assert "| 1 | Standalone desktop applications |" in kanban
+    assert "IP Scanner v1.1.0 desktop release" in kanban
+    assert "No card is actively being implemented" in kanban
 
 
 def test_desktop_packaging_documents_all_three_targets():
