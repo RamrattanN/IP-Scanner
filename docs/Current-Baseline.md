@@ -4,12 +4,13 @@
 
 | Field | Value |
 | --- | --- |
-| Name | Recovery Baseline 2026.09.21 |
-| Functional commit | `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
+| Name | Result Usability Baseline Candidate 2026.09.21 |
+| Functional commit | `451ce6704e55c66717c4884a2b3c775f85e37c02` |
+| Prior accepted baseline | Recovery Baseline 2026.09.21 at `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
 | Development branch | `recovery/cross-platform-desktop` |
 | Review vehicle | Draft pull request #1 |
 | Historical base | `v1.07` at `fc50a2bbde29c63afb2c2fe443f3bc454c641ad9` |
-| Product state | Development baseline, not a production release |
+| Product state | Development candidate awaiting owner review, not a production release |
 
 Documentation commits after the functional commit may clarify the checkpoint
 without changing the functional identity above.  Any later behavioral change
@@ -66,8 +67,8 @@ must establish a new functional checkpoint.
 - Twenty-five automated tests pass locally and in the operating-system CI matrix.
 - Source compilation, JavaScript syntax validation, wheel build, and isolated
   wheel installation pass.
-- GitHub Actions validates Ubuntu, macOS, and Windows on Python 3.11 and 3.12,
-  plus the package smoke test.
+- GitHub Actions run 15 passed all seven jobs: Ubuntu, macOS, and Windows on
+  Python 3.11 and 3.12, plus the package smoke test.
 - Owner review on Intel Mac accepted the refreshed discovery interface and
   results.
 
@@ -84,7 +85,7 @@ installers still require hands-on acceptance on each target product.
   observed heuristics.  They are not ownership or security assertions.
 - Scans currently run as one request without progress reporting or cancellation.
 - Scan history is not a persistent reconciled device inventory.
-- CSV export, IPv6 discovery, offline MAC-vendor data, signed installers, and
+- CSV export, IPv6 discovery, signed installers, and
   release publishing are not available in this baseline.
 
 ## Change control

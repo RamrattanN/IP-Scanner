@@ -5,11 +5,12 @@ uses a FastAPI service and a shared browser interface, stores scan history
 locally, and is being recovered as one codebase for Intel Mac, Apple silicon
 Mac, and Windows x64 desktop products.
 
-## Accepted recovery baseline
+## Current review candidate
 
-The accepted functional checkpoint is **Recovery Baseline 2026.09.21** at
-commit `22f2b6e`.  It is a development baseline, not a production release.  The
-historical `main` branch and `v1.07` tag remain unchanged.
+The current functional checkpoint is **Result Usability Baseline Candidate
+2026.09.21** at commit `451ce67`.  It builds on the accepted Recovery Baseline
+2026.09.21 at `22f2b6e` and awaits owner review.  It is not a production
+release.  The historical `main` branch and `v1.07` tag remain unchanged.
 
 The recovery branch provides:
 
@@ -36,8 +37,8 @@ The recovery branch provides:
 - Automated tests for CIDR handling, adapters, probing, scanning, storage, the
   API health route, and packaged visual assets.
 
-IPv6 discovery, offline MAC-vendor identification, CSV export, background
-progress, cancellation, and desktop installers remain planned work.  They must
+IPv6 discovery, CSV export, background progress, cancellation, and desktop
+installers remain planned work.  They must
 not be represented as available until implemented and accepted.
 
 Start with the [Documentation Guide](docs/README.md).  The guide links the

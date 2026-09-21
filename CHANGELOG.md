@@ -7,8 +7,10 @@
 
 ## Unreleased - Cross-platform recovery
 ### Baseline
+- Established `Result Usability Baseline Candidate 2026.09.21` at functional
+  commit `451ce6704e55c66717c4884a2b3c775f85e37c02` for owner review.
 - Accepted `Recovery Baseline 2026.09.21` as the current functional checkpoint
-  on the draft recovery pull request.
+  before the result-usability candidate on the draft recovery pull request.
 - Added a documentation guide, current-baseline specification, working Kanban
   board, and origin-to-date roadmap.
 - Updated in-application Help to explain inclusive coverage, confirmed versus
