@@ -192,6 +192,121 @@ function resetTableSort(tableId) {
   });
 }
 
+const RESULTS_COLUMN_DEFAULTS = [76, 140, 260, 360, 190, 220, 170, 130, 210, 260, 120];
+const RESULTS_COLUMN_MINIMUMS = [64, 112, 160, 180, 150, 150, 130, 112, 130, 150, 96];
+const RESULTS_COLUMN_STORAGE_KEY = 'ip-scanner-results-column-widths';
+
+function storedColumnWidths(columnCount) {
+  try {
+    const widths = JSON.parse(localStorage.getItem(RESULTS_COLUMN_STORAGE_KEY));
+    if (!Array.isArray(widths) || widths.length !== columnCount) return null;
+    return widths.map((width, index) => Math.min(1200, Math.max(
+      RESULTS_COLUMN_MINIMUMS[index] || 80,
+      Number(width) || RESULTS_COLUMN_DEFAULTS[index] || 160,
+    )));
+  } catch (_error) {
+    return null;
+  }
+}
+
+function makeResizable(tableId) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const headers = [...table.querySelectorAll('thead th')];
+  if (!headers.length) return;
+
+  const colgroup = document.createElement('colgroup');
+  const columns = headers.map((_header, index) => {
+    const column = document.createElement('col');
+    column.dataset.defaultWidth = String(RESULTS_COLUMN_DEFAULTS[index] || 160);
+    colgroup.appendChild(column);
+    return column;
+  });
+  table.prepend(colgroup);
+
+  const widths = storedColumnWidths(headers.length) || RESULTS_COLUMN_DEFAULTS.slice(0, headers.length);
+  const applyWidths = () => {
+    columns.forEach((column, index) => {
+      column.style.width = `${widths[index]}px`;
+    });
+    table.style.width = `${widths.reduce((total, width) => total + width, 0)}px`;
+  };
+  const resizers = [];
+  const persistWidths = () => {
+    try {
+      localStorage.setItem(RESULTS_COLUMN_STORAGE_KEY, JSON.stringify(widths));
+    } catch (_error) {
+      // Resizing remains available when browser storage is disabled.
+    }
+  };
+  const setWidth = (index, width, persist = false) => {
+    widths[index] = Math.min(1200, Math.max(RESULTS_COLUMN_MINIMUMS[index] || 80, Math.round(width)));
+    resizers[index]?.setAttribute('aria-valuenow', String(widths[index]));
+    applyWidths();
+    if (persist) persistWidths();
+  };
+
+  headers.forEach((header, index) => {
+    const resizer = document.createElement('button');
+    const label = header.textContent.trim();
+    resizer.type = 'button';
+    resizer.className = 'column-resizer';
+    resizer.setAttribute('role', 'separator');
+    resizer.setAttribute('aria-orientation', 'vertical');
+    resizer.setAttribute('aria-valuemin', String(RESULTS_COLUMN_MINIMUMS[index] || 80));
+    resizer.setAttribute('aria-valuemax', '1200');
+    resizer.setAttribute('aria-valuenow', String(widths[index]));
+    resizer.setAttribute('aria-label', `Resize ${label} column`);
+    resizer.title = `Resize ${label} column`;
+    resizers[index] = resizer;
+    header.appendChild(resizer);
+
+    resizer.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const startX = event.clientX;
+      const startWidth = widths[index];
+      resizer.classList.add('is-active');
+      document.body.classList.add('is-resizing-column');
+      resizer.setPointerCapture(event.pointerId);
+
+      const move = (moveEvent) => setWidth(index, startWidth + moveEvent.clientX - startX);
+      const finish = () => {
+        resizer.classList.remove('is-active');
+        document.body.classList.remove('is-resizing-column');
+        persistWidths();
+        resizer.removeEventListener('pointermove', move);
+        resizer.removeEventListener('pointerup', finish);
+        resizer.removeEventListener('pointercancel', finish);
+      };
+      resizer.addEventListener('pointermove', move);
+      resizer.addEventListener('pointerup', finish);
+      resizer.addEventListener('pointercancel', finish);
+    });
+
+    resizer.addEventListener('dblclick', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setWidth(index, RESULTS_COLUMN_DEFAULTS[index] || 160, true);
+    });
+
+    resizer.addEventListener('keydown', (event) => {
+      if (event.key === 'Home') {
+        event.preventDefault();
+        setWidth(index, RESULTS_COLUMN_DEFAULTS[index] || 160, true);
+        return;
+      }
+      if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      event.preventDefault();
+      const direction = event.key === 'ArrowLeft' ? -1 : 1;
+      setWidth(index, widths[index] + direction * (event.shiftKey ? 32 : 12), true);
+    });
+  });
+
+  applyWidths();
+}
+
 const durationLabel = (milliseconds) => {
   if (!Number.isFinite(milliseconds)) return '';
   if (milliseconds < 1000) return `${milliseconds} ms`;
@@ -733,6 +848,7 @@ historyChartTypeInputs.forEach((input) => {
 
 makeSortable('history-table');
 makeSortable('results-table');
+makeResizable('results-table');
 
 loadHistory().catch((error) => {
   actionStatus.textContent = error.message;

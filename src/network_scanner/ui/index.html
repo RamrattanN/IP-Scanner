@@ -155,7 +155,7 @@
         </div>
         <div class="table-card results-card">
           <div class="table-scroll">
-            <table id="results-table">
+            <table id="results-table" class="resizable-table">
               <thead><tr>
                 <th><button class="sort-button" data-sort-type="text">Type</button></th>
                 <th><button class="sort-button" data-sort-type="ip">IP address</button></th>
@@ -225,9 +225,11 @@
         </ul>
       </section>
       <section class="help-card">
-        <h3>Sort and interpret MAC details</h3>
+        <h3>Arrange and interpret device results</h3>
         <ul>
           <li>Select any column heading to sort that table.  Select it again to reverse the order.</li>
+          <li>Drag the divider at the right edge of a Device Results heading to resize that column.  Double-click the divider to restore its original width.  Your widths are retained in this browser.</li>
+          <li>With a divider focused, use the Left and Right Arrow keys to resize, or press Home to restore the original width.</li>
           <li>MAC addresses use uppercase colon-separated formatting.</li>
           <li><strong>Shared/proxy response</strong> means the address was returned for multiple IPs and is not presented as the device's confirmed hardware address.</li>
           <li>Missing manufacturers are checked against a bundled local IEEE OUI list.  Scanned MAC addresses are not sent to an external service.</li>
@@ -254,6 +256,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260921.14"></script>
+    <script src="/app.js?v=20260921.15"></script>
   </body>
 </html>

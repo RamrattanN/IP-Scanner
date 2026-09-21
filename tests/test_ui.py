@@ -33,7 +33,7 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "MAC status" in html
     assert "MAC vendor" in html
     assert "Shared/proxy response" in javascript
-    assert "Sort and interpret MAC details" in html
+    assert "Arrange and interpret device results" in html
     assert "data-sort-type" in html
     assert "DEVICE_ICONS" in javascript
     assert "Game Console" in javascript
@@ -41,6 +41,14 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "Shared/proxy responder" in javascript
     assert "makeSortable('history-table')" in javascript
     assert "makeSortable('results-table')" in javascript
+    assert "makeResizable('results-table')" in javascript
+    assert "ip-scanner-results-column-widths" in javascript
+    assert "Resize ${label} column" in javascript
+    assert "resizer.setPointerCapture" in javascript
+    assert "event.key === 'Home'" in javascript
+    assert 'class="resizable-table"' in html
+    assert "Drag the divider" in html
+    assert ".column-resizer" in css
     assert "renderHistoryChart" in javascript
     assert "renderDeviceTypeChart" in javascript
     assert "renderDeviceTypeChart(scans[0])" in javascript
