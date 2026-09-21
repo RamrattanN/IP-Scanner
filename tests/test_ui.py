@@ -48,6 +48,8 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "event.key === 'Home'" in javascript
     assert 'class="resizable-table"' in html
     assert "Drag the divider" in html
+    assert "About this baseline" in html
+    assert "Standalone Intel Mac, Apple silicon Mac, and Windows x64 applications" in html
     assert ".column-resizer" in css
     assert "renderHistoryChart" in javascript
     assert "renderDeviceTypeChart" in javascript

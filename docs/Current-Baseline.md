@@ -6,9 +6,10 @@
 | --- | --- |
 | Name | Discovery Experience Baseline 2026.09.21 |
 | Functional commit | `9cd37a98525acda67278d9902c6afcc28be638c4` |
+| Main integration commit | `47d0bc66e7af4c979e5a3c281d70148ff5f7cddb` |
 | Prior accepted baseline | Recovery Baseline 2026.09.21 at `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
-| Development branch | `recovery/cross-platform-desktop` |
-| Review vehicle | Draft pull request #1 |
+| Baseline branch | `main` |
+| Review vehicle | Pull request #1, merged 2026-09-21 |
 | Historical base | `v1.07` at `fc50a2bbde29c63afb2c2fe443f3bc454c641ad9` |
 | Product state | Owner-accepted development baseline, not a production release |
 
@@ -73,9 +74,8 @@ must establish a new functional checkpoint.
 - Twenty-nine automated tests pass locally.
 - Source compilation, JavaScript syntax validation, wheel build, and isolated
   wheel installation pass.
-- GitHub Actions runs through 33 passed all seven jobs: Ubuntu, macOS, and
-  Windows on Python 3.11 and 3.12, plus the package smoke test.  Run 35 verifies
-  the functional baseline recorded here.
+- GitHub Actions run 38 passed all seven jobs against the merged `main`: Ubuntu,
+  macOS, and Windows on Python 3.11 and 3.12, plus the package smoke test.
 - Owner review on Intel Mac accepted the refreshed discovery interface,
   results, visualizations, device-type summary, and table interactions.
 
@@ -92,12 +92,14 @@ installers still require hands-on acceptance on each target product.
   observed heuristics.  They are not ownership or security assertions.
 - Scans currently run as one request without progress reporting or cancellation.
 - Scan history is not a persistent reconciled device inventory.
-- CSV export, IPv6 discovery, signed installers, and
-  release publishing are not available in this baseline.
+- Standalone desktop applications, CSV export, IPv6 discovery, signed
+  installers, and release publishing are not available in this baseline.
 
 ## Change control
 
-- Keep `main` and `v1.07` unchanged until explicit merge approval.
-- Keep pull request #1 in draft while target-native acceptance remains open.
+- Treat merge commit `47d0bc6` on `main` as the protected starting point for
+  subsequent work.  Preserve `v1.07` as the audited historical checkpoint.
+- Develop material changes on focused branches and merge them only after tests,
+  CI, documentation reconciliation, and owner approval.
 - Record new behavior in tests, Help, Changelog, Kanban, and this baseline.
 - Establish a new named baseline when behavior materially changes.

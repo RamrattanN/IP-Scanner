@@ -2,18 +2,18 @@
 
 A local network scanner in the Ramrattan Network Tools family.  The application
 uses a FastAPI service and a shared browser interface, stores scan history
-locally, and is being recovered as one codebase for Intel Mac, Apple silicon
-Mac, and Windows x64 desktop products.
+locally, and now provides the accepted shared baseline for Intel Mac, Apple
+silicon Mac, and Windows x64 desktop products.
 
 ## Current accepted development baseline
 
 The current functional checkpoint is **Discovery Experience Baseline
-2026.09.21** at commit `9cd37a9`.  The owner accepted it as the recovery
-starting point after reviewing discovery accuracy, device intelligence, charts,
-and table interactions on Intel Mac.  It is not a production release.  The
-historical `main` branch and `v1.07` tag remain unchanged.
+2026.09.21** at commit `9cd37a9`, integrated into `main` by merge commit
+`47d0bc6`.  The owner accepted it after reviewing discovery accuracy, device
+intelligence, charts, and table interactions on Intel Mac.  It is not a
+production release.  The historical `v1.07` tag remains unchanged.
 
-The recovery branch provides:
+The accepted baseline provides:
 
 - Active IPv4 adapter and default-gateway detection on macOS, Windows, and Linux.
 - Layered device discovery using native ICMP, common TCP services, and the
@@ -41,8 +41,9 @@ The recovery branch provides:
 - Automated tests for CIDR handling, adapters, probing, scanning, storage, the
   API health route, and packaged visual assets.
 
-IPv6 discovery, CSV export, background progress, cancellation, and desktop
-installers remain planned work.  They must
+Standalone Intel Mac, Apple silicon Mac, and Windows x64 applications are the
+next delivery priority.  IPv6 discovery, CSV export, background progress, and
+cancellation remain planned work.  These capabilities must
 not be represented as available until implemented and accepted.
 
 Start with the [Documentation Guide](docs/README.md).  The guide links the
@@ -79,7 +80,7 @@ Open <http://127.0.0.1:8000>.  Stop the development server with Control-C.
 
 ## Data location
 
-The current recovery build preserves the legacy data location:
+The current baseline preserves the legacy data location:
 
 ```text
 ~/Documents/Network Scanner/history.json
@@ -114,8 +115,10 @@ Baseline CI runs tests and source compilation on Python 3.11 and 3.12 across
 Linux, macOS, and Windows.  It also builds and installs the wheel in isolation
 to confirm that the UI and logo are packaged.
 
-Target-native installer workflows will follow the proven Speedtest Monitor
-pattern after the shared scanner and user experience pass functional acceptance.
+Target-native application and installer workflows are next and will follow the
+proven Speedtest Monitor pattern.  The shared scanner and user experience stay
+common while packaging, signing, and platform lifecycle behavior remain
+target-specific.
 
 The [Kanban board](docs/KANBAN.md) is the working source of truth for delivery
 status.  CI success demonstrates source portability, but it does not replace

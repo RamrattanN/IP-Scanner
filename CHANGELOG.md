@@ -5,14 +5,17 @@
 > does not contain several listed features.  See
 > `docs/Recovery-Baseline.md` for the verified baseline and recovery decisions.
 
-## Unreleased - Cross-platform recovery
+## Discovery Experience Baseline 2026.09.21
 ### Baseline
 - Established the owner-accepted `Discovery Experience Baseline 2026.09.21` at
   functional commit `9cd37a98525acda67278d9902c6afcc28be638c4`.
+- Merged the accepted recovery into `main` at
+  `47d0bc66e7af4c979e5a3c281d70148ff5f7cddb`.  Post-merge CI run 38 passed all
+  seven jobs.
 - Retained the earlier result-usability checkpoint at
   `451ce6704e55c66717c4884a2b3c775f85e37c02` in the draft pull request history.
-- Accepted `Recovery Baseline 2026.09.21` as the current functional checkpoint
-  before the result-usability candidate on the draft recovery pull request.
+- Retained `Recovery Baseline 2026.09.21` as the earlier audited checkpoint
+  before the result-usability work.
 - Added a documentation guide, current-baseline specification, working Kanban
   board, and origin-to-date roadmap.
 - Updated in-application Help to explain inclusive coverage, confirmed versus

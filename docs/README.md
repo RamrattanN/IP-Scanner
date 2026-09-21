@@ -1,7 +1,7 @@
 # IP Scanner Documentation
 
-This directory is the documentation source of truth for the IP Scanner
-recovery.  The documents separate verified history, current behavior, product
+This directory is the documentation and repository-wiki source of truth for IP
+Scanner.  The documents separate verified history, current behavior, product
 standards, and future work so that planned capabilities are never mistaken for
 available features.
 
@@ -22,8 +22,8 @@ available features.
 
 - **Available** means implemented in source and exercised by automated or
   documented manual verification.
-- **Accepted baseline** means suitable as the next recovery starting point.  It
-  does not mean production-ready or generally released.
+- **Accepted baseline** means suitable as the protected starting point for the
+  next delivery stage.  It does not mean production-ready or generally released.
 - **In review** means implemented or documented but still awaiting a named
   acceptance gate.
 - **Planned** means sequenced on the Kanban or roadmap and not yet available.
@@ -35,5 +35,6 @@ available features.
 When behavior changes, update the application Help, Current Baseline, Kanban,
 Roadmap, README, and Changelog as applicable in the same pull request.  Move a
 card to Done only when its stated acceptance evidence exists.  Preserve the
-original `main` branch and `v1.07` tag until the recovery pull request is
-explicitly approved for merge.
+current `main` baseline and the historical `v1.07` tag.  Implement material
+changes on focused branches and merge them only after the required approval and
+verification gates pass.

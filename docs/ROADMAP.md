@@ -14,7 +14,8 @@
 | 2026-09-21 | Recovery Baseline 2026.09.21 | Functional commit `22f2b6e` passed seven CI jobs.  Current behavior, Help, Kanban, and roadmap were reconciled on draft pull request #1. |
 | 2026-09-21 | Inventory candidate withdrawn | A standalone Known Devices table and label workflow were evaluated, then removed before acceptance after owner review.  Scan history and device results remain the current source of truth. |
 | 2026-09-21 | Result usability and visualization | Added local OUI enrichment, device-type intelligence, sortable and resizable result columns, historical stacked bar and area charts, a latest-scan mix chart, hover metrics, and a shared icon summary. |
-| 2026-09-21 | Discovery Experience Baseline | Owner accepted the Intel Mac discovery and review experience at functional commit `9cd37a9`.  The draft pull request remains unmerged while Apple silicon Mac and Windows x64 hands-on gates remain open. |
+| 2026-09-21 | Discovery Experience Baseline | Owner accepted the Intel Mac discovery and review experience at functional commit `9cd37a9`. |
+| 2026-09-21 | Recovery integrated | PR #1 merged the accepted baseline into `main` at `47d0bc6`.  Post-merge CI run 38 passed all seven Ubuntu, macOS, Windows, and package jobs. |
 
 The historical changelog remains part of the record.  The
 [Recovery Baseline](Recovery-Baseline.md) identifies which `v1.07` behavior was
@@ -23,7 +24,23 @@ available now.
 
 ## Forward roadmap
 
-### Stage 1 - Change awareness and review
+### Stage 1 - Standalone desktop applications
+
+Apply the Speedtest Monitor deployment pattern to the IP Scanner lifecycle and
+build three deliverables from the accepted shared baseline: Intel Mac, Apple
+silicon Mac, and Windows x64.  Add the desktop lifecycle controller,
+single-instance behavior, safe local-data continuity, target build workflows,
+installer smoke tests, diagnostics, and rollback guidance.
+
+Exit criteria:
+
+- Each target application installs, launches, scans, retains history, upgrades,
+  and uninstalls as documented on its physical target.
+- The three products present the same UI, behavior, Help, and data model.
+- Artifacts are versioned, checksummed, traceable to CI, and ready for the
+  separately gated signing and publishing process.
+
+### Stage 2 - Change awareness and review
 
 Compare scan history directly, identify new or missing devices, show changed
 identity or services, and add the device details panel, search, filter, and
@@ -37,7 +54,7 @@ Exit criteria:
 - False changes caused by incomplete evidence are clearly qualified.
 - Exported data matches the selected scan or comparison view.
 
-### Stage 2 - Operational scanning
+### Stage 3 - Operational scanning
 
 Move scans to background jobs with live progress and cancellation.  Add safe
 scheduling, retention controls, and optional local change notifications.
@@ -48,35 +65,19 @@ Exit criteria:
 - Cancellation leaves valid, clearly labelled partial results.
 - Scheduling and notification defaults are private and non-disruptive.
 
-### Stage 3 - Protocol and platform completion
+### Stage 4 - Protocol depth
 
-Add IPv6 discovery and validate the shared core on physical Intel Mac, Apple
-silicon Mac, and Windows x64 systems.  Preserve one experience and one data
-model across all three products.
+Add IPv6 discovery and optional expanded service profiles while preserving one
+experience and one data model across all three products.
 
 Exit criteria:
 
-- Target-specific behavior has automated coverage and hands-on acceptance.
 - IPv4 and IPv6 evidence remains distinguishable and auditable.
 - Existing local history migrates safely.
-
-### Stage 4 - Desktop distribution
-
-Apply the Speedtest Monitor deployment pattern to the IP Scanner lifecycle and
-build three deliverables: Intel Mac, Apple silicon Mac, and Windows x64.  Add
-single-instance operation, signing, notarization where applicable, installer
-smoke tests, rollback guidance, and release publishing.
-
-Exit criteria:
-
-- Each installer launches, scans, retains history, upgrades, and uninstalls as
-  documented on its target hardware.
-- Release artifacts are signed, checksummed, versioned, and traceable to CI.
-- User documentation and support diagnostics match the released build.
 
 ## Roadmap governance
 
 The [Kanban board](KANBAN.md) controls current delivery status.  This roadmap
 controls sequencing and outcomes.  A stage may be refined as evidence changes,
-but unavailable work must not be represented as shipped.  Moving to installer
-work requires acceptance of the shared core on all three target platforms.
+but unavailable work must not be represented as shipped.  Standalone desktop
+applications are the next governed delivery stage.
