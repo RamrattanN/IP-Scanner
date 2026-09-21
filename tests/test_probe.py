@@ -25,9 +25,13 @@ def test_probe_returns_explicit_reachable_contract(monkeypatch):
     async def reverse_dns(_ip):
         return "printer.local"
 
+    async def web_identity(_ip, _ports):
+        return {"web_title": "Office Printer", "http_server": "printer-os"}
+
     monkeypatch.setattr(probe, "_ping", reachable)
     monkeypatch.setattr(probe, "_tcp_open", tcp_open)
     monkeypatch.setattr(probe, "_reverse_dns", reverse_dns)
+    monkeypatch.setattr(probe, "_web_identity", web_identity)
 
     result = asyncio.run(probe.probe_host("192.0.2.10"))
 
@@ -38,3 +42,5 @@ def test_probe_returns_explicit_reachable_contract(monkeypatch):
     assert result["open_ports"] == [80, 445]
     assert result["services"] == ["HTTP", "SMB"]
     assert result["evidence"] == ["ICMP", "TCP"]
+    assert result["names"] == [{"source": "Reverse DNS", "value": "printer.local"}]
+    assert result["notes"]["web_title"] == "Office Printer"

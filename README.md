@@ -17,6 +17,10 @@ The recovery branch provides:
   addresses, probe errors, and discovered devices separately.
 - Reverse-DNS names, MAC addresses, discovery evidence, common open services,
   and gateway role when those facts can be established locally.
+- Bonjour/mDNS, UPnP, NetBIOS, and safe web-metadata identity enrichment.
+- High, Medium, and Observed confidence classifications with identity-source
+  attribution.
+- Broadcast, multicast-MAC, and repeated proxy-ARP artifact suppression.
 - Local JSON history and rotating logs.
 - Device-level results for every discovered host, with selectable scan history.
 - A shared Ramrattan Network Tools header, logo, palette, action system, empty
@@ -24,12 +28,12 @@ The recovery branch provides:
 - Automated tests for CIDR handling, adapters, probing, scanning, storage, the
   API health route, and packaged visual assets.
 
-UPnP, Bonjour, IPv6, NetBIOS and mDNS naming, hardware-vendor identification,
-CSV export, background progress, cancellation, and desktop installers remain
-planned work.  They must not be represented as available until implemented and
-accepted.
+IPv6 discovery, offline MAC-vendor identification, CSV export, background
+progress, cancellation, and desktop installers remain planned work.  They must
+not be represented as available until implemented and accepted.
 
-See [Recovery Baseline](docs/Recovery-Baseline.md) for the audited v1.07 state
+See [Recovery Baseline](docs/Recovery-Baseline.md) for the audited v1.07 state,
+[Discovery Confidence](docs/Discovery-Confidence.md) for result interpretation,
 and [UX Guidelines](docs/UX-Guidelines.md) for the shared visual system.
 
 ## Developer setup
@@ -78,6 +82,7 @@ and routine uninstallation.
 src/network_scanner/
 ├── adapters.py       # Platform-aware adapter and default-route detection
 ├── api.py            # Local FastAPI routes
+├── discovery.py      # mDNS, UPnP, NetBIOS, confidence primitives
 ├── probe.py          # ICMP, TCP service, and reverse-DNS probes
 ├── neighbors.py      # Platform-aware ARP/neighbor-table evidence
 ├── scanner.py        # Concurrent IPv4 range scanning

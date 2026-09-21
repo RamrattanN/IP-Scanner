@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import asyncio
 import math
+import re
 import socket
 import sys
 from typing import Any, Dict
+
+import httpx
 
 
 # Common computer, router, printer, NAS, camera, and local web-service ports.
@@ -79,6 +82,38 @@ async def _reverse_dns(ip: str) -> str | None:
         return None
 
 
+async def _web_identity(ip: str, open_ports: list[int]) -> dict[str, str]:
+    """Read small, non-authenticated web metadata without retaining page content."""
+    for port in open_ports:
+        if port not in WEB_PORTS:
+            continue
+        scheme = "https" if port in {443, 8443} else "http"
+        default_port = (scheme == "http" and port == 80) or (scheme == "https" and port == 443)
+        authority = ip if default_port else f"{ip}:{port}"
+        try:
+            async with httpx.AsyncClient(
+                timeout=0.9, verify=False, follow_redirects=True, trust_env=False
+            ) as client:
+                async with client.stream("GET", f"{scheme}://{authority}/") as response:
+                    server = response.headers.get("server", "").strip()
+                    body = b""
+                    async for chunk in response.aiter_bytes():
+                        body += chunk
+                        if len(body) >= 65536:
+                            break
+            text = body[:65536].decode("utf-8", errors="replace")
+            title_match = re.search(r"<title[^>]*>(.*?)</title>", text, re.IGNORECASE | re.DOTALL)
+            title = re.sub(r"\s+", " ", title_match.group(1)).strip() if title_match else ""
+            return {
+                key: value
+                for key, value in {"web_title": title, "http_server": server}.items()
+                if value
+            }
+        except (httpx.HTTPError, OSError):
+            continue
+    return {}
+
+
 async def probe_host(ip: str) -> Dict[str, Any]:
     """Interrogate one IPv4 address and retain the evidence that answered."""
     flags = {"G": False, "W": False, "U": False, "B": False, "P": False, "6": False}
@@ -99,14 +134,18 @@ async def probe_host(ip: str) -> Dict[str, Any]:
         evidence.append("TCP")
 
     name = await _reverse_dns(ip) if reachable else None
+    web_identity = await _web_identity(ip, open_ports) if open_ports else {}
     return {
         "ip": ip,
         "name": name,
+        "names": ([{"source": "Reverse DNS", "value": name}] if name else []),
+        "manufacturer": None,
+        "model": None,
         "mac": None,
         "reachable": reachable,
         "evidence": evidence,
         "open_ports": open_ports,
         "services": [TCP_SERVICES[port] for port in open_ports],
         "flags": flags,
-        "notes": {},
+        "notes": web_identity,
     }

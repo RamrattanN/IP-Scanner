@@ -18,6 +18,15 @@
   details when available.
 - Selectable history rows and a device-level result table.
 - Validation for incomplete, reversed, invalid, and oversized custom ranges.
+- Bonjour/mDNS, UPnP, NetBIOS, and safe web-metadata identity enrichment.
+- Identity-source attribution plus High, Medium, and Observed confidence.
+
+### Changed
+- Subnet network and broadcast addresses remain part of requested and attempted
+  coverage but are not counted as devices.
+- Broadcast and multicast MAC addresses are rejected.
+- ARP-only entries sharing a likely proxy MAC are excluded, while actively
+  responding IP addresses remain visible with the shared-MAC condition noted.
 
 ## v1.00 - Initial Build (2025-09-19)
 ### Added

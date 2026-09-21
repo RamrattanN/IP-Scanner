@@ -70,7 +70,7 @@
             <table id="history-table">
               <thead><tr>
                 <th>Timestamp</th><th>Network</th><th>Range</th><th>Duration</th>
-                <th>Requested</th><th>Attempted</th><th>Devices</th><th>Ping</th><th>Web</th>
+                <th>Requested</th><th>Attempted</th><th>Confirmed</th><th>Observed</th><th>Web</th>
               </tr></thead>
               <tbody id="history-body"></tbody>
             </table>
@@ -97,15 +97,17 @@
         <div class="summary-grid" aria-label="Scan coverage summary">
           <div class="summary-card"><span>Requested</span><strong id="summary-requested">0</strong></div>
           <div class="summary-card"><span>Attempted</span><strong id="summary-attempted">0</strong></div>
-          <div class="summary-card"><span>Devices</span><strong id="summary-devices">0</strong></div>
+          <div class="summary-card"><span>Confirmed</span><strong id="summary-confirmed">0</strong></div>
+          <div class="summary-card"><span>Observed</span><strong id="summary-observed">0</strong></div>
           <div class="summary-card"><span>Probe errors</span><strong id="summary-errors">0</strong></div>
         </div>
         <div class="table-card results-card">
           <div class="table-scroll">
             <table id="results-table">
               <thead><tr>
-                <th>IP address</th><th>Device name</th><th>MAC address</th>
-                <th>Evidence</th><th>Open services</th><th>Role</th>
+                <th>IP address</th><th>Device identity</th><th>Manufacturer / model</th>
+                <th>MAC address</th><th>Confidence</th><th>Evidence</th>
+                <th>Open services</th><th>Role</th>
               </tr></thead>
               <tbody id="results-body"></tbody>
             </table>
@@ -150,6 +152,9 @@
           <li><strong>W</strong> identifies an HTTP or HTTPS service.</li>
           <li><strong>P</strong> identifies a device that answered the ICMP ping check.</li>
           <li><strong>Evidence</strong> shows whether ICMP, TCP, or ARP established the device's presence.</li>
+          <li><strong>High</strong> confidence uses a discovery protocol or multiple active signals.</li>
+          <li><strong>Medium</strong> confidence uses one active response.  <strong>Observed</strong> is ARP-only evidence.</li>
+          <li>Broadcast addresses and proxy-ARP-only entries are attempted but excluded from device totals.</li>
           <li><strong>U, B, and 6</strong> are reserved for UPnP, Bonjour, and IPv6 discovery.</li>
         </ul>
       </section>

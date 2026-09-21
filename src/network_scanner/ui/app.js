@@ -23,6 +23,32 @@ const cell = (value) => {
   return td;
 };
 
+const identityCell = (host) => {
+  const td = document.createElement('td');
+  const primary = document.createElement('span');
+  primary.className = 'identity-primary';
+  primary.textContent = host.name || 'Not advertised';
+  td.appendChild(primary);
+  const source = host.names?.find((item) => item.value === host.name)?.source;
+  if (source) {
+    const secondary = document.createElement('span');
+    secondary.className = 'identity-source';
+    secondary.textContent = source;
+    td.appendChild(secondary);
+  }
+  return td;
+};
+
+const confidenceCell = (value) => {
+  const td = document.createElement('td');
+  const badge = document.createElement('span');
+  const confidence = value || 'Legacy';
+  badge.className = `confidence confidence-${confidence.toLowerCase()}`;
+  badge.textContent = confidence;
+  td.appendChild(badge);
+  return td;
+};
+
 const durationLabel = (milliseconds) => {
   if (!Number.isFinite(milliseconds)) return '';
   if (milliseconds < 1000) return `${milliseconds} ms`;
@@ -44,7 +70,8 @@ function renderResults(scan) {
   resultsRange.textContent = `${scanRange(scan)}.  Select a history row to review that scan.`;
   document.getElementById('summary-requested').textContent = scan.stats?.addresses_requested ?? 'Not recorded';
   document.getElementById('summary-attempted').textContent = scan.stats?.addresses_attempted ?? 'Not recorded';
-  document.getElementById('summary-devices').textContent = scan.stats?.hosts_up ?? scan.hosts?.length ?? 0;
+  document.getElementById('summary-confirmed').textContent = scan.stats?.confirmed_devices ?? 'Not recorded';
+  document.getElementById('summary-observed').textContent = scan.stats?.observed_devices ?? 'Not recorded';
   document.getElementById('summary-errors').textContent = scan.stats?.probe_errors ?? 'Not recorded';
 
   const hosts = Array.isArray(scan.hosts) ? scan.hosts : [];
@@ -53,10 +80,12 @@ function renderResults(scan) {
     const row = document.createElement('tr');
     const evidence = Array.isArray(host.evidence) ? host.evidence.join(', ') : (host.flags?.P ? 'ICMP' : 'Legacy result');
     const services = Array.isArray(host.services) ? host.services.join(', ') : (host.flags?.W ? 'Web' : '');
+    const product = [host.manufacturer, host.model].filter(Boolean).join(' ');
+    const mac = host.mac || (host.notes?.shared_proxy_mac ? `Shared/proxy response (${host.notes.shared_proxy_mac})` : 'Not available');
     row.append(
-      cell(host.ip), cell(host.name || 'Unknown'), cell(host.mac || 'Unknown'),
-      cell(evidence || 'Unknown'), cell(services || 'None detected'),
-      cell(host.flags?.G ? 'Gateway' : ''),
+      cell(host.ip), identityCell(host), cell(product || 'Not advertised'), cell(mac),
+      confidenceCell(host.confidence), cell(evidence || 'Unknown'),
+      cell(services || 'None detected'), cell(host.flags?.G ? 'Gateway' : ''),
     );
     resultsBody.appendChild(row);
   }
@@ -86,8 +115,9 @@ async function loadHistory() {
     row.append(
       cell(scan.timestamp_utc), cell(scan.network_name), cell(scanRange(scan)),
       cell(durationLabel(scan.stats?.duration_ms)), cell(scan.stats?.addresses_requested ?? 'Not recorded'),
-      cell(scan.stats?.addresses_attempted ?? 'Not recorded'), cell(scan.stats?.hosts_up),
-      cell(scan.stats?.ping_replies ?? 'Not recorded'), cell(scan.stats?.website),
+      cell(scan.stats?.addresses_attempted ?? 'Not recorded'),
+      cell(scan.stats?.confirmed_devices ?? 'Not recorded'),
+      cell(scan.stats?.observed_devices ?? 'Not recorded'), cell(scan.stats?.website),
     );
     row.addEventListener('click', () => selectScan(scan, row));
     row.addEventListener('keydown', (event) => {
@@ -127,7 +157,8 @@ async function startScan(payload) {
     selectedScanId = result.scan_id;
     await loadHistory();
     const stats = result.stats || {};
-    actionStatus.textContent = `Scan completed.  Attempted ${stats.addresses_attempted} of ${stats.addresses_requested} addresses and discovered ${stats.hosts_up} devices.`;
+    const exclusions = (stats.proxy_arp_ignored || 0) + (stats.reserved_ignored || 0);
+    actionStatus.textContent = `Scan completed.  Attempted ${stats.addresses_attempted} of ${stats.addresses_requested} addresses.  Confirmed ${stats.confirmed_devices} devices and retained ${stats.observed_devices} ARP-only observations.  Excluded ${exclusions} proxy or reserved artifacts.`;
   } catch (error) {
     actionStatus.textContent = error.message;
   } finally {

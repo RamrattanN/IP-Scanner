@@ -54,7 +54,7 @@ from evidence rather than assumptions.
 
 - Asynchronous progress and scan cancellation.
 - Range-size confirmation beyond the enforced 4,096-address safety limit.
-- UPnP, Bonjour, IPv6, NetBIOS, and mDNS discovery.
+- IPv6 discovery and offline MAC-vendor identification.
 - CSV export.
 - Desktop controllers and single-instance lifecycle management.
 - Intel Mac, Apple silicon Mac, and Windows x64 installers.

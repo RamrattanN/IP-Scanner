@@ -11,6 +11,8 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert 'id="btn-help"' in html
     assert 'id="help-panel"' in html
     assert 'id="summary-attempted"' in html
+    assert 'id="summary-confirmed"' in html
+    assert 'id="summary-observed"' in html
     assert 'id="results-body"' in html
     assert "#173f63" in css.lower()
     assert ui.joinpath("ramrattan-logo.png").is_file()
