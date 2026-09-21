@@ -487,8 +487,8 @@ function renderDeviceTypeChart(scan) {
   deviceTypeChart.hidden = false;
   deviceTypeChartEmpty.hidden = true;
   const centerX = 150;
-  const centerY = 128;
-  const radius = 102;
+  const centerY = 150;
+  const radius = 132;
   let angle = 0;
   entries.forEach(([type, count]) => {
     const sweep = (count / total) * 360;

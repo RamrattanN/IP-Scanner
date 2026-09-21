@@ -54,6 +54,7 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "ip-scanner-history-chart-type" in javascript
     assert "Scan time (local)" in javascript
     assert "DEVICE_TYPE_COLORS" in javascript
+    assert "const radius = 132" in javascript
     assert "Other: '#9fc8e8'" in javascript
     assert "icon.style.color = color" in javascript
     assert "device-summary-icon" in javascript
@@ -67,4 +68,5 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "Known devices" not in html
     assert "/api/inventory" not in javascript
     assert "#173f63" in css.lower()
+    assert ".action-status:empty" in css
     assert ui.joinpath("ramrattan-logo.png").is_file()

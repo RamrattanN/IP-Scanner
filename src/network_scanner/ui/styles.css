@@ -36,7 +36,7 @@ button:focus-visible { outline: 3px solid rgba(47, 120, 184, 0.35); outline-offs
 .section-heading h2 { margin: 0; font-size: 1.5rem; line-height: 1.25; }
 .section-heading > p:last-child { margin: 7px 0 0; color: var(--muted); }
 .action-card, .table-card, .help-card { border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow); }
-.action-card { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 20px; }
+.action-card { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 14px 16px; }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 10px 16px; border: 1px solid var(--navy-700); border-radius: 10px; font-weight: 700; cursor: pointer; }
 .button:disabled { cursor: wait; opacity: .62; }
 .button-primary { color: #fff; background: var(--navy-700); }
@@ -46,6 +46,7 @@ button:focus-visible { outline: 3px solid rgba(47, 120, 184, 0.35); outline-offs
 .button-quiet { margin-left: auto; border-color: var(--line); color: var(--danger); background: #fff; }
 .button-quiet:hover { border-color: #d9aaac; background: #fff7f7; }
 .action-status { flex-basis: 100%; min-height: 1.2em; margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
+.action-status:empty { display: none; }
 .table-card { overflow: hidden; }
 .summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
 .summary-card { padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
@@ -89,7 +90,7 @@ button:focus-visible { outline: 3px solid rgba(47, 120, 184, 0.35); outline-offs
 .type-chart-card { display: flex; flex-direction: column; }
 .type-chart-layout { display: grid; flex: 1; place-items: center; }
 .type-chart-stage { display: grid; width: 100%; min-height: 430px; place-items: center; }
-#device-type-chart { display: block; width: min(100%, 340px); height: auto; margin: 0 auto; }
+#device-type-chart { display: block; width: min(100%, 380px); height: auto; margin: 0 auto; }
 .pie-slice { stroke: #fff; stroke-width: 2; }
 .device-summary-card { margin: -2px 0 18px; padding: 20px 24px 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow); }
 .device-summary-card[hidden] { display: none; }
