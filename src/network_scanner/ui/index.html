@@ -74,13 +74,16 @@
               </div>
               <fieldset class="chart-type-control">
                 <legend>Chart type</legend>
-                <label><input type="radio" name="history-chart-type" value="bar" /> Bar</label>
-                <label><input type="radio" name="history-chart-type" value="line" checked /> Line</label>
+                <label><input type="radio" name="history-chart-type" value="bar" checked /> Bar</label>
+                <label><input type="radio" name="history-chart-type" value="area" /> Area</label>
               </fieldset>
             </div>
-            <div class="chart-legend" aria-hidden="true"><span></span>Devices found</div>
+            <div class="history-chart-key" hidden>
+              <div class="chart-legend" aria-hidden="true"><span></span>Total devices</div>
+              <ul id="history-device-type-legend" class="history-type-legend" aria-label="Historical device type categories"></ul>
+            </div>
             <div class="chart-stage trend-chart-stage">
-              <svg id="history-chart" viewBox="0 0 760 320" role="img" aria-label="Device discovery history"></svg>
+              <svg id="history-chart" viewBox="0 0 760 460" role="img" aria-label="Device discovery history by device type"></svg>
               <div id="history-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
               <p id="history-chart-empty" class="chart-empty" hidden>Run a scan to begin the discovery trend.</p>
             </div>
@@ -246,6 +249,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260921.10"></script>
+    <script src="/app.js?v=20260921.11"></script>
   </body>
 </html>

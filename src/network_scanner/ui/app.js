@@ -18,6 +18,8 @@ const historyChart = document.getElementById('history-chart');
 const historyChartEmpty = document.getElementById('history-chart-empty');
 const historyChartTooltip = document.getElementById('history-chart-tooltip');
 const historyChartTypeInputs = [...document.querySelectorAll('input[name="history-chart-type"]')];
+const historyChartKey = document.querySelector('.history-chart-key');
+const historyDeviceTypeLegend = document.getElementById('history-device-type-legend');
 const deviceTypeChart = document.getElementById('device-type-chart');
 const deviceTypeChartEmpty = document.getElementById('device-type-chart-empty');
 const deviceTypeChartTooltip = document.getElementById('device-type-chart-tooltip');
@@ -25,8 +27,9 @@ const deviceTypeLegend = document.getElementById('device-type-legend');
 
 let selectedScanId = null;
 let chartScans = [];
-let historyChartType = localStorage.getItem('ip-scanner-history-chart-type') || 'line';
-if (!['bar', 'line'].includes(historyChartType)) historyChartType = 'line';
+const storedHistoryChartType = localStorage.getItem('ip-scanner-history-chart-type');
+let historyChartType = storedHistoryChartType === 'line' ? 'area' : (storedHistoryChartType || 'bar');
+if (!['bar', 'area'].includes(historyChartType)) historyChartType = 'bar';
 
 const cell = (value, sortValue = value) => {
   const td = document.createElement('td');
@@ -89,16 +92,24 @@ const DEVICE_TYPE_COLORS = {
   Mobile: '#8aae4f',
   IoT: '#c2a23a',
   Other: '#8794a0',
+  Unclassified: '#b7c0c8',
 };
+
+const DEVICE_TYPE_ORDER = [
+  'Router', 'Network Device', 'Computer', 'Game Console', 'Printer', 'TV',
+  'Audio', 'NAS', 'Mobile', 'IoT', 'Other', 'Unclassified',
+];
 
 const deviceTypeCell = (host) => {
   const type = host.device_type || 'Other';
+  const color = DEVICE_TYPE_COLORS[type] || DEVICE_TYPE_COLORS.Other;
   const td = document.createElement('td');
   td.dataset.sortValue = type;
   td.setAttribute('aria-label', type);
   const icon = document.createElement('span');
   icon.className = 'device-type-icon';
   icon.title = type;
+  icon.style.color = color;
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('aria-hidden', 'true');
@@ -247,6 +258,89 @@ const scanDeviceCount = (scan) => {
   return Array.isArray(scan.hosts) ? scan.hosts.length : 0;
 };
 
+const scanTypeBreakdown = (scan) => {
+  const counts = new Map();
+  const hosts = Array.isArray(scan.hosts) ? scan.hosts : [];
+  hosts.forEach((host) => {
+    const type = host.device_type || 'Unclassified';
+    counts.set(type, (counts.get(type) || 0) + 1);
+  });
+  const hostTotal = [...counts.values()].reduce((total, count) => total + count, 0);
+  const total = Math.max(scanDeviceCount(scan), hostTotal);
+  if (total > hostTotal) counts.set('Unclassified', (counts.get('Unclassified') || 0) + total - hostTotal);
+  return {counts, total};
+};
+
+const chartScanKey = (scan) => String(scan.id || scan.timestamp_utc || '');
+
+const activeDeviceTypes = (breakdowns) => {
+  const present = new Set();
+  breakdowns.forEach(({counts}) => counts.forEach((count, type) => {
+    if (count > 0) present.add(type);
+  }));
+  const ordered = DEVICE_TYPE_ORDER.filter((type) => present.delete(type));
+  return [...ordered, ...[...present].sort((left, right) => left.localeCompare(right))];
+};
+
+const scanBreakdownMetric = (types, breakdown) => {
+  const lines = [`Total: ${breakdown.total} device${breakdown.total === 1 ? '' : 's'}`];
+  types.forEach((type) => {
+    const count = breakdown.counts.get(type) || 0;
+    if (count) lines.push(`${type}: ${count}`);
+  });
+  return lines.join('\n');
+};
+
+function renderHistoryTypeLegend(types) {
+  historyDeviceTypeLegend.replaceChildren();
+  types.forEach((type) => {
+    const color = DEVICE_TYPE_COLORS[type] || DEVICE_TYPE_COLORS.Other;
+    const item = document.createElement('li');
+    const icon = document.createElement('span');
+    icon.className = 'history-type-icon';
+    icon.style.color = color;
+    icon.setAttribute('aria-hidden', 'true');
+    const iconSvg = document.createElementNS(SVG_NS, 'svg');
+    iconSvg.setAttribute('viewBox', '0 0 24 24');
+    iconSvg.innerHTML = DEVICE_ICONS[type] || DEVICE_ICONS.Other;
+    icon.appendChild(iconSvg);
+    const name = document.createElement('span');
+    name.textContent = type;
+    item.append(icon, name);
+    historyDeviceTypeLegend.appendChild(item);
+  });
+}
+
+function updateSelectedChartMarks() {
+  document.querySelectorAll('.chart-scan-mark').forEach((mark) => {
+    mark.classList.toggle('is-selected', mark.dataset.scanId === String(selectedScanId));
+  });
+}
+
+function activateChartScan(scan) {
+  const scanKey = chartScanKey(scan);
+  const row = [...document.querySelectorAll('.history-row')]
+    .find((candidate) => candidate.dataset.scanKey === scanKey);
+  if (row) selectScan(scan, row);
+}
+
+const makeChartScanInteractive = (mark, scan, accessibleLabel, time, metric) => {
+  mark.classList.add('chart-scan-mark');
+  mark.dataset.scanId = String(scan.id);
+  mark.setAttribute('tabindex', '0');
+  mark.setAttribute('role', 'button');
+  mark.setAttribute('aria-label', accessibleLabel);
+  mark.appendChild(svgElement('title', {}, accessibleLabel));
+  attachChartTooltip(mark, historyChartTooltip, time, metric);
+  mark.addEventListener('click', () => activateChartScan(scan));
+  mark.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      activateChartScan(scan);
+    }
+  });
+};
+
 const chartTimestamp = (value) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value || 'Unknown time';
@@ -269,19 +363,28 @@ function renderHistoryChart() {
   historyChart.replaceChildren();
   historyChartTypeInputs.forEach((input) => { input.checked = input.value === historyChartType; });
   if (!chartScans.length) {
+    historyDeviceTypeLegend.replaceChildren();
+    historyChartKey.hidden = true;
     historyChart.hidden = true;
     historyChartEmpty.hidden = false;
     return;
   }
   historyChart.hidden = false;
   historyChartEmpty.hidden = true;
+  historyChartKey.hidden = false;
+  const breakdowns = chartScans.map(scanTypeBreakdown);
+  const types = activeDeviceTypes(breakdowns);
+  renderHistoryTypeLegend(types);
+
+  const totalLegend = historyChartKey.querySelector('.chart-legend');
+  totalLegend.hidden = historyChartType !== 'area';
 
   const width = 760;
-  const height = 320;
-  const margin = {top: 18, right: 24, bottom: 66, left: 62};
+  const height = 460;
+  const margin = {top: 20, right: 24, bottom: 68, left: 62};
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
-  const values = chartScans.map(scanDeviceCount);
+  const values = breakdowns.map(({total}) => total);
   const scale = niceChartScale(Math.max(...values));
   const x = (index) => {
     if (chartScans.length === 1) return margin.left + (plotWidth / 2);
@@ -316,37 +419,68 @@ function renderHistoryChart() {
     }, chartTimestamp(chartScans[index].timestamp_utc)));
   });
 
-  if (historyChartType === 'line' && chartScans.length > 1) {
-    const path = values.map((value, index) => `${index ? 'L' : 'M'} ${x(index)} ${y(value)}`).join(' ');
-    historyChart.append(svgElement('path', {d: path, class: 'chart-line'}));
-  }
+  if (historyChartType === 'bar') {
+    const slotWidth = plotWidth / Math.max(values.length, 1);
+    const barWidth = Math.max(5, Math.min(62, slotWidth * .7));
+    breakdowns.forEach((breakdown, index) => {
+      let cumulative = 0;
+      const time = chartTimestamp(chartScans[index].timestamp_utc);
+      const metric = scanBreakdownMetric(types, breakdown);
+      const accessibleLabel = `${time}. ${metric.replaceAll('\n', '. ')}`;
+      types.forEach((type) => {
+        const count = breakdown.counts.get(type) || 0;
+        if (!count) return;
+        const lower = cumulative;
+        cumulative += count;
+        const segment = svgElement('rect', {
+          x: x(index) - (barWidth / 2), y: y(cumulative), width: barWidth,
+          height: Math.max(1, y(lower) - y(cumulative)), fill: DEVICE_TYPE_COLORS[type] || DEVICE_TYPE_COLORS.Other,
+          class: 'chart-bar-segment', 'data-device-type': type,
+        });
+        historyChart.appendChild(segment);
+      });
+      const mark = svgElement('rect', {
+        x: x(index) - (barWidth / 2), y: y(breakdown.total), width: barWidth,
+        height: Math.max(1, y(0) - y(breakdown.total)), class: 'chart-bar',
+      });
+      makeChartScanInteractive(mark, chartScans[index], accessibleLabel, time, metric);
+      historyChart.appendChild(mark);
+    });
+  } else {
+    const cumulative = Array(chartScans.length).fill(0);
+    types.forEach((type) => {
+      const lower = [...cumulative];
+      const upper = cumulative.map((value, index) => value + (breakdowns[index].counts.get(type) || 0));
+      const topPath = upper.length === 1
+        ? `M ${x(0) - 30} ${y(upper[0])} L ${x(0) + 30} ${y(upper[0])}`
+        : upper.map((value, index) => `${index ? 'L' : 'M'} ${x(index)} ${y(value)}`).join(' ');
+      const bottomPath = lower.length === 1
+        ? `L ${x(0) + 30} ${y(lower[0])} L ${x(0) - 30} ${y(lower[0])}`
+        : lower.map((value, index) => `L ${x(lower.length - 1 - index)} ${y(lower[lower.length - 1 - index])}`).join(' ');
+      historyChart.appendChild(svgElement('path', {
+        d: `${topPath} ${bottomPath} Z`, fill: DEVICE_TYPE_COLORS[type] || DEVICE_TYPE_COLORS.Other,
+        'fill-opacity': '.82', class: 'chart-area', 'data-device-type': type,
+      }));
+      upper.forEach((value, index) => { cumulative[index] = value; });
+    });
 
-  values.forEach((value, index) => {
-    const time = chartTimestamp(chartScans[index].timestamp_utc);
-    const metric = `${value} device${value === 1 ? '' : 's'} found`;
-    const accessibleLabel = `${time}: ${metric}`;
-    let mark;
-    if (historyChartType === 'bar') {
-      const slotWidth = plotWidth / Math.max(values.length, 1);
-      const barWidth = Math.max(2, Math.min(42, slotWidth * .66));
-      mark = svgElement('rect', {
-        x: x(index) - (barWidth / 2), y: y(value), width: barWidth,
-        height: Math.max(1, margin.top + plotHeight - y(value)), class: 'chart-bar',
-        tabindex: '0', role: 'img', 'aria-label': accessibleLabel,
-      });
-    } else {
-      mark = svgElement('circle', {
-        cx: x(index), cy: y(value), r: 5.5, class: 'chart-point',
-        tabindex: '0', role: 'img', 'aria-label': accessibleLabel,
-      });
+    if (chartScans.length > 1) {
+      const path = values.map((value, index) => `${index ? 'L' : 'M'} ${x(index)} ${y(value)}`).join(' ');
+      historyChart.append(svgElement('path', {d: path, class: 'chart-line'}));
     }
-    mark.appendChild(svgElement('title', {}, accessibleLabel));
-    attachChartTooltip(mark, historyChartTooltip, time, metric);
-    historyChart.appendChild(mark);
-  });
+    values.forEach((value, index) => {
+      const time = chartTimestamp(chartScans[index].timestamp_utc);
+      const metric = scanBreakdownMetric(types, breakdowns[index]);
+      const accessibleLabel = `${time}. ${metric.replaceAll('\n', '. ')}`;
+      const mark = svgElement('circle', {cx: x(index), cy: y(value), r: 5.5, class: 'chart-point'});
+      makeChartScanInteractive(mark, chartScans[index], accessibleLabel, time, metric);
+      historyChart.appendChild(mark);
+    });
+  }
+  updateSelectedChartMarks();
   historyChart.setAttribute(
     'aria-label',
-    `Device discovery history with ${chartScans.length} scans. Latest result: ${values[values.length - 1]} devices found.`,
+    `Device discovery history with ${chartScans.length} scans stacked across ${types.length} device type categories. Latest result: ${values[values.length - 1]} devices found.`,
   );
 }
 
@@ -462,6 +596,7 @@ function selectScan(scan, row) {
   selectedScanId = scan.id;
   document.querySelectorAll('.history-row').forEach((item) => item.classList.remove('is-selected'));
   row.classList.add('is-selected');
+  updateSelectedChartMarks();
   renderResults(scan);
 }
 
@@ -483,6 +618,7 @@ async function loadHistory() {
   for (const scan of scans) {
     const row = document.createElement('tr');
     row.className = 'history-row';
+    row.dataset.scanKey = chartScanKey(scan);
     row.tabIndex = 0;
     row.setAttribute('aria-label', `Review scan from ${scan.timestamp_utc}`);
     row.append(
