@@ -6,7 +6,7 @@ from .api import router as api_router
 from .storage import get_app_data_dir, ensure_history_file
 from .logging_config import setup_logging
 
-app = FastAPI(title="Network Analysis Tool", version="1.0.0")
+app = FastAPI(title="Ramrattan IP Scanner", version="1.0.0")
 
 # Prepare storage and logging on import
 APP_DATA_DIR = get_app_data_dir()

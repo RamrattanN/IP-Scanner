@@ -1,40 +1,96 @@
-# Network Analysis Tool
+# Ramrattan IP Scanner
 
-A simple local network scanner with a FastAPI backend and a minimal HTML front end.  It stores scan history locally, and lets you view device details with service flags.
+A local network scanner in the Ramrattan Network Tools family.  The application
+uses a FastAPI service and a shared browser interface, stores scan history
+locally, and is being recovered as one codebase for Intel Mac, Apple silicon
+Mac, and Windows x64 desktop products.
 
-## Features
-- Scan the current subnet or a custom range.  
-- Show only discovered devices.  
-- Device names via UPnP friendly name, NetBIOS, and reverse DNS.  
-- Flags as colored letter badges: G for Gateway, W for Website, U for UPnP, B for Bonjour, P for Pingable, 6 for IPv6.  
-- Click a history row to expand details, click it again to collapse.  
-- Export results to CSV.  
-- One click launcher opens your browser automatically.
+## Current recovery baseline
 
-## Quick start
+The recovery branch provides:
+
+- Active IPv4 adapter and default-gateway detection on macOS, Windows, and Linux.
+- Native one-packet reachability commands for each supported platform.
+- Detected-network and custom-range scan requests.
+- Local JSON history and rotating logs.
+- HTTP and HTTPS availability checks for reachable hosts.
+- A shared Ramrattan Network Tools header, logo, palette, action system, empty
+  state, and right-side Help panel.
+- Automated tests for CIDR handling, adapters, probing, scanning, storage, the
+  API health route, and packaged visual assets.
+
+UPnP, Bonjour, IPv6 discovery, device-name discovery, expandable host details,
+CSV export, background progress, cancellation, and desktop installers remain
+planned work.  They must not be represented as available until implemented and
+accepted.
+
+See [Recovery Baseline](docs/Recovery-Baseline.md) for the audited v1.07 state
+and [UX Guidelines](docs/UX-Guidelines.md) for the shared visual system.
+
+## Developer setup
+
+Python 3.11 or newer is required.
+
+### macOS or Linux
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e ".[test]"
+python -m pytest -q
+python -m uvicorn network_scanner.app:app --host 127.0.0.1 --port 8000
+```
+
+### Windows PowerShell
+
 ```powershell
-cd "C:\Users\niles\Dropbox\GitHub\IP Scanner"
+py -3.12 -m venv .venv
 . .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python .\scripts\run_and_open.py
-```
-Open http://127.0.0.1:8000  if it is not already open.
-
-## How it finds names
-- UPnP device description friendly name when available.  
-- NetBIOS Node Status over UDP.  
-- Windows nbtstat call as a fallback.  
-- Reverse DNS lookup.
-
-If NetBIOS names are not appearing, try allowing File and Printer Sharing on the device or confirm with:
-```powershell
-nbtstat -A <ip>
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e ".[test]"
+python -m pytest -q
+python -m uvicorn network_scanner.app:app --host 127.0.0.1 --port 8000
 ```
 
-## Where data is stored
-History JSON is saved under your Documents folder in `Network Scanner\history.json`.  Delete it or use Clear History in the UI to reset.
+Open <http://127.0.0.1:8000>.  Stop the development server with Control-C.
 
-## Development notes
-- Backend: FastAPI and Uvicorn.  
-- Front end: static HTML, CSS, and vanilla JavaScript.  
-- Source layout uses `src`.  Run Uvicorn with `--app-dir src`.
+## Data location
+
+The current recovery build preserves the legacy data location:
+
+```text
+~/Documents/Network Scanner/history.json
+```
+
+Application logs are stored in the `logs` folder beneath the same directory.
+The planned desktop applications will preserve user history through upgrades
+and routine uninstallation.
+
+## Architecture
+
+```text
+src/network_scanner/
+├── adapters.py       # Platform-aware adapter and default-route detection
+├── api.py            # Local FastAPI routes
+├── probe.py          # Reachability and web-service probes
+├── scanner.py        # Concurrent IPv4 range scanning
+├── storage.py        # Local JSON persistence
+└── ui/               # Shared HTML, CSS, JavaScript, and brand assets
+```
+
+The three desktop products will share this application core and UI.  Only the
+platform controller, packaging, and installer layers may differ.
+
+## CI and release direction
+
+Baseline CI runs tests and source compilation on Python 3.11 and 3.12 across
+Linux, macOS, and Windows.  It also builds and installs the wheel in isolation
+to confirm that the UI and logo are packaged.
+
+Target-native installer workflows will follow the proven Speedtest Monitor
+pattern after the shared scanner and user experience pass functional acceptance.
+
+## License
+
+Licensed under the MIT License.

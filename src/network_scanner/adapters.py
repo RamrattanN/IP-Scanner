@@ -1,5 +1,11 @@
 from __future__ import annotations
-import psutil, socket, subprocess, re
+
+import re
+import socket
+import subprocess
+import sys
+
+import psutil
 
 def _get_windows_gateways() -> dict[str, str]:
     """Returns {interface_name: default_gateway_ipv4} by parsing ipconfig."""
@@ -19,6 +25,50 @@ def _get_windows_gateways() -> dict[str, str]:
                 gw_by_if[current_if] = m.group(1)
     return gw_by_if
 
+
+def _get_macos_gateways() -> dict[str, str]:
+    """Return the active default route as {interface_name: gateway_ipv4}."""
+    try:
+        out = subprocess.check_output(
+            ["route", "-n", "get", "default"],
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+        )
+    except Exception:
+        return {}
+    interface = re.search(r"^\s*interface:\s*(\S+)", out, re.MULTILINE)
+    gateway = re.search(r"^\s*gateway:\s*(\d+\.\d+\.\d+\.\d+)", out, re.MULTILINE)
+    if interface and gateway:
+        return {interface.group(1): gateway.group(1)}
+    return {}
+
+
+def _get_linux_gateways() -> dict[str, str]:
+    try:
+        out = subprocess.check_output(
+            ["ip", "route", "show", "default"],
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+        )
+    except Exception:
+        return {}
+    match = re.search(r"\bvia\s+(\d+\.\d+\.\d+\.\d+)\s+dev\s+(\S+)", out)
+    if match:
+        return {match.group(2): match.group(1)}
+    return {}
+
+
+def get_default_gateways(platform: str | None = None) -> dict[str, str]:
+    platform = platform or sys.platform
+    if platform == "win32":
+        return _get_windows_gateways()
+    if platform == "darwin":
+        return _get_macos_gateways()
+    return _get_linux_gateways()
+
+
 def detect_active_adapter():
     addrs = psutil.net_if_addrs()
     candidates = []
@@ -29,9 +79,17 @@ def detect_active_adapter():
             candidates.append({"name": name, "ipv4": ipv4, "netmask": netmask, "gateway": None, "ssid": None})
     if not candidates:
         return None
-    gws = _get_windows_gateways()
+    gws = get_default_gateways()
     for c in candidates:
-        match = next((gw for ifname, gw in gws.items() if ifname.lower() in c["name"].lower()), None)
+        match = next(
+            (
+                gw
+                for ifname, gw in gws.items()
+                if ifname.casefold() == c["name"].casefold()
+                or ifname.casefold() in c["name"].casefold()
+            ),
+            None,
+        )
         if match:
             c["gateway"] = match
             return c

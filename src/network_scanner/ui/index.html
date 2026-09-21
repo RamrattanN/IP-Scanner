@@ -1,43 +1,146 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Network Analysis Tool</title>
+    <meta name="theme-color" content="#173f63" />
+    <title>Ramrattan IP Scanner</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <header>
-      <h1>Network Analysis Tool</h1>
-      <nav>
-        <button id="btn-scan">Scan</button>
-        <button id="btn-scan-custom">Scan Custom Range</button>
-        <button id="btn-clear">Clear History</button>
-      </nav>
-    </header>
+    <main class="page-shell">
+      <header class="hero">
+        <div class="hero-main">
+          <img class="rr-logo" src="/ramrattan-logo.png" alt="Ramrattan logo" />
+          <div class="hero-copy">
+            <p class="eyebrow hero-eyebrow">RAMRATTAN NETWORK TOOLS</p>
+            <h1>IP Scanner</h1>
+            <p>Clear, local visibility into devices and services on your network.</p>
+          </div>
+        </div>
+        <button id="btn-help" class="icon-button help-button" type="button"
+          aria-label="Help with this page" aria-controls="help-panel"
+          aria-expanded="false" title="Help with this page">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M9.8 9a2.4 2.4 0 1 1 3.1 2.3c-.9.4-1.4 1-1.4 2"></path>
+            <path d="M12 17h.01"></path>
+          </svg>
+        </button>
+      </header>
 
-    <main>
-      <section>
-        <h2>History</h2>
-        <table id="history-table">
-          <thead>
-            <tr>
-              <th>Timestamp</</th>
-              <th>Network</th>
-              <th>CIDR</th>
-              <th>Duration ms</th>
-              <th>Hosts up</th>
-              <th>Website</th>
-              <th>UPnP</th>
-              <th>Bonjour</th>
-              <th>IPv6</th>
-            </tr>
-          </thead>
-          <tbody id="history-body"></tbody>
-        </table>
+      <section class="section-block" aria-labelledby="discovery-heading">
+        <div class="section-heading">
+          <p class="eyebrow">NETWORK DISCOVERY</p>
+          <h2 id="discovery-heading">Scan and review local devices</h2>
+          <p>Choose the detected network or provide a specific IPv4 address range.</p>
+        </div>
+        <div class="action-card">
+          <button id="btn-scan" class="button button-primary" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M4.9 4.9a10 10 0 0 1 14.2 0M2.1 2.1a14 14 0 0 1 19.8 0M7.8 7.8a6 6 0 0 1 8.4 0"></path>
+            </svg>
+            Scan detected network
+          </button>
+          <button id="btn-scan-custom" class="button button-secondary" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M8 12h8"></path>
+            </svg>
+            Scan custom range
+          </button>
+          <button id="btn-clear" class="button button-quiet" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"></path>
+            </svg>
+            Clear history
+          </button>
+          <p id="action-status" class="action-status" role="status" aria-live="polite"></p>
+        </div>
       </section>
+
+      <section class="section-block" aria-labelledby="history-heading">
+        <div class="section-heading">
+          <p class="eyebrow">SCAN HISTORY</p>
+          <h2 id="history-heading">Previous network scans</h2>
+          <p>Results remain on this computer and are ordered by scan time.</p>
+        </div>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table id="history-table">
+              <thead><tr>
+                <th>Timestamp</th><th>Network</th><th>CIDR</th><th>Duration</th>
+                <th>Hosts</th><th>Web</th><th>UPnP</th><th>Bonjour</th><th>IPv6</th>
+              </tr></thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+          <div id="history-empty" class="empty-state" hidden>
+            <div class="empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M4.9 4.9a10 10 0 0 1 14.2 0M7.8 7.8a6 6 0 0 1 8.4 0"></path>
+              </svg>
+            </div>
+            <h3>No scans recorded</h3>
+            <p>Start with Scan detected network when you are ready.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>Ramrattan IP Scanner · Local data only · Use Help for operating guidance and troubleshooting.</footer>
     </main>
 
+    <div id="help-scrim" class="help-scrim" hidden></div>
+    <aside id="help-panel" class="help-panel" aria-hidden="true" aria-labelledby="help-heading">
+      <div class="help-toolbar">
+        <span>HELP</span>
+        <button id="btn-close-help" class="icon-button close-button" type="button" aria-label="Close Help">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+        </button>
+      </div>
+      <div class="section-heading help-heading">
+        <p class="eyebrow">HELP WITH THIS PAGE</p>
+        <h2 id="help-heading">Using IP Scanner</h2>
+        <p>Keep this guidance open while reviewing or running a scan.</p>
+      </div>
+      <section class="help-card">
+        <h3>Run a network scan</h3>
+        <ol>
+          <li>Select Scan detected network to use the active adapter and subnet.</li>
+          <li>Use Scan custom range only when you know the starting and ending IPv4 addresses.</li>
+          <li>Wait for the scan to finish before starting another scan.</li>
+          <li>Review the new entry under Previous network scans.</li>
+        </ol>
+        <p class="remember"><strong>Remember:</strong> Scan only networks that you own or are authorized to assess.</p>
+      </section>
+      <section class="help-card">
+        <h3>Understand the indicators</h3>
+        <ul>
+          <li><strong>G</strong> identifies the detected default gateway.</li>
+          <li><strong>W</strong> identifies an HTTP or HTTPS service.</li>
+          <li><strong>P</strong> identifies a host responding to the reachability check.</li>
+          <li><strong>U, B, and 6</strong> are reserved for UPnP, Bonjour, and IPv6 discovery.</li>
+        </ul>
+      </section>
+      <section class="help-card">
+        <h3>Data and privacy</h3>
+        <ul>
+          <li>Scan history is stored locally on this computer.</li>
+          <li>The interface is served only on the local loopback address.</li>
+          <li>Clearing history removes the saved scan records from this installation.</li>
+        </ul>
+      </section>
+      <section class="help-card">
+        <h3>Resolve common issues</h3>
+        <ul>
+          <li><strong>No adapter detected:</strong> Confirm that Wi-Fi or Ethernet is connected.</li>
+          <li><strong>No hosts found:</strong> A firewall may block reachability checks even when a device is online.</li>
+          <li><strong>Page does not respond:</strong> Confirm that the IP Scanner service is still running.</li>
+        </ul>
+      </section>
+      <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
+    </aside>
     <script src="/app.js"></script>
   </body>
 </html>

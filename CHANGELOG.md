@@ -1,5 +1,10 @@
 # Network Analysis Tool - Changelog
 
+> Recovery note, 2026-09-21: The historical entries below describe intended
+> behavior as well as implemented behavior.  The audited source at tag `v1.07`
+> does not contain several listed features.  See
+> `docs/Recovery-Baseline.md` for the verified baseline and recovery decisions.
+
 ## v1.00 - Initial Build (2025-09-19)
 ### Added
 - Home Page with history table and actions: `Scan`, `Scan Custom Range`, `Clear History`.
