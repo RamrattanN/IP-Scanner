@@ -69,6 +69,12 @@ colours require an explicit accessibility and family-consistency review.
 - Honour reduced-motion preferences.
 - On narrow screens, stack actions and reduce the hero and logo dimensions.
 - Keep horizontal scrolling inside wide data tables rather than the full page.
+- Keep sorting on the header label and column resizing on a distinct divider so
+  the two interactions cannot be confused.
+- Provide keyboard resizing, a documented reset action, sensible minimum
+  widths, and local persistence whenever users may resize a table.
+- Pair chart colours with labels, icons, counts, and hover metrics so colour is
+  never the only carrier of meaning.
 
 ## Content style
 

@@ -28,8 +28,8 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     kanban = (ROOT / "docs" / "KANBAN.md").read_text(encoding="utf-8")
     roadmap = (ROOT / "docs" / "ROADMAP.md").read_text(encoding="utf-8")
 
-    assert "Result Usability Baseline Candidate 2026.09.21" in baseline
-    assert "451ce6704e55c66717c4884a2b3c775f85e37c02" in baseline
+    assert "Discovery Experience Baseline 2026.09.21" in baseline
+    assert "9cd37a98525acda67278d9902c6afcc28be638c4" in baseline
     assert "Recovery Baseline 2026.09.21" in baseline
     assert "22f2b6ec1dbfe8661daf956bc985539f3ef5c03f" in baseline
     assert "not a production release" in baseline
@@ -43,4 +43,5 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "2025-09-19" in roadmap
     assert "2026-09-21" in roadmap
     assert "Inventory candidate withdrawn" in roadmap
-    assert "Result usability candidate" in roadmap
+    assert "Result usability and visualization" in roadmap
+    assert "Discovery Experience Baseline" in roadmap

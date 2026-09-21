@@ -9,16 +9,12 @@ or approval gate.
 
 ## In Progress
 
-| Card | Outcome | Acceptance evidence |
-| --- | --- | --- |
-| Documentation re-baseline | Help, technical docs, board, and roadmap agree with available behavior | Documentation tests, link review, draft PR CI |
+No card is actively being implemented at this checkpoint.
 
 ## In Review
 
 | Card | Outcome | Acceptance evidence still needed |
 | --- | --- | --- |
-| Result usability enhancements | Device-type icons, sortable columns, normalized MAC values, separate proxy status, and local vendor enrichment | Owner visual review and representative-device accuracy check |
-| Frontend cache behavior | Updated CSS and JavaScript load after a recovery update | Verify normal relaunch and hard refresh on the Intel Mac |
 | Cross-platform shared core | One source and UI behave consistently across targets | Hands-on Apple silicon Mac and Windows x64 acceptance |
 
 ## Ready
@@ -55,12 +51,15 @@ or approval gate.
 | 2026-09-21 | Confidence and artifact controls | Source attribution, confidence, reserved-address filtering, invalid-MAC rejection, and proxy-ARP suppression added |
 | 2026-09-21 | Portable CI baseline | Seven Linux, macOS, Windows, and package jobs passed on functional commit `22f2b6e` |
 | 2026-09-21 | Intel Mac functional acceptance | Owner accepted the refreshed interface and discovery results on the recovery host |
+| 2026-09-21 | Result usability and intelligence | Owner accepted device-type icons, sortable and resizable columns, normalized MAC values, proxy status, and local vendor enrichment |
+| 2026-09-21 | Discovery visualization | Owner accepted stacked device history, bar and area modes, latest-scan mix, hover metrics, and the shared icon summary |
+| 2026-09-21 | Discovery Experience Baseline | Functional checkpoint `9cd37a9` recorded with synchronized Help, README, Changelog, roadmap, and baseline documentation |
 
 ## Blocked
 
 | Card | Blocker | Unblock condition |
 | --- | --- | --- |
-| Merge recovery to `main` | Recovery pull request remains intentionally draft | Owner approves functional baseline and target acceptance plan |
+| Merge recovery to `main` | Recovery pull request remains intentionally draft | Apple silicon Mac and Windows x64 acceptance plan is approved |
 | Production installers | Shared core is not yet accepted on all physical target platforms | Intel Mac, Apple silicon Mac, and Windows x64 acceptance complete |
 | Signed public release | Signing identities and release policy are outside the current recovery checkpoint | Packaging, signing, notarization, and release checklist approved |
 

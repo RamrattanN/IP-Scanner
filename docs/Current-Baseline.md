@@ -4,13 +4,13 @@
 
 | Field | Value |
 | --- | --- |
-| Name | Result Usability Baseline Candidate 2026.09.21 |
-| Functional commit | `451ce6704e55c66717c4884a2b3c775f85e37c02` |
+| Name | Discovery Experience Baseline 2026.09.21 |
+| Functional commit | `9cd37a98525acda67278d9902c6afcc28be638c4` |
 | Prior accepted baseline | Recovery Baseline 2026.09.21 at `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
 | Development branch | `recovery/cross-platform-desktop` |
 | Review vehicle | Draft pull request #1 |
 | Historical base | `v1.07` at `fc50a2bbde29c63afb2c2fe443f3bc454c641ad9` |
-| Product state | Development candidate awaiting owner review, not a production release |
+| Product state | Owner-accepted development baseline, not a production release |
 
 Documentation commits after the functional commit may clarify the checkpoint
 without changing the functional identity above.  Any later behavioral change
@@ -42,6 +42,8 @@ must establish a new functional checkpoint.
   address value.
 - Provides evidence-based device-type icons and sortable history and result
   columns.
+- Lets users resize Device Results columns with a pointer or keyboard, restores
+  a column by double-click or Home, and retains widths in local browser storage.
 - Uses High, Medium, and Observed confidence without presenting confidence as a
   security or ownership rating.
 
@@ -59,18 +61,23 @@ must establish a new functional checkpoint.
 - Uses the Ramrattan Network Tools family header, logo, palette, buttons,
   cards, tables, empty states, and right-side Help pattern.
 - Stores selectable scan history and device-level results locally.
+- Charts total devices and device-type composition over time in stacked bar or
+  area form, and charts the latest scan mix as a pie with hover metrics.
+- Uses a shared device-type key with matched icons, colours, percentages, and
+  counts for both discovery charts.
 - Binds the documented application service to the local loopback address.
 - Supports keyboard selection of history rows and keyboard dismissal of Help.
 
 ## Verification evidence
 
-- Twenty-five automated tests pass locally and in the operating-system CI matrix.
+- Twenty-nine automated tests pass locally.
 - Source compilation, JavaScript syntax validation, wheel build, and isolated
   wheel installation pass.
-- GitHub Actions run 15 passed all seven jobs: Ubuntu, macOS, and Windows on
-  Python 3.11 and 3.12, plus the package smoke test.
-- Owner review on Intel Mac accepted the refreshed discovery interface and
-  results.
+- GitHub Actions runs through 33 passed all seven jobs: Ubuntu, macOS, and
+  Windows on Python 3.11 and 3.12, plus the package smoke test.  Run 35 verifies
+  the functional baseline recorded here.
+- Owner review on Intel Mac accepted the refreshed discovery interface,
+  results, visualizations, device-type summary, and table interactions.
 
 CI validates the shared source and package contents.  Native behavior and final
 installers still require hands-on acceptance on each target product.

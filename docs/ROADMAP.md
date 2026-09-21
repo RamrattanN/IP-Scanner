@@ -13,7 +13,8 @@
 | 2026-09-21 | Discovery phase 2 | Bonjour/mDNS, UPnP, NetBIOS, safe web metadata, confidence, identity sources, and artifact controls were added. |
 | 2026-09-21 | Recovery Baseline 2026.09.21 | Functional commit `22f2b6e` passed seven CI jobs.  Current behavior, Help, Kanban, and roadmap were reconciled on draft pull request #1. |
 | 2026-09-21 | Inventory candidate withdrawn | A standalone Known Devices table and label workflow were evaluated, then removed before acceptance after owner review.  Scan history and device results remain the current source of truth. |
-| 2026-09-21 | Result usability candidate | Added sortable columns, device-type icons, normalized MAC formatting, separate shared/proxy status, and local IEEE OUI vendor enrichment.  Owner acceptance remains open. |
+| 2026-09-21 | Result usability and visualization | Added local OUI enrichment, device-type intelligence, sortable and resizable result columns, historical stacked bar and area charts, a latest-scan mix chart, hover metrics, and a shared icon summary. |
+| 2026-09-21 | Discovery Experience Baseline | Owner accepted the Intel Mac discovery and review experience at functional commit `9cd37a9`.  The draft pull request remains unmerged while Apple silicon Mac and Windows x64 hands-on gates remain open. |
 
 The historical changelog remains part of the record.  The
 [Recovery Baseline](Recovery-Baseline.md) identifies which `v1.07` behavior was
@@ -26,8 +27,8 @@ available now.
 
 Compare scan history directly, identify new or missing devices, show changed
 identity or services, and add the device details panel, search, filter, and
-export.  Sortable columns and offline OUI evidence are implemented and in
-review.  Do not reintroduce a standalone Known Devices
+export.  Sortable and resizable columns, charts, and offline OUI evidence are
+part of the accepted development baseline.  Do not reintroduce a standalone Known Devices
 table without a newly approved use case and interaction design.
 
 Exit criteria:

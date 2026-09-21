@@ -5,12 +5,13 @@ uses a FastAPI service and a shared browser interface, stores scan history
 locally, and is being recovered as one codebase for Intel Mac, Apple silicon
 Mac, and Windows x64 desktop products.
 
-## Current review candidate
+## Current accepted development baseline
 
-The current functional checkpoint is **Result Usability Baseline Candidate
-2026.09.21** at commit `451ce67`.  It builds on the accepted Recovery Baseline
-2026.09.21 at `22f2b6e` and awaits owner review.  It is not a production
-release.  The historical `main` branch and `v1.07` tag remain unchanged.
+The current functional checkpoint is **Discovery Experience Baseline
+2026.09.21** at commit `9cd37a9`.  The owner accepted it as the recovery
+starting point after reviewing discovery accuracy, device intelligence, charts,
+and table interactions on Intel Mac.  It is not a production release.  The
+historical `main` branch and `v1.07` tag remain unchanged.
 
 The recovery branch provides:
 
@@ -28,10 +29,13 @@ The recovery branch provides:
 - Local IEEE OUI vendor enrichment for valid globally administered MAC
   addresses, without sending scanned addresses to an external service.
 - Consistent uppercase MAC formatting, a separate shared/proxy status column,
-  evidence-based device-type icons, and sortable table columns.
+  evidence-based device-type icons, sortable table columns, and persistent
+  user-resizable Device Results columns.
 - Broadcast, multicast-MAC, and repeated proxy-ARP artifact suppression.
 - Local JSON history and rotating logs.
 - Device-level results for every discovered host, with selectable scan history.
+- Historical device totals and type composition in stacked bar or area charts,
+  a latest-scan device-type pie chart, hover metrics, and a shared icon key.
 - A shared Ramrattan Network Tools header, logo, palette, action system, empty
   state, and right-side Help panel.
 - Automated tests for CIDR handling, adapters, probing, scanning, storage, the

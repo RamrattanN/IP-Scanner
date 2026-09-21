@@ -7,8 +7,10 @@
 
 ## Unreleased - Cross-platform recovery
 ### Baseline
-- Established `Result Usability Baseline Candidate 2026.09.21` at functional
-  commit `451ce6704e55c66717c4884a2b3c775f85e37c02` for owner review.
+- Established the owner-accepted `Discovery Experience Baseline 2026.09.21` at
+  functional commit `9cd37a98525acda67278d9902c6afcc28be638c4`.
+- Retained the earlier result-usability checkpoint at
+  `451ce6704e55c66717c4884a2b3c775f85e37c02` in the draft pull request history.
 - Accepted `Recovery Baseline 2026.09.21` as the current functional checkpoint
   before the result-usability candidate on the draft recovery pull request.
 - Added a documentation guide, current-baseline specification, working Kanban
@@ -35,6 +37,11 @@
 - Evidence-based device-type icons for Router, Computer, Printer, TV, Audio,
   NAS, Mobile, IoT, and Other.
 - Sortable columns in Scan History and Device Results.
+- Pointer- and keyboard-resizable Device Results columns with browser-local
+  width persistence and per-column reset.
+- Historical stacked bar and area charts, a latest-scan device-type pie chart,
+  hover metrics, and a shared device-type summary with icons, percentages, and
+  counts.
 
 ### Changed
 - Withdrew the standalone Known Devices inventory candidate after owner review.
