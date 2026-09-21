@@ -5,6 +5,20 @@
 > does not contain several listed features.  See
 > `docs/Recovery-Baseline.md` for the verified baseline and recovery decisions.
 
+## Unreleased - Cross-platform recovery
+### Fixed
+- Custom IPv4 ranges are enumerated inclusively, with requested and attempted
+  address counts retained for verification.
+- Device presence no longer depends on an ICMP response alone.  Common TCP
+  services and the operating system ARP/neighbor table provide additional
+  local evidence.
+
+### Added
+- Reverse-DNS names, MAC addresses, discovery evidence, and common open-service
+  details when available.
+- Selectable history rows and a device-level result table.
+- Validation for incomplete, reversed, invalid, and oversized custom ranges.
+
 ## v1.00 - Initial Build (2025-09-19)
 ### Added
 - Home Page with history table and actions: `Scan`, `Scan Custom Range`, `Clear History`.

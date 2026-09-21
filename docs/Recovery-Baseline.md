@@ -30,6 +30,10 @@ from evidence rather than assumptions.
 - Restore the explicit `reachable` contract before adding discovery features.
 - Isolate platform-specific gateway and ping behavior behind shared functions.
 - Test the shared core on macOS, Windows, and Linux before installer work.
+- Treat device discovery as layered evidence rather than equating an ICMP reply
+  with device presence.
+- Make every range scan auditable by recording requested, attempted, failed,
+  and discovered counts separately.
 - Adopt the Speedtest Monitor visual system as the Ramrattan Network Tools
   family standard.
 - Keep the three desktop products on one source and UI baseline.
@@ -49,9 +53,9 @@ from evidence rather than assumptions.
 ## Deferred work
 
 - Asynchronous progress and scan cancellation.
-- Range-size confirmation and comprehensive request validation.
-- UPnP, Bonjour, IPv6, reverse DNS, and NetBIOS discovery.
-- Expandable device details and CSV export.
+- Range-size confirmation beyond the enforced 4,096-address safety limit.
+- UPnP, Bonjour, IPv6, NetBIOS, and mDNS discovery.
+- CSV export.
 - Desktop controllers and single-instance lifecycle management.
 - Intel Mac, Apple silicon Mac, and Windows x64 installers.
 - Target-native package smoke tests and production release publishing.

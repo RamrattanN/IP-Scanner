@@ -10,16 +10,21 @@ Mac, and Windows x64 desktop products.
 The recovery branch provides:
 
 - Active IPv4 adapter and default-gateway detection on macOS, Windows, and Linux.
-- Native one-packet reachability commands for each supported platform.
+- Layered device discovery using native ICMP, common TCP services, and the
+  operating system ARP/neighbor table.
 - Detected-network and custom-range scan requests.
+- Inclusive range accounting that reports requested addresses, attempted
+  addresses, probe errors, and discovered devices separately.
+- Reverse-DNS names, MAC addresses, discovery evidence, common open services,
+  and gateway role when those facts can be established locally.
 - Local JSON history and rotating logs.
-- HTTP and HTTPS availability checks for reachable hosts.
+- Device-level results for every discovered host, with selectable scan history.
 - A shared Ramrattan Network Tools header, logo, palette, action system, empty
   state, and right-side Help panel.
 - Automated tests for CIDR handling, adapters, probing, scanning, storage, the
   API health route, and packaged visual assets.
 
-UPnP, Bonjour, IPv6 discovery, device-name discovery, expandable host details,
+UPnP, Bonjour, IPv6, NetBIOS and mDNS naming, hardware-vendor identification,
 CSV export, background progress, cancellation, and desktop installers remain
 planned work.  They must not be represented as available until implemented and
 accepted.
@@ -73,7 +78,8 @@ and routine uninstallation.
 src/network_scanner/
 ├── adapters.py       # Platform-aware adapter and default-route detection
 ├── api.py            # Local FastAPI routes
-├── probe.py          # Reachability and web-service probes
+├── probe.py          # ICMP, TCP service, and reverse-DNS probes
+├── neighbors.py      # Platform-aware ARP/neighbor-table evidence
 ├── scanner.py        # Concurrent IPv4 range scanning
 ├── storage.py        # Local JSON persistence
 └── ui/               # Shared HTML, CSS, JavaScript, and brand assets

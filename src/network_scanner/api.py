@@ -1,4 +1,5 @@
 from __future__ import annotations
+import ipaddress
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
@@ -8,6 +9,7 @@ from .cidr import cidr_from_adapter, cidr_to_range
 from .scanner import Scanner, ScannerConfig
 
 router = APIRouter()
+MAX_ADDRESSES = 4096
 
 class StartScanRequest(BaseModel):
     start_ip: Optional[str] = None
@@ -37,8 +39,23 @@ async def start_scan(req: StartScanRequest) -> Dict[str, Any]:
 
     cidr = cidr_from_adapter(adapter)
     start, end = cidr_to_range(cidr)
+    if (req.start_ip is None) != (req.end_ip is None):
+        raise HTTPException(status_code=422, detail="Provide both a starting and ending IPv4 address")
     start_ip = req.start_ip or start
     end_ip = req.end_ip or end
+    try:
+        start_address = ipaddress.IPv4Address(start_ip)
+        end_address = ipaddress.IPv4Address(end_ip)
+    except ipaddress.AddressValueError as exc:
+        raise HTTPException(status_code=422, detail="Enter valid IPv4 addresses") from exc
+    if end_address < start_address:
+        raise HTTPException(status_code=422, detail="The ending address must not precede the starting address")
+    address_count = int(end_address) - int(start_address) + 1
+    if address_count > MAX_ADDRESSES:
+        raise HTTPException(
+            status_code=422,
+            detail=f"This build accepts at most {MAX_ADDRESSES} addresses in one scan",
+        )
     name = req.network_name or adapter.get("ssid") or adapter.get("name") or cidr
 
     # Prepare scan record
@@ -57,6 +74,6 @@ async def start_scan(req: StartScanRequest) -> Dict[str, Any]:
 
     # Replace the last record with final result
     history = load_history(app_dir)
-    history["scans"][-1] = result
+    history["scans"] = [result if item.get("id") == result["id"] else item for item in history["scans"]]
     save_history(app_dir, history)
-    return {"started": True, "scan_id": result["id"]}
+    return {"started": True, "scan_id": result["id"], "stats": result["stats"]}
