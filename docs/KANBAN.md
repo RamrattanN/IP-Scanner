@@ -13,18 +13,17 @@ No card is actively being implemented at this checkpoint.
 
 ## In Review
 
-| Card | Outcome | Acceptance evidence still needed |
-| --- | --- | --- |
-| Cross-platform shared core | One source and UI behave consistently across targets | Hands-on Apple silicon Mac and Windows x64 acceptance |
+No card is awaiting review at this checkpoint.
 
 ## Ready
 
 | Priority | Card | Outcome | Done when |
 | --- | --- | --- | --- |
-| 1 | Scan comparison | Show new, missing, changed, and returning devices between scans | Changes are reproducible and false positives are controlled |
-| 2 | Device details panel | Present all names, sources, services, notes, and first/last seen without widening the main table | Keyboard and responsive behavior are accepted |
-| 3 | Search and filter | Find devices by IP, identity, vendor, service, confidence, or change state | Controls work with keyboard and preserve numeric IP sorting |
-| 4 | Export | Export the selected scan or comparison to documented local formats | CSV schema, escaping, tests, and Help are accepted |
+| 1 | Standalone desktop applications | Package the accepted shared baseline as Intel Mac, Apple silicon Mac, and Windows x64 applications with the same look, behavior, and local data model | All three target applications install, launch, scan, retain history, upgrade safely, and pass target-native acceptance |
+| 2 | Scan comparison | Show new, missing, changed, and returning devices between scans | Changes are reproducible and false positives are controlled |
+| 3 | Device details panel | Present all names, sources, services, notes, and first/last seen without widening the main table | Keyboard and responsive behavior are accepted |
+| 4 | Search and filter | Find devices by IP, identity, vendor, service, confidence, or change state | Controls work with keyboard and preserve numeric IP sorting |
+| 5 | Export | Export the selected scan or comparison to documented local formats | CSV schema, escaping, tests, and Help are accepted |
 
 ## Later
 
@@ -33,8 +32,7 @@ No card is actively being implemented at this checkpoint.
 | Scan operation | Background jobs, live progress, cancellation, configurable safe concurrency |
 | Monitoring | Scheduled scans, change notifications, retention controls, scan reports |
 | Protocol depth | IPv6 discovery, optional expanded service profiles, additional safe identity sources |
-| Productization | Desktop lifecycle controller, single-instance behavior, data migration, diagnostics bundle |
-| Distribution | Intel Mac, Apple silicon Mac, and Windows x64 installers, signing, notarization, release publishing |
+| Release operations | Signing, macOS notarization, checksums, release notes, rollback guidance, and publishing after target-native acceptance |
 
 ## Done
 
@@ -54,14 +52,13 @@ No card is actively being implemented at this checkpoint.
 | 2026-09-21 | Result usability and intelligence | Owner accepted device-type icons, sortable and resizable columns, normalized MAC values, proxy status, and local vendor enrichment |
 | 2026-09-21 | Discovery visualization | Owner accepted stacked device history, bar and area modes, latest-scan mix, hover metrics, and the shared icon summary |
 | 2026-09-21 | Discovery Experience Baseline | Functional checkpoint `9cd37a9` recorded with synchronized Help, README, Changelog, roadmap, and baseline documentation |
+| 2026-09-21 | Recovery merged to `main` | PR #1 merged at `47d0bc6`; post-merge CI run 38 passed all seven jobs |
 
 ## Blocked
 
 | Card | Blocker | Unblock condition |
 | --- | --- | --- |
-| Merge recovery to `main` | Recovery pull request remains intentionally draft | Apple silicon Mac and Windows x64 acceptance plan is approved |
-| Production installers | Shared core is not yet accepted on all physical target platforms | Intel Mac, Apple silicon Mac, and Windows x64 acceptance complete |
-| Signed public release | Signing identities and release policy are outside the current recovery checkpoint | Packaging, signing, notarization, and release checklist approved |
+| Signed public release | Signing identities and release policy are outside the current baseline checkpoint | Packaging, signing, notarization, and release checklist approved |
 
 ## Withdrawn
 

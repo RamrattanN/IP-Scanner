@@ -30,6 +30,7 @@ def test_current_baseline_distinguishes_available_and_planned_work():
 
     assert "Discovery Experience Baseline 2026.09.21" in baseline
     assert "9cd37a98525acda67278d9902c6afcc28be638c4" in baseline
+    assert "47d0bc66e7af4c979e5a3c281d70148ff5f7cddb" in baseline
     assert "Recovery Baseline 2026.09.21" in baseline
     assert "22f2b6ec1dbfe8661daf956bc985539f3ef5c03f" in baseline
     assert "not a production release" in baseline
@@ -45,3 +46,5 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "Inventory candidate withdrawn" in roadmap
     assert "Result usability and visualization" in roadmap
     assert "Discovery Experience Baseline" in roadmap
+    assert "Standalone desktop applications" in roadmap
+    assert "| 1 | Standalone desktop applications |" in kanban
