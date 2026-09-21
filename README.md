@@ -5,7 +5,12 @@ uses a FastAPI service and a shared browser interface, stores scan history
 locally, and is being recovered as one codebase for Intel Mac, Apple silicon
 Mac, and Windows x64 desktop products.
 
-## Current recovery baseline
+## Accepted recovery baseline
+
+The accepted functional checkpoint is **Recovery Baseline 2026.09.21**, recorded
+on the draft recovery pull request at commit `22f2b6e`.  It is a development
+baseline, not a production release.  The historical `main` branch and `v1.07`
+tag remain unchanged.
 
 The recovery branch provides:
 
@@ -32,9 +37,9 @@ IPv6 discovery, offline MAC-vendor identification, CSV export, background
 progress, cancellation, and desktop installers remain planned work.  They must
 not be represented as available until implemented and accepted.
 
-See [Recovery Baseline](docs/Recovery-Baseline.md) for the audited v1.07 state,
-[Discovery Confidence](docs/Discovery-Confidence.md) for result interpretation,
-and [UX Guidelines](docs/UX-Guidelines.md) for the shared visual system.
+Start with the [Documentation Guide](docs/README.md).  The guide links the
+accepted current baseline, the audited v1.07 recovery record, result
+interpretation, UX standard, Kanban board, and origin-to-date roadmap.
 
 ## Developer setup
 
@@ -101,6 +106,10 @@ to confirm that the UI and logo are packaged.
 
 Target-native installer workflows will follow the proven Speedtest Monitor
 pattern after the shared scanner and user experience pass functional acceptance.
+
+The [Kanban board](docs/KANBAN.md) is the working source of truth for delivery
+status.  CI success demonstrates source portability, but it does not replace
+hands-on acceptance on Intel Mac, Apple silicon Mac, and Windows x64 hardware.
 
 ## License
 

@@ -14,5 +14,9 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert 'id="summary-confirmed"' in html
     assert 'id="summary-observed"' in html
     assert 'id="results-body"' in html
+    assert "inclusive starting and ending IPv4 addresses" in html
+    assert "Why some values are unknown" in html
+    assert "not an exhaustive port scan" in html
+    assert "/app.js?v=" in html
     assert "#173f63" in css.lower()
     assert ui.joinpath("ramrattan-logo.png").is_file()

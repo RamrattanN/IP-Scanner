@@ -6,6 +6,14 @@
 > `docs/Recovery-Baseline.md` for the verified baseline and recovery decisions.
 
 ## Unreleased - Cross-platform recovery
+### Baseline
+- Accepted `Recovery Baseline 2026.09.21` as the current functional checkpoint
+  on the draft recovery pull request.
+- Added a documentation guide, current-baseline specification, working Kanban
+  board, and origin-to-date roadmap.
+- Updated in-application Help to explain inclusive coverage, confirmed versus
+  observed results, discovery sources, confidence, and expected unknown values.
+
 ### Fixed
 - Custom IPv4 ranges are enumerated inclusively, with requested and attempted
   address counts retained for verification.

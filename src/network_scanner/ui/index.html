@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#173f63" />
     <title>Ramrattan IP Scanner</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260921.3" />
   </head>
   <body>
     <main class="page-shell">
@@ -139,23 +139,29 @@
         <h3>Run a network scan</h3>
         <ol>
           <li>Select Scan detected network to use the active adapter and subnet.</li>
-          <li>Use Scan custom range only when you know the starting and ending IPv4 addresses.</li>
-          <li>Wait for the scan to finish before starting another scan.</li>
-          <li>Review the new entry under Previous network scans.</li>
+          <li>Use Scan custom range to provide inclusive starting and ending IPv4 addresses.</li>
+          <li>Every address in that inclusive range is attempted.  Requested and Attempted should match when the scan completes without an interruption.</li>
+          <li>Wait for the scan to finish before starting another scan, then review the selected entry under Previous network scans.</li>
         </ol>
         <p class="remember"><strong>Remember:</strong> Scan only networks that you own or are authorized to assess.</p>
       </section>
       <section class="help-card">
-        <h3>Understand the indicators</h3>
+        <h3>Understand device results</h3>
         <ul>
-          <li><strong>G</strong> identifies the detected default gateway.</li>
-          <li><strong>W</strong> identifies an HTTP or HTTPS service.</li>
-          <li><strong>P</strong> identifies a device that answered the ICMP ping check.</li>
-          <li><strong>Evidence</strong> shows whether ICMP, TCP, or ARP established the device's presence.</li>
-          <li><strong>High</strong> confidence uses a discovery protocol or multiple active signals.</li>
-          <li><strong>Medium</strong> confidence uses one active response.  <strong>Observed</strong> is ARP-only evidence.</li>
-          <li>Broadcast addresses and proxy-ARP-only entries are attempted but excluded from device totals.</li>
-          <li><strong>U, B, and 6</strong> are reserved for UPnP, Bonjour, and IPv6 discovery.</li>
+          <li><strong>Confirmed</strong> devices answered an active check or discovery protocol.  <strong>Observed</strong> devices have only a unique local ARP association.</li>
+          <li><strong>Evidence</strong> lists the sources that established presence, including ICMP, TCP, ARP, mDNS, UPnP, and NetBIOS.</li>
+          <li><strong>High</strong> confidence uses a discovery identity or multiple active signals.  <strong>Medium</strong> uses one active response.  <strong>Observed</strong> is ARP-only.</li>
+          <li><strong>Role</strong> identifies the detected default gateway when applicable.</li>
+          <li><strong>Open services</strong> reports selected common services that answered.  It is not an exhaustive port scan.</li>
+        </ul>
+      </section>
+      <section class="help-card">
+        <h3>Why some values are unknown</h3>
+        <ul>
+          <li><strong>Not advertised</strong> means the device did not publish a usable name, manufacturer, or model through the available local sources.</li>
+          <li><strong>Not available</strong> means a MAC address could not be established.  Routed or isolated devices commonly have this result.</li>
+          <li>Broadcast addresses, invalid MAC addresses, and likely proxy-ARP-only artifacts are attempted but excluded from device totals.</li>
+          <li>IP Scanner reports observed facts and does not guess identity, ownership, or security status.</li>
         </ul>
       </section>
       <section class="help-card">
@@ -171,11 +177,13 @@
         <ul>
           <li><strong>No adapter detected:</strong> Confirm that Wi-Fi or Ethernet is connected.</li>
           <li><strong>No devices found:</strong> Confirm that the requested range is on the locally connected network.  Client isolation can prevent local discovery.</li>
+          <li><strong>Few device names:</strong> Confirm that local multicast is allowed.  Firewalls, guest networks, and disabled Bonjour, UPnP, or NetBIOS can limit identity details.</li>
+          <li><strong>Old interface after an update:</strong> Relaunch the application or refresh the page while holding Shift.</li>
           <li><strong>Page does not respond:</strong> Confirm that the IP Scanner service is still running.</li>
         </ul>
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js"></script>
+    <script src="/app.js?v=20260921.3"></script>
   </body>
 </html>
