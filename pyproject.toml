@@ -4,8 +4,8 @@ version = "1.0.0"
 description = "Local network analysis tool with FastAPI UI"
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{ name = "Your Name" }]
-license = { text = "MIT" }
+authors = [{ name = "Nilesh Ramrattan" }]
+license = "MIT"
 dependencies = [
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.30.0",
@@ -13,10 +13,20 @@ dependencies = [
     "dnspython>=2.6.1",
     "psutil>=6.0.0",
     "rich>=13.7.1",
+    "mac-vendor-lookup>=0.1.15,<0.2",
+]
+
+[project.optional-dependencies]
+test = [
+    "build>=1.2.2",
+    "pytest>=8.0",
 ]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+network_scanner = ["ui/*.html", "ui/*.css", "ui/*.js", "ui/*.png"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

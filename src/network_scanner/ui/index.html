@@ -1,43 +1,261 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Network Analysis Tool</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <meta name="theme-color" content="#173f63" />
+    <title>Ramrattan IP Scanner</title>
+    <link rel="stylesheet" href="/styles.css?v=20260921.6" />
   </head>
   <body>
-    <header>
-      <h1>Network Analysis Tool</h1>
-      <nav>
-        <button id="btn-scan">Scan</button>
-        <button id="btn-scan-custom">Scan Custom Range</button>
-        <button id="btn-clear">Clear History</button>
-      </nav>
-    </header>
+    <main class="page-shell">
+      <header class="hero">
+        <div class="hero-main">
+          <img class="rr-logo" src="/ramrattan-logo.png" alt="Ramrattan logo" />
+          <div class="hero-copy">
+            <p class="eyebrow hero-eyebrow">RAMRATTAN NETWORK TOOLS</p>
+            <h1>IP Scanner</h1>
+            <p>Clear, local visibility into devices and services on your network.</p>
+          </div>
+        </div>
+        <button id="btn-help" class="icon-button help-button" type="button"
+          aria-label="Help with this page" aria-controls="help-panel"
+          aria-expanded="false" title="Help with this page">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M9.8 9a2.4 2.4 0 1 1 3.1 2.3c-.9.4-1.4 1-1.4 2"></path>
+            <path d="M12 17h.01"></path>
+          </svg>
+        </button>
+      </header>
 
-    <main>
-      <section>
-        <h2>History</h2>
-        <table id="history-table">
-          <thead>
-            <tr>
-              <th>Timestamp</</th>
-              <th>Network</th>
-              <th>CIDR</th>
-              <th>Duration ms</th>
-              <th>Hosts up</th>
-              <th>Website</th>
-              <th>UPnP</th>
-              <th>Bonjour</th>
-              <th>IPv6</th>
-            </tr>
-          </thead>
-          <tbody id="history-body"></tbody>
-        </table>
+      <section class="section-block" aria-labelledby="discovery-heading">
+        <div class="section-heading">
+          <p class="eyebrow">NETWORK DISCOVERY</p>
+          <h2 id="discovery-heading">Scan and review local devices</h2>
+          <p>Choose the detected network or provide a specific IPv4 address range.</p>
+        </div>
+        <div class="action-card">
+          <button id="btn-scan" class="button button-primary" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M4.9 4.9a10 10 0 0 1 14.2 0M2.1 2.1a14 14 0 0 1 19.8 0M7.8 7.8a6 6 0 0 1 8.4 0"></path>
+            </svg>
+            Scan detected network
+          </button>
+          <button id="btn-scan-custom" class="button button-secondary" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M8 12h8"></path>
+            </svg>
+            Scan custom range
+          </button>
+          <button id="btn-clear" class="button button-quiet" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"></path>
+            </svg>
+            Clear history
+          </button>
+          <p id="action-status" class="action-status" role="status" aria-live="polite"></p>
+        </div>
       </section>
+
+      <section class="section-block" aria-labelledby="history-heading">
+        <div class="section-heading">
+          <p class="eyebrow">SCAN HISTORY</p>
+          <h2 id="history-heading">Previous network scans</h2>
+          <p>Results remain on this computer and are ordered by scan time.</p>
+        </div>
+        <div class="history-visuals">
+          <div class="chart-card trend-chart-card" aria-labelledby="history-chart-heading">
+            <div class="chart-toolbar">
+              <div>
+                <p class="eyebrow">DISCOVERY TREND</p>
+                <h3 id="history-chart-heading">Devices found over time</h3>
+              </div>
+              <fieldset class="chart-type-control">
+                <legend>Chart type</legend>
+                <label><input type="radio" name="history-chart-type" value="bar" checked /> Bar</label>
+                <label><input type="radio" name="history-chart-type" value="area" /> Area</label>
+              </fieldset>
+            </div>
+            <div class="chart-stage trend-chart-stage">
+              <svg id="history-chart" viewBox="0 0 760 460" role="img" aria-label="Device discovery history by device type"></svg>
+              <div id="history-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
+              <p id="history-chart-empty" class="chart-empty" hidden>Run a scan to begin the discovery trend.</p>
+            </div>
+          </div>
+          <div class="chart-card type-chart-card" aria-labelledby="type-chart-heading">
+            <div class="chart-toolbar">
+              <div>
+                <p class="eyebrow">LATEST SCAN MIX</p>
+                <h3 id="type-chart-heading">Device types</h3>
+              </div>
+            </div>
+            <div class="type-chart-layout">
+              <div class="chart-stage type-chart-stage">
+                <svg id="device-type-chart" viewBox="0 0 300 300" role="img" aria-label="Device types in latest scan"></svg>
+                <div id="device-type-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
+                <p id="device-type-chart-empty" class="chart-empty" hidden>No device types are available for this scan.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <section id="device-summary-card" class="device-summary-card" aria-labelledby="device-summary-heading" hidden>
+          <div class="device-summary-toolbar">
+            <div>
+              <p class="eyebrow">DEVICE TYPE KEY</p>
+              <h3 id="device-summary-heading">Latest scan breakdown</h3>
+            </div>
+            <p class="device-summary-total"><span id="total-line-swatch" class="total-line-swatch" aria-hidden="true" hidden></span><strong id="latest-device-total">0</strong><span class="device-summary-total-label">total devices</span></p>
+          </div>
+          <ul id="device-summary-grid" class="device-summary-grid" aria-label="Latest scan device type totals"></ul>
+        </section>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table id="history-table">
+              <thead><tr>
+                <th><button class="sort-button" data-sort-type="date">Timestamp</button></th>
+                <th><button class="sort-button" data-sort-type="text">Network</button></th>
+                <th><button class="sort-button" data-sort-type="ip">Range</button></th>
+                <th><button class="sort-button" data-sort-type="number">Duration</button></th>
+                <th><button class="sort-button" data-sort-type="number">Requested</button></th>
+                <th><button class="sort-button" data-sort-type="number">Attempted</button></th>
+                <th><button class="sort-button" data-sort-type="number">Confirmed</button></th>
+                <th><button class="sort-button" data-sort-type="number">Observed</button></th>
+                <th><button class="sort-button" data-sort-type="number">Web</button></th>
+              </tr></thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+          <div id="history-empty" class="empty-state" hidden>
+            <div class="empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M4.9 4.9a10 10 0 0 1 14.2 0M7.8 7.8a6 6 0 0 1 8.4 0"></path>
+              </svg>
+            </div>
+            <h3>No scans recorded</h3>
+            <p>Start with Scan detected network when you are ready.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="results-section" class="section-block" aria-labelledby="results-heading" hidden>
+        <div class="section-heading">
+          <p class="eyebrow">DEVICE RESULTS</p>
+          <h2 id="results-heading">Most recent scan</h2>
+          <p id="results-range"></p>
+        </div>
+        <div class="summary-grid" aria-label="Scan coverage summary">
+          <div class="summary-card"><span>Requested</span><strong id="summary-requested">0</strong></div>
+          <div class="summary-card"><span>Attempted</span><strong id="summary-attempted">0</strong></div>
+          <div class="summary-card"><span>Confirmed</span><strong id="summary-confirmed">0</strong></div>
+          <div class="summary-card"><span>Observed</span><strong id="summary-observed">0</strong></div>
+          <div class="summary-card"><span>Probe errors</span><strong id="summary-errors">0</strong></div>
+        </div>
+        <div class="table-card results-card">
+          <div class="table-scroll">
+            <table id="results-table" class="resizable-table">
+              <thead><tr>
+                <th><button class="sort-button" data-sort-type="text">Type</button></th>
+                <th><button class="sort-button" data-sort-type="ip">IP address</button></th>
+                <th><button class="sort-button" data-sort-type="text">Device identity</button></th>
+                <th><button class="sort-button" data-sort-type="text">Manufacturer / model</button></th>
+                <th><button class="sort-button" data-sort-type="text">MAC address</button></th>
+                <th><button class="sort-button" data-sort-type="text">MAC vendor</button></th>
+                <th><button class="sort-button" data-sort-type="text">MAC status</button></th>
+                <th><button class="sort-button" data-sort-type="text">Confidence</button></th>
+                <th><button class="sort-button" data-sort-type="text">Evidence</button></th>
+                <th><button class="sort-button" data-sort-type="text">Open services</button></th>
+                <th><button class="sort-button" data-sort-type="text">Role</button></th>
+              </tr></thead>
+              <tbody id="results-body"></tbody>
+            </table>
+          </div>
+          <div id="results-empty" class="empty-state" hidden>
+            <h3>No devices answered</h3>
+            <p>Every requested address was attempted, but none returned ICMP, TCP, or ARP evidence.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>Ramrattan IP Scanner · Local data only · Use Help for operating guidance and troubleshooting.</footer>
     </main>
 
-    <script src="/app.js"></script>
+    <div id="help-scrim" class="help-scrim" hidden></div>
+    <aside id="help-panel" class="help-panel" aria-hidden="true" aria-labelledby="help-heading">
+      <div class="help-toolbar">
+        <span>HELP</span>
+        <button id="btn-close-help" class="icon-button close-button" type="button" aria-label="Close Help">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+        </button>
+      </div>
+      <div class="section-heading help-heading">
+        <p class="eyebrow">HELP WITH THIS PAGE</p>
+        <h2 id="help-heading">Using IP Scanner</h2>
+        <p>Keep this guidance open while reviewing or running a scan.</p>
+      </div>
+      <section class="help-card">
+        <h3>Run a network scan</h3>
+        <ol>
+          <li>Select Scan detected network to use the active adapter and subnet.</li>
+          <li>Use Scan custom range to provide inclusive starting and ending IPv4 addresses.</li>
+          <li>Every address in that inclusive range is attempted.  Requested and Attempted should match when the scan completes without an interruption.</li>
+          <li>Wait for the scan to finish before starting another scan, then review the selected entry under Previous network scans.</li>
+        </ol>
+        <p class="remember"><strong>Remember:</strong> Scan only networks that you own or are authorized to assess.</p>
+      </section>
+      <section class="help-card">
+        <h3>Understand device results</h3>
+        <ul>
+          <li><strong>Confirmed</strong> devices answered an active check or discovery protocol.  <strong>Observed</strong> devices have only a unique local ARP association.</li>
+          <li><strong>Evidence</strong> lists the sources that established presence, including ICMP, TCP, ARP, mDNS, UPnP, and NetBIOS.</li>
+          <li><strong>High</strong> confidence uses a discovery identity or multiple active signals.  <strong>Medium</strong> uses one active response.  <strong>Observed</strong> is ARP-only.</li>
+          <li><strong>Role</strong> identifies the detected default gateway when applicable.</li>
+          <li><strong>Open services</strong> reports selected common services that answered.  It is not an exhaustive port scan.</li>
+        </ul>
+      </section>
+      <section class="help-card">
+        <h3>Why some values are unknown</h3>
+        <ul>
+          <li><strong>Not advertised</strong> means the device did not publish a usable name, manufacturer, or model through the available local sources.</li>
+          <li><strong>Not available</strong> means a MAC address could not be established.  Routed or isolated devices commonly have this result.</li>
+          <li>Broadcast addresses, invalid MAC addresses, and likely proxy-ARP-only artifacts are attempted but excluded from device totals.</li>
+          <li>IP Scanner reports observed facts and does not guess identity, ownership, or security status.</li>
+        </ul>
+      </section>
+      <section class="help-card">
+        <h3>Arrange and interpret device results</h3>
+        <ul>
+          <li>Select any column heading to sort that table.  Select it again to reverse the order.</li>
+          <li>Drag the divider at the right edge of a Device Results heading to resize that column.  Double-click the divider to restore its original width.  Your widths are retained in this browser.</li>
+          <li>With a divider focused, use the Left and Right Arrow keys to resize, or press Home to restore the original width.</li>
+          <li>MAC addresses use uppercase colon-separated formatting.</li>
+          <li><strong>Shared/proxy response</strong> means the address was returned for multiple IPs and is not presented as the device's confirmed hardware address.</li>
+          <li>Missing manufacturers are checked against a bundled local IEEE OUI list.  Scanned MAC addresses are not sent to an external service.</li>
+          <li>The first Device Results column uses observed evidence to show Router, Computer, Printer, TV, Audio, NAS, Mobile, IoT, or Other.  Other is used when the type cannot be established.</li>
+        </ul>
+      </section>
+      <section class="help-card">
+        <h3>Data and privacy</h3>
+        <ul>
+          <li>Scan history is stored locally on this computer.</li>
+          <li>The interface is served only on the local loopback address.</li>
+          <li>Clearing history removes the saved scan records from this installation.</li>
+        </ul>
+      </section>
+      <section class="help-card">
+        <h3>Resolve common issues</h3>
+        <ul>
+          <li><strong>No adapter detected:</strong> Confirm that Wi-Fi or Ethernet is connected.</li>
+          <li><strong>No devices found:</strong> Confirm that the requested range is on the locally connected network.  Client isolation can prevent local discovery.</li>
+          <li><strong>Few device names:</strong> Confirm that local multicast is allowed.  Firewalls, guest networks, and disabled Bonjour, UPnP, or NetBIOS can limit identity details.</li>
+          <li><strong>Old interface after an update:</strong> Relaunch the application or refresh the page while holding Shift.</li>
+          <li><strong>Page does not respond:</strong> Confirm that the IP Scanner service is still running.</li>
+        </ul>
+      </section>
+      <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
+    </aside>
+    <script src="/app.js?v=20260921.15"></script>
   </body>
 </html>

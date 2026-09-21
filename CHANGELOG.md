@@ -1,5 +1,60 @@
 # Network Analysis Tool - Changelog
 
+> Recovery note, 2026-09-21: The historical entries below describe intended
+> behavior as well as implemented behavior.  The audited source at tag `v1.07`
+> does not contain several listed features.  See
+> `docs/Recovery-Baseline.md` for the verified baseline and recovery decisions.
+
+## Unreleased - Cross-platform recovery
+### Baseline
+- Established the owner-accepted `Discovery Experience Baseline 2026.09.21` at
+  functional commit `9cd37a98525acda67278d9902c6afcc28be638c4`.
+- Retained the earlier result-usability checkpoint at
+  `451ce6704e55c66717c4884a2b3c775f85e37c02` in the draft pull request history.
+- Accepted `Recovery Baseline 2026.09.21` as the current functional checkpoint
+  before the result-usability candidate on the draft recovery pull request.
+- Added a documentation guide, current-baseline specification, working Kanban
+  board, and origin-to-date roadmap.
+- Updated in-application Help to explain inclusive coverage, confirmed versus
+  observed results, discovery sources, confidence, and expected unknown values.
+
+### Fixed
+- Custom IPv4 ranges are enumerated inclusively, with requested and attempted
+  address counts retained for verification.
+- Device presence no longer depends on an ICMP response alone.  Common TCP
+  services and the operating system ARP/neighbor table provide additional
+  local evidence.
+
+### Added
+- Reverse-DNS names, MAC addresses, discovery evidence, and common open-service
+  details when available.
+- Selectable history rows and a device-level result table.
+- Validation for incomplete, reversed, invalid, and oversized custom ranges.
+- Bonjour/mDNS, UPnP, NetBIOS, and safe web-metadata identity enrichment.
+- Identity-source attribution plus High, Medium, and Observed confidence.
+- Local IEEE OUI vendor enrichment through the bundled `mac-vendor-lookup`
+  dataset, with no per-device external requests.
+- Evidence-based device-type icons for Router, Computer, Printer, TV, Audio,
+  NAS, Mobile, IoT, and Other.
+- Sortable columns in Scan History and Device Results.
+- Pointer- and keyboard-resizable Device Results columns with browser-local
+  width persistence and per-column reset.
+- Historical stacked bar and area charts, a latest-scan device-type pie chart,
+  hover metrics, and a shared device-type summary with icons, percentages, and
+  counts.
+
+### Changed
+- Withdrew the standalone Known Devices inventory candidate after owner review.
+  The table, label controls, inventory API, and separate inventory persistence
+  were removed before acceptance.
+- Subnet network and broadcast addresses remain part of requested and attempted
+  coverage but are not counted as devices.
+- Broadcast and multicast MAC addresses are rejected.
+- ARP-only entries sharing a likely proxy MAC are excluded, while actively
+  responding IP addresses remain visible with the shared-MAC condition noted.
+- MAC addresses use uppercase colon-separated formatting.  Shared or proxy
+  responses appear in a separate MAC status column.
+
 ## v1.00 - Initial Build (2025-09-19)
 ### Added
 - Home Page with history table and actions: `Scan`, `Scan Custom Range`, `Clear History`.

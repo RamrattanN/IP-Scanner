@@ -30,7 +30,7 @@ def save_history(base_dir: Path, data: dict) -> None:
     os.replace(tmp, p)
 
 def new_scan_record(network_name: str, cidr: str, start_ip: str, end_ip: str, adapter: dict) -> dict:
-    ts = datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z"
+    ts = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     scan_id = f"{ts}_{cidr.replace('/', '_')}"
     return {
         "id": scan_id,
@@ -39,6 +39,23 @@ def new_scan_record(network_name: str, cidr: str, start_ip: str, end_ip: str, ad
         "cidr": cidr,
         "range": {"start": start_ip, "end": end_ip},
         "adapter": adapter,
-        "stats": {"hosts_up": 0, "website": 0, "upnp": 0, "bonjour": 0, "ipv6": 0, "duration_ms": 0, "cancelled": False},
+        "stats": {
+            "addresses_requested": 0,
+            "addresses_attempted": 0,
+            "probe_errors": 0,
+            "hosts_up": 0,
+            "confirmed_devices": 0,
+            "observed_devices": 0,
+            "ping_replies": 0,
+            "neighbor_only": 0,
+            "proxy_arp_ignored": 0,
+            "reserved_ignored": 0,
+            "website": 0,
+            "upnp": 0,
+            "bonjour": 0,
+            "ipv6": 0,
+            "duration_ms": 0,
+            "cancelled": False,
+        },
         "hosts": [],
     }

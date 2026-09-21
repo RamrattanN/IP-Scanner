@@ -4,3 +4,4 @@ httpx>=0.27.0
 dnspython>=2.6.1
 psutil>=6.0.0
 rich>=13.7.1
+mac-vendor-lookup>=0.1.15,<0.2
