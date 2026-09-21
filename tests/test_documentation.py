@@ -27,15 +27,16 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     kanban = (ROOT / "docs" / "KANBAN.md").read_text(encoding="utf-8")
     roadmap = (ROOT / "docs" / "ROADMAP.md").read_text(encoding="utf-8")
 
-    assert "Inventory Baseline Candidate 2026.09.21" in baseline
-    assert "7b1602dfc4123e5159e54e3b6a7347f7741e8d2e" in baseline
+    assert "Recovery Baseline 2026.09.21" in baseline
+    assert "22f2b6ec1dbfe8661daf956bc985539f3ef5c03f" in baseline
     assert "not a production release" in baseline
-    assert "device inventory" in baseline
     assert "## In Progress" in kanban
     assert "## In Review" in kanban
     assert "## Ready" in kanban
     assert "## Done" in kanban
     assert "## Blocked" in kanban
+    assert "## Withdrawn" in kanban
+    assert "Standalone Known Devices inventory" in kanban
     assert "2025-09-19" in roadmap
     assert "2026-09-21" in roadmap
-    assert "Persistent inventory implementation" in roadmap
+    assert "Inventory candidate withdrawn" in roadmap

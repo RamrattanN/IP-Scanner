@@ -48,7 +48,6 @@ button:focus-visible { outline: 3px solid rgba(47, 120, 184, 0.35); outline-offs
 .action-status { flex-basis: 100%; min-height: 1.2em; margin: 2px 0 0; color: var(--muted); font-size: .9rem; }
 .table-card { overflow: hidden; }
 .summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
-.inventory-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .summary-card { padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
 .summary-card span { display: block; color: var(--muted); font-size: .82rem; }
 .summary-card strong { display: block; margin-top: 5px; color: var(--navy-700); font-size: 1.75rem; }
@@ -62,7 +61,6 @@ button:focus-visible { outline: 3px solid rgba(47, 120, 184, 0.35); outline-offs
 .confidence-high { color: #165a3b; background: #e8f6ef; }
 .confidence-medium { color: var(--navy-700); background: var(--blue-100); }
 .confidence-observed { color: #73510d; background: #fff5d8; }
-.button-small { min-height: 34px; padding: 6px 10px; font-size: .8rem; }
 .table-scroll { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; background: #fff; }
 th, td { padding: 13px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; text-align: left; }

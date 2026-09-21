@@ -9,8 +9,6 @@
 ### Baseline
 - Accepted `Recovery Baseline 2026.09.21` as the current functional checkpoint
   on the draft recovery pull request.
-- Established `Inventory Baseline Candidate 2026.09.21` for owner review at
-  functional commit `7b1602d` after local and cross-platform CI validation.
 - Added a documentation guide, current-baseline specification, working Kanban
   board, and origin-to-date roadmap.
 - Updated in-application Help to explain inclusive coverage, confirmed versus
@@ -30,12 +28,11 @@
 - Validation for incomplete, reversed, invalid, and oversized custom ranges.
 - Bonjour/mDNS, UPnP, NetBIOS, and safe web-metadata identity enrichment.
 - Identity-source attribution plus High, Medium, and Observed confidence.
-- Persistent local device inventory with first-seen and last-seen timestamps,
-  observation counts, MAC-first reconciliation, and private user labels.
-- Inventory seeding from the most recent existing scan so recovery users do not
-  need to discard useful current observations.
 
 ### Changed
+- Withdrew the standalone Known Devices inventory candidate after owner review.
+  The table, label controls, inventory API, and separate inventory persistence
+  were removed before acceptance.
 - Subnet network and broadcast addresses remain part of requested and attempted
   coverage but are not counted as devices.
 - Broadcast and multicast MAC addresses are rejected.

@@ -17,7 +17,6 @@ or approval gate.
 
 | Card | Outcome | Acceptance evidence still needed |
 | --- | --- | --- |
-| Persistent device inventory | Reconcile repeated observations into durable local records with user labels | Owner review of seeded inventory, repeat counts, and label editing |
 | Frontend cache behavior | Updated CSS and JavaScript load after a recovery update | Verify normal relaunch and hard refresh on the Intel Mac |
 | Cross-platform shared core | One source and UI behave consistently across targets | Hands-on Apple silicon Mac and Windows x64 acceptance |
 
@@ -29,14 +28,14 @@ or approval gate.
 | 2 | Offline MAC vendor lookup | Add local OUI-based manufacturer evidence without sending data away | Data source, license, update process, and confidence rules are documented |
 | 3 | Device details panel | Present all names, sources, services, notes, and first/last seen without widening the main table | Keyboard and responsive behavior are accepted |
 | 4 | Search, filter, and sort | Find devices by IP, identity, vendor, service, confidence, or change state | Controls work with keyboard and preserve numeric IP sorting |
-| 5 | Export | Export the selected scan and inventory to documented local formats | CSV schema, escaping, tests, and Help are accepted |
+| 5 | Export | Export the selected scan or comparison to documented local formats | CSV schema, escaping, tests, and Help are accepted |
 
 ## Later
 
 | Stage | Cards |
 | --- | --- |
 | Scan operation | Background jobs, live progress, cancellation, configurable safe concurrency |
-| Monitoring | Scheduled scans, change notifications, retention controls, inventory reports |
+| Monitoring | Scheduled scans, change notifications, retention controls, scan reports |
 | Protocol depth | IPv6 discovery, optional expanded service profiles, additional safe identity sources |
 | Productization | Desktop lifecycle controller, single-instance behavior, data migration, diagnostics bundle |
 | Distribution | Intel Mac, Apple silicon Mac, and Windows x64 installers, signing, notarization, release publishing |
@@ -64,6 +63,12 @@ or approval gate.
 | Merge recovery to `main` | Recovery pull request remains intentionally draft | Owner approves functional baseline and target acceptance plan |
 | Production installers | Shared core is not yet accepted on all physical target platforms | Intel Mac, Apple silicon Mac, and Windows x64 acceptance complete |
 | Signed public release | Signing identities and release policy are outside the current recovery checkpoint | Packaging, signing, notarization, and release checklist approved |
+
+## Withdrawn
+
+| Card | Decision | Reason |
+| --- | --- | --- |
+| Standalone Known Devices inventory | Removed before acceptance | Owner determined the table did not provide sufficient value and its rename or label interaction was not usable |
 
 ## Board rules
 

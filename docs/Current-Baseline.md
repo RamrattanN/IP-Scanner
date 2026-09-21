@@ -4,13 +4,12 @@
 
 | Field | Value |
 | --- | --- |
-| Name | Inventory Baseline Candidate 2026.09.21 |
-| Functional commit | `7b1602dfc4123e5159e54e3b6a7347f7741e8d2e` |
-| Prior accepted checkpoint | Recovery Baseline 2026.09.21 at `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
+| Name | Recovery Baseline 2026.09.21 |
+| Functional commit | `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
 | Development branch | `recovery/cross-platform-desktop` |
 | Review vehicle | Draft pull request #1 |
 | Historical base | `v1.07` at `fc50a2bbde29c63afb2c2fe443f3bc454c641ad9` |
-| Product state | Development candidate awaiting inventory acceptance, not a production release |
+| Product state | Development baseline, not a production release |
 
 Documentation commits after the functional commit may clarify the checkpoint
 without changing the functional identity above.  Any later behavioral change
@@ -55,21 +54,16 @@ must establish a new functional checkpoint.
 - Stores selectable scan history and device-level results locally.
 - Binds the documented application service to the local loopback address.
 - Supports keyboard selection of history rows and keyboard dismissal of Help.
-- Maintains a separate local device inventory with first-seen and last-seen
-  timestamps, observation counts, current evidence, and private user labels.
-- Seeds a new inventory from the most recent existing completed scan and then
-  reconciles every subsequent scan.
 
 ## Verification evidence
 
-- Thirty-one automated tests pass locally and in the operating-system CI matrix.
+- Twenty-one automated tests pass locally and in the operating-system CI matrix.
 - Source compilation, JavaScript syntax validation, wheel build, and isolated
   wheel installation pass.
-- GitHub Actions push run 9 and pull-request run 10 each passed all seven jobs:
-  Ubuntu, macOS, and Windows on Python 3.11 and 3.12, plus package smoke test.
+- GitHub Actions validates Ubuntu, macOS, and Windows on Python 3.11 and 3.12,
+  plus the package smoke test.
 - Owner review on Intel Mac accepted the refreshed discovery interface and
-  results.  Inventory layout, seeding, repeat counts, and label editing remain
-  open for owner acceptance.
+  results.
 
 CI validates the shared source and package contents.  Native behavior and final
 installers still require hands-on acceptance on each target product.
@@ -81,8 +75,7 @@ installers still require hands-on acceptance on each target product.
   multicast can reduce the evidence available.
 - Port checks cover a selected common-service set, not every TCP or UDP port.
 - Scans currently run as one request without progress reporting or cancellation.
-- Inventory reconciliation is intentionally conservative and may retain
-  separate records when evidence is insufficient to prove they are one device.
+- Scan history is not a persistent reconciled device inventory.
 - CSV export, IPv6 discovery, offline MAC-vendor data, signed installers, and
   release publishing are not available in this baseline.
 

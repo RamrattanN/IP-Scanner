@@ -12,7 +12,7 @@
 | 2026-09-21 | Discovery phase 1 | Inclusive range accounting, ICMP, common TCP, ARP, reverse DNS, device results, and portable CI were established. |
 | 2026-09-21 | Discovery phase 2 | Bonjour/mDNS, UPnP, NetBIOS, safe web metadata, confidence, identity sources, and artifact controls were added. |
 | 2026-09-21 | Recovery Baseline 2026.09.21 | Functional commit `22f2b6e` passed seven CI jobs.  Current behavior, Help, Kanban, and roadmap were reconciled on draft pull request #1. |
-| 2026-09-21 | Persistent inventory implementation | Added MAC-first device reconciliation, conservative network-and-IP fallback, first-seen and last-seen history, observation counts, and private user labels.  Owner acceptance remains open. |
+| 2026-09-21 | Inventory candidate withdrawn | A standalone Known Devices table and label workflow were evaluated, then removed before acceptance after owner review.  Scan history and device results remain the current source of truth. |
 
 The historical changelog remains part of the record.  The
 [Recovery Baseline](Recovery-Baseline.md) identifies which `v1.07` behavior was
@@ -21,34 +21,20 @@ available now.
 
 ## Forward roadmap
 
-### Stage 1 - Trustworthy inventory
+### Stage 1 - Change awareness and review
 
-Turn scan observations into a durable device inventory.  Add user labels,
-first-seen and last-seen dates, offline OUI manufacturer evidence, and explicit
-identity reconciliation rules.
-
-Current progress: durable inventory, labels, timestamps, observation counts,
-and reconciliation rules are implemented and in review.  Offline OUI evidence
-remains planned.
-
-Exit criteria:
-
-- Repeated scans reconcile predictably without collapsing distinct devices.
-- User labels survive scans, upgrades, and data migration.
-- Identity evidence and confidence remain inspectable.
-
-### Stage 2 - Change awareness and review
-
-Compare scans, identify new or missing devices, show changed identity or
-services, and add the device details panel, search, filter, sort, and export.
+Compare scan history directly, identify new or missing devices, show changed
+identity or services, and add the device details panel, search, filter, sort,
+offline OUI evidence, and export.  Do not reintroduce a standalone Known Devices
+table without a newly approved use case and interaction design.
 
 Exit criteria:
 
 - Operators can explain why every change was reported.
 - False changes caused by incomplete evidence are clearly qualified.
-- Exported data matches the selected scan or inventory view.
+- Exported data matches the selected scan or comparison view.
 
-### Stage 3 - Operational scanning
+### Stage 2 - Operational scanning
 
 Move scans to background jobs with live progress and cancellation.  Add safe
 scheduling, retention controls, and optional local change notifications.
@@ -59,7 +45,7 @@ Exit criteria:
 - Cancellation leaves valid, clearly labelled partial results.
 - Scheduling and notification defaults are private and non-disruptive.
 
-### Stage 4 - Protocol and platform completion
+### Stage 3 - Protocol and platform completion
 
 Add IPv6 discovery and validate the shared core on physical Intel Mac, Apple
 silicon Mac, and Windows x64 systems.  Preserve one experience and one data
@@ -71,7 +57,7 @@ Exit criteria:
 - IPv4 and IPv6 evidence remains distinguishable and auditable.
 - Existing local history migrates safely.
 
-### Stage 5 - Desktop distribution
+### Stage 4 - Desktop distribution
 
 Apply the Speedtest Monitor deployment pattern to the IP Scanner lifecycle and
 build three deliverables: Intel Mac, Apple silicon Mac, and Windows x64.  Add

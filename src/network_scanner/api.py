@@ -1,17 +1,9 @@
 from __future__ import annotations
 import ipaddress
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
-from .storage import (
-    get_app_data_dir,
-    load_history,
-    load_inventory,
-    new_scan_record,
-    save_history,
-    save_inventory,
-)
-from .inventory import reconcile_inventory, update_user_label
+from .storage import load_history, save_history, get_app_data_dir, new_scan_record
 from .adapters import detect_active_adapter
 from .cidr import cidr_from_adapter, cidr_to_range
 from .scanner import Scanner, ScannerConfig
@@ -24,9 +16,6 @@ class StartScanRequest(BaseModel):
     end_ip: Optional[str] = None
     network_name: Optional[str] = None
 
-class InventoryLabelRequest(BaseModel):
-    label: Optional[str] = Field(default=None, max_length=80)
-
 @router.get("/ping")
 def ping() -> Dict[str, str]:
     return {"status": "ok"}
@@ -34,20 +23,6 @@ def ping() -> Dict[str, str]:
 @router.get("/history")
 def get_history() -> Dict[str, Any]:
     return load_history(get_app_data_dir())
-
-@router.get("/inventory")
-def get_inventory() -> Dict[str, Any]:
-    return load_inventory(get_app_data_dir())
-
-@router.patch("/inventory/{device_id}")
-def set_inventory_label(device_id: str, req: InventoryLabelRequest) -> Dict[str, Any]:
-    app_dir = get_app_data_dir()
-    inventory = load_inventory(app_dir)
-    device = update_user_label(inventory, device_id, req.label)
-    if device is None:
-        raise HTTPException(status_code=404, detail="Inventory device not found")
-    save_inventory(app_dir, inventory)
-    return {"device": device}
 
 @router.post("/clear-history")
 def clear_history() -> Dict[str, Any]:
@@ -101,6 +76,4 @@ async def start_scan(req: StartScanRequest) -> Dict[str, Any]:
     history = load_history(app_dir)
     history["scans"] = [result if item.get("id") == result["id"] else item for item in history["scans"]]
     save_history(app_dir, history)
-    inventory = reconcile_inventory(load_inventory(app_dir), result)
-    save_inventory(app_dir, inventory)
     return {"started": True, "scan_id": result["id"], "stats": result["stats"]}
