@@ -10,6 +10,7 @@ available features.
 | Document | Purpose | Audience |
 | --- | --- | --- |
 | [Current Baseline](Current-Baseline.md) | Defines the accepted functional checkpoint and its acceptance evidence | Owners, developers, testers |
+| [Desktop Packaging](Desktop-Packaging.md) | Defines v1.1 QA artifacts, collection lifecycle, build commands, data continuity, and rollback | Owners, developers, testers |
 | [In-application Help](../src/network_scanner/ui/index.html) | Provides operating and troubleshooting guidance without leaving the application | Operators |
 | [Discovery Confidence](Discovery-Confidence.md) | Explains evidence, confidence, unknown values, and artifact controls | Operators, testers |
 | [UX Guidelines](UX-Guidelines.md) | Defines the shared Ramrattan Network Tools visual and interaction system | Designers, developers |

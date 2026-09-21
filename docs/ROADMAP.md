@@ -17,6 +17,7 @@
 | 2026-09-21 | Discovery Experience Baseline | Owner accepted the Intel Mac discovery and review experience at functional commit `9cd37a9`. |
 | 2026-09-21 | Recovery integrated | PR #1 merged the accepted baseline into `main` at `47d0bc6`.  Post-merge CI run 38 passed all seven Ubuntu, macOS, Windows, and package jobs. |
 | 2026-09-21 | v1.0.0 Discovery Experience Release | Named, tagged, and published the accepted Python application as the protected source-release baseline.  Standalone installers are not included. |
+| 2026-09-21 | v1.1.0 desktop work opened | Created `develop/v1.1-desktop-apps` from v1.0.0 and implemented configurable scheduled collection, freshness state, shared desktop lifecycle, and three target build definitions. |
 
 The historical changelog remains part of the record.  The
 [Recovery Baseline](Recovery-Baseline.md) identifies which `v1.07` behavior was
@@ -57,8 +58,9 @@ Exit criteria:
 
 ### Stage 3 - Operational scanning
 
-Move scans to background jobs with live progress and cancellation.  Add safe
-scheduling, retention controls, and optional local change notifications.
+The v1.1 candidate establishes safe interval scheduling and prevents scan
+overlap.  Continue with non-blocking background jobs, live progress,
+cancellation, retention controls, and optional local change notifications.
 
 Exit criteria:
 

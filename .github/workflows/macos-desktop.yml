@@ -1,0 +1,72 @@
+name: Build macOS desktop QA packages
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/macos-desktop.yml"
+      - "IPScanner.spec"
+      - "installer/macos/**"
+      - "scripts/build_macos_*"
+      - "pyproject.toml"
+      - "src/network_scanner/**"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build macOS ${{ matrix.package_arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15-intel
+            machine_arch: x86_64
+            package_arch: Intel
+          - runner: macos-15
+            machine_arch: arm64
+            package_arch: Apple-Silicon
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project and release tools
+        run: python -m pip install -e ".[test,desktop-release]"
+      - name: Verify architecture
+        run: test "$(uname -m)" = "${{ matrix.machine_arch }}"
+      - name: Run tests
+        run: pytest -q
+      - name: Build unsigned application and disk image
+        run: bash scripts/build_macos_release.sh
+      - name: Smoke-test packaged service and scheduler API
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP="dist/IP Scanner.app/Contents/MacOS/IP Scanner"
+          LOG="$RUNNER_TEMP/ip-scanner-smoke.log"
+          DATA="$RUNNER_TEMP/ip-scanner-data"
+          "$APP" --service --port 8765 --data-dir "$DATA" >"$LOG" 2>&1 &
+          PID=$!
+          cleanup() { kill "$PID" 2>/dev/null || true; wait "$PID" 2>/dev/null || true; }
+          trap cleanup EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:8765/api/ping | grep -q '"ok"'; then
+              curl --fail --silent http://127.0.0.1:8765/api/schedule | grep -q 'interval_minutes'
+              curl --fail --silent http://127.0.0.1:8765/ | grep -qi '<!doctype html'
+              exit 0
+            fi
+            if ! kill -0 "$PID" 2>/dev/null; then break; fi
+            sleep 1
+          done
+          cat "$LOG"
+          exit 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IP-Scanner-macOS-${{ matrix.package_arch }}-1.1.0
+          path: dist/IP-Scanner-macOS-${{ matrix.package_arch }}-1.1.0.dmg
+          if-no-files-found: error
+          retention-days: 14

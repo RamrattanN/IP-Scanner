@@ -19,6 +19,22 @@ Documentation commits after the functional commit may clarify the checkpoint
 without changing the functional identity above.  Any later behavioral change
 must establish a new functional checkpoint.
 
+## v1.1.0 candidate under review
+
+Work on `develop/v1.1-desktop-apps` does not replace the accepted v1.0.0
+baseline until the review and target-native gates pass.  The candidate adds:
+
+- Configurable automatic detected-network scans alongside manual scans.
+- Shared coordination that prevents scan overlap.
+- Explicit scan freshness and next-run information.
+- A shared desktop controller with loopback-only service lifecycle and
+  single-instance behavior.
+- Unsigned QA packaging for Intel Mac, Apple silicon Mac, and Windows x64.
+
+The three artifacts must build and pass packaged-service smoke tests in CI,
+then be exercised on their matching physical targets before v1.1.0 can become
+the current accepted baseline.
+
 ## Available behavior
 
 ### Scan coverage

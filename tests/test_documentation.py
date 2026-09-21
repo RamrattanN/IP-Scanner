@@ -8,6 +8,7 @@ def test_recovery_documentation_set_is_complete_and_linked():
     expected = {
         "README.md",
         "Current-Baseline.md",
+        "Desktop-Packaging.md",
         "Recovery-Baseline.md",
         "Discovery-Confidence.md",
         "UX-Guidelines.md",
@@ -48,3 +49,12 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "Discovery Experience Baseline" in roadmap
     assert "Standalone desktop applications" in roadmap
     assert "| 1 | Standalone desktop applications |" in kanban
+
+
+def test_desktop_packaging_documents_all_three_targets():
+    packaging = (ROOT / "docs" / "Desktop-Packaging.md").read_text(encoding="utf-8")
+    assert "IP-Scanner-macOS-Intel-1.1.0.dmg" in packaging
+    assert "IP-Scanner-macOS-Apple-Silicon-1.1.0.dmg" in packaging
+    assert "IP-Scanner-Windows-x64-1.1.0.exe" in packaging
+    assert "Automatic scans" in packaging
+    assert "rollback" in packaging.lower()

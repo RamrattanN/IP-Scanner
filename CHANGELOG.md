@@ -5,6 +5,26 @@
 > does not contain several listed features.  See
 > `docs/Recovery-Baseline.md` for the verified baseline and recovery decisions.
 
+## v1.1.0 - Desktop Application Candidate (Unreleased)
+### Added
+- Configurable automatic detected-network scans alongside existing manual and
+  custom-range scans.  Automatic scans default to every 60 minutes.
+- Shared scan coordination that prevents manual and scheduled scans from
+  overlapping.
+- Fresh, Aging, Stale, and Scanning now status with last-completed and next-run
+  times.
+- A shared desktop controller that starts the loopback service, opens the
+  browser, prevents duplicate instances, and stops collection on quit.
+- Target-native build workflows for Intel Mac DMG, Apple silicon Mac DMG, and
+  Windows x64 EXE installer QA artifacts.
+
+### Data continuity
+- Schedule settings are stored locally beside history in
+  `~/Documents/Network Scanner/settings.json`.
+- Upgrade and uninstall flows preserve local scan history and settings.
+- The QA packages are unsigned pending target-native acceptance and release
+  signing approval.
+
 ## v1.0.0 - Discovery Experience Release (2026-09-21)
 ### Baseline
 - Named and released the accepted cross-platform source baseline as Ramrattan
