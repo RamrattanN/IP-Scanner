@@ -30,6 +30,7 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "Recovery Baseline 2026.09.21" in baseline
     assert "22f2b6ec1dbfe8661daf956bc985539f3ef5c03f" in baseline
     assert "not a production release" in baseline
+    assert "device inventory" in baseline
     assert "## In Progress" in kanban
     assert "## In Review" in kanban
     assert "## Ready" in kanban
@@ -37,3 +38,4 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "## Blocked" in kanban
     assert "2025-09-19" in roadmap
     assert "2026-09-21" in roadmap
+    assert "Persistent inventory implementation" in roadmap

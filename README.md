@@ -28,6 +28,8 @@ The recovery branch provides:
 - Broadcast, multicast-MAC, and repeated proxy-ARP artifact suppression.
 - Local JSON history and rotating logs.
 - Device-level results for every discovered host, with selectable scan history.
+- A persistent local device inventory with first-seen, last-seen, observation
+  count, conservative identity reconciliation, and private user labels.
 - A shared Ramrattan Network Tools header, logo, palette, action system, empty
   state, and right-side Help panel.
 - Automated tests for CIDR handling, adapters, probing, scanning, storage, the
@@ -78,6 +80,8 @@ The current recovery build preserves the legacy data location:
 ```
 
 Application logs are stored in the `logs` folder beneath the same directory.
+The device inventory and user labels are stored separately in `inventory.json`,
+so clearing scan history does not remove them.
 The planned desktop applications will preserve user history through upgrades
 and routine uninstallation.
 
@@ -88,6 +92,7 @@ src/network_scanner/
 ├── adapters.py       # Platform-aware adapter and default-route detection
 ├── api.py            # Local FastAPI routes
 ├── discovery.py      # mDNS, UPnP, NetBIOS, confidence primitives
+├── inventory.py      # Persistent device identity reconciliation
 ├── probe.py          # ICMP, TCP service, and reverse-DNS probes
 ├── neighbors.py      # Platform-aware ARP/neighbor-table evidence
 ├── scanner.py        # Concurrent IPv4 range scanning

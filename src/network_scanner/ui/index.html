@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#173f63" />
     <title>Ramrattan IP Scanner</title>
-    <link rel="stylesheet" href="/styles.css?v=20260921.3" />
+    <link rel="stylesheet" href="/styles.css?v=20260921.4" />
   </head>
   <body>
     <main class="page-shell">
@@ -88,6 +88,35 @@
         </div>
       </section>
 
+      <section class="section-block" aria-labelledby="inventory-heading">
+        <div class="section-heading">
+          <p class="eyebrow">DEVICE INVENTORY</p>
+          <h2 id="inventory-heading">Known devices</h2>
+          <p>Devices are reconciled across scans.  Add your own label to make an identity easier to recognize.</p>
+        </div>
+        <div class="summary-grid inventory-summary" aria-label="Inventory summary">
+          <div class="summary-card"><span>Known devices</span><strong id="inventory-total">0</strong></div>
+          <div class="summary-card"><span>User labeled</span><strong id="inventory-labeled">0</strong></div>
+          <div class="summary-card"><span>Observed more than once</span><strong id="inventory-repeat">0</strong></div>
+        </div>
+        <div class="table-card">
+          <div id="inventory-scroll" class="table-scroll">
+            <table id="inventory-table">
+              <thead><tr>
+                <th>User label</th><th>Observed identity</th><th>Last IP</th>
+                <th>MAC address</th><th>Manufacturer / model</th><th>Last seen</th>
+                <th>Observations</th><th>Confidence</th><th>Action</th>
+              </tr></thead>
+              <tbody id="inventory-body"></tbody>
+            </table>
+          </div>
+          <div id="inventory-empty" class="empty-state" hidden>
+            <h3>No known devices yet</h3>
+            <p>Complete a scan to begin building the local device inventory.</p>
+          </div>
+        </div>
+      </section>
+
       <section id="results-section" class="section-block" aria-labelledby="results-heading" hidden>
         <div class="section-heading">
           <p class="eyebrow">DEVICE RESULTS</p>
@@ -165,6 +194,15 @@
         </ul>
       </section>
       <section class="help-card">
+        <h3>Use the device inventory</h3>
+        <ul>
+          <li>A valid MAC address is used as the strongest stable device key.</li>
+          <li>When a MAC is unavailable, the same network and IP may be used conservatively until stronger evidence appears.</li>
+          <li>Select Add label or Edit label to store a private name such as Office printer or Guest room TV.</li>
+          <li>Clearing scan history does not remove the device inventory or your labels.</li>
+        </ul>
+      </section>
+      <section class="help-card">
         <h3>Data and privacy</h3>
         <ul>
           <li>Scan history is stored locally on this computer.</li>
@@ -184,6 +222,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260921.3"></script>
+    <script src="/app.js?v=20260921.4"></script>
   </body>
 </html>

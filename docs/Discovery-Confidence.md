@@ -44,3 +44,21 @@ name or product description through reverse DNS, mDNS, UPnP, or NetBIOS.  A MAC
 address may show `Not available` when the device is routed, isolated, or hidden
 behind a network intermediary.  IP Scanner preserves those boundaries rather
 than presenting a guess as a discovered fact.
+
+## Inventory reconciliation
+
+The inventory preserves a device record across scans without claiming certainty
+that the available evidence cannot support.
+
+- A valid unicast MAC address is the strongest local reconciliation key.
+- When no MAC is available, the same network and IP address may be used as a
+  conservative fallback.
+- An IP-based record is upgraded when a reliable MAC later appears at that
+  address, preserving its user label and observation history.
+- A different valid MAC at a previously used IP creates a separate record.  The
+  inventory does not silently collapse those devices.
+- When a MAC is temporarily unavailable for a previously MAC-identified device,
+  the fallback requires a matching published name.
+
+User labels are private operator annotations.  They do not change discovery
+evidence or confidence.

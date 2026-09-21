@@ -28,6 +28,10 @@
 - Validation for incomplete, reversed, invalid, and oversized custom ranges.
 - Bonjour/mDNS, UPnP, NetBIOS, and safe web-metadata identity enrichment.
 - Identity-source attribution plus High, Medium, and Observed confidence.
+- Persistent local device inventory with first-seen and last-seen timestamps,
+  observation counts, MAC-first reconciliation, and private user labels.
+- Inventory seeding from the most recent existing scan so recovery users do not
+  need to discard useful current observations.
 
 ### Changed
 - Subnet network and broadcast addresses remain part of requested and attempted

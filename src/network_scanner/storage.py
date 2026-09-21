@@ -11,15 +11,29 @@ def get_app_data_dir() -> Path:
 def history_path(base_dir: Path) -> Path:
     return base_dir / "history.json"
 
+def inventory_path(base_dir: Path) -> Path:
+    return base_dir / "inventory.json"
+
 def ensure_history_file(base_dir: Path) -> None:
     p = history_path(base_dir)
     if not p.exists():
         with open(p, "w", encoding="utf-8") as f:
             json.dump({"version": 1, "scans": []}, f, indent=2)
 
+def ensure_inventory_file(base_dir: Path) -> None:
+    p = inventory_path(base_dir)
+    if not p.exists():
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump({"version": 1, "devices": []}, f, indent=2)
+
 def load_history(base_dir: Path) -> dict:
     p = history_path(base_dir)
     with open(p, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def load_inventory(base_dir: Path) -> dict:
+    ensure_inventory_file(base_dir)
+    with open(inventory_path(base_dir), "r", encoding="utf-8") as f:
         return json.load(f)
 
 def save_history(base_dir: Path, data: dict) -> None:
@@ -29,8 +43,15 @@ def save_history(base_dir: Path, data: dict) -> None:
         json.dump(data, f, indent=2)
     os.replace(tmp, p)
 
+def save_inventory(base_dir: Path, data: dict) -> None:
+    p = inventory_path(base_dir)
+    tmp = p.with_suffix(".tmp")
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    os.replace(tmp, p)
+
 def new_scan_record(network_name: str, cidr: str, start_ip: str, end_ip: str, adapter: dict) -> dict:
-    ts = datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z"
+    ts = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     scan_id = f"{ts}_{cidr.replace('/', '_')}"
     return {
         "id": scan_id,

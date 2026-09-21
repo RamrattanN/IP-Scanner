@@ -12,6 +12,7 @@
 | 2026-09-21 | Discovery phase 1 | Inclusive range accounting, ICMP, common TCP, ARP, reverse DNS, device results, and portable CI were established. |
 | 2026-09-21 | Discovery phase 2 | Bonjour/mDNS, UPnP, NetBIOS, safe web metadata, confidence, identity sources, and artifact controls were added. |
 | 2026-09-21 | Recovery Baseline 2026.09.21 | Functional commit `22f2b6e` passed seven CI jobs.  Current behavior, Help, Kanban, and roadmap were reconciled on draft pull request #1. |
+| 2026-09-21 | Persistent inventory implementation | Added MAC-first device reconciliation, conservative network-and-IP fallback, first-seen and last-seen history, observation counts, and private user labels.  Owner acceptance remains open. |
 
 The historical changelog remains part of the record.  The
 [Recovery Baseline](Recovery-Baseline.md) identifies which `v1.07` behavior was
@@ -25,6 +26,10 @@ available now.
 Turn scan observations into a durable device inventory.  Add user labels,
 first-seen and last-seen dates, offline OUI manufacturer evidence, and explicit
 identity reconciliation rules.
+
+Current progress: durable inventory, labels, timestamps, observation counts,
+and reconciliation rules are implemented and in review.  Offline OUI evidence
+remains planned.
 
 Exit criteria:
 

@@ -14,6 +14,9 @@ const resultsRange = document.getElementById('results-range');
 const resultsBody = document.getElementById('results-body');
 const resultsEmpty = document.getElementById('results-empty');
 const resultsScroll = document.querySelector('#results-table').closest('.table-scroll');
+const inventoryBody = document.getElementById('inventory-body');
+const inventoryEmpty = document.getElementById('inventory-empty');
+const inventoryScroll = document.getElementById('inventory-scroll');
 
 let selectedScanId = null;
 
@@ -93,6 +96,83 @@ function renderResults(scan) {
   resultsScroll.hidden = hosts.length === 0;
 }
 
+const inventoryIdentityCell = (device) => {
+  const td = document.createElement('td');
+  const primary = document.createElement('span');
+  primary.className = 'identity-primary';
+  primary.textContent = device.name || 'Not advertised';
+  td.appendChild(primary);
+  if (device.identity_basis) {
+    const secondary = document.createElement('span');
+    secondary.className = 'identity-source';
+    secondary.textContent = device.identity_basis === 'mac' ? 'Reconciled by MAC' : 'Network and IP fallback';
+    td.appendChild(secondary);
+  }
+  return td;
+};
+
+const inventoryActionCell = (device) => {
+  const td = document.createElement('td');
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'button button-secondary button-small';
+  button.textContent = device.user_label ? 'Edit label' : 'Add label';
+  button.addEventListener('click', () => editInventoryLabel(device));
+  td.appendChild(button);
+  return td;
+};
+
+function renderInventory(data) {
+  const devices = Array.isArray(data?.devices) ? data.devices : [];
+  document.getElementById('inventory-total').textContent = devices.length;
+  document.getElementById('inventory-labeled').textContent = devices.filter((device) => device.user_label).length;
+  document.getElementById('inventory-repeat').textContent = devices.filter((device) => device.observation_count > 1).length;
+  inventoryBody.replaceChildren();
+  for (const device of devices) {
+    const row = document.createElement('tr');
+    const product = [device.manufacturer, device.model].filter(Boolean).join(' ');
+    row.append(
+      cell(device.user_label || 'Not labeled'), inventoryIdentityCell(device),
+      cell(device.last_ip || 'Not available'), cell(device.mac || 'Not available'),
+      cell(product || 'Not advertised'), cell(device.last_seen_utc || 'Not recorded'),
+      cell(device.observation_count ?? 0), confidenceCell(device.confidence),
+      inventoryActionCell(device),
+    );
+    inventoryBody.appendChild(row);
+  }
+  inventoryEmpty.hidden = devices.length !== 0;
+  inventoryScroll.hidden = devices.length === 0;
+}
+
+async function loadInventory() {
+  const response = await fetch('/api/inventory');
+  if (!response.ok) throw new Error('Device inventory could not be loaded.');
+  renderInventory(await response.json());
+}
+
+async function editInventoryLabel(device) {
+  const label = window.prompt(
+    'Device label.  Leave blank to remove the current label.',
+    device.user_label || '',
+  );
+  if (label === null) return;
+  actionStatus.textContent = 'Saving device label...';
+  try {
+    const response = await fetch(`/api/inventory/${encodeURIComponent(device.id)}`, {
+      method: 'PATCH', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({label}),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.detail || 'The device label could not be saved.');
+    }
+    await loadInventory();
+    actionStatus.textContent = label.trim() ? 'Device label saved.' : 'Device label removed.';
+  } catch (error) {
+    actionStatus.textContent = error.message;
+  }
+}
+
 function selectScan(scan, row) {
   selectedScanId = scan.id;
   document.querySelectorAll('.history-row').forEach((item) => item.classList.remove('is-selected'));
@@ -155,7 +235,7 @@ async function startScan(payload) {
     }
     const result = await response.json();
     selectedScanId = result.scan_id;
-    await loadHistory();
+    await Promise.all([loadHistory(), loadInventory()]);
     const stats = result.stats || {};
     const exclusions = (stats.proxy_arp_ignored || 0) + (stats.reserved_ignored || 0);
     actionStatus.textContent = `Scan completed.  Attempted ${stats.addresses_attempted} of ${stats.addresses_requested} addresses.  Confirmed ${stats.confirmed_devices} devices and retained ${stats.observed_devices} ARP-only observations.  Excluded ${exclusions} proxy or reserved artifacts.`;
@@ -207,7 +287,7 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && helpPanel.classList.contains('is-open')) setHelpPanel(false);
 });
 
-loadHistory().catch((error) => {
+Promise.all([loadHistory(), loadInventory()]).catch((error) => {
   actionStatus.textContent = error.message;
   historyEmpty.hidden = false;
 });

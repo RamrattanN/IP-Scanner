@@ -54,6 +54,10 @@ must establish a new functional checkpoint.
 - Stores selectable scan history and device-level results locally.
 - Binds the documented application service to the local loopback address.
 - Supports keyboard selection of history rows and keyboard dismissal of Help.
+- Maintains a separate local device inventory with first-seen and last-seen
+  timestamps, observation counts, current evidence, and private user labels.
+- Seeds a new inventory from the most recent existing completed scan and then
+  reconciles every subsequent scan.
 
 ## Verification evidence
 
@@ -76,7 +80,8 @@ installers still require hands-on acceptance on each target product.
   multicast can reduce the evidence available.
 - Port checks cover a selected common-service set, not every TCP or UDP port.
 - Scans currently run as one request without progress reporting or cancellation.
-- Scan history is not yet a persistent reconciled device inventory.
+- Inventory reconciliation is intentionally conservative and may retain
+  separate records when evidence is insufficient to prove they are one device.
 - CSV export, IPv6 discovery, offline MAC-vendor data, signed installers, and
   release publishing are not available in this baseline.
 
