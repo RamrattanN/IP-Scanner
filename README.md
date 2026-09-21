@@ -7,10 +7,11 @@ silicon Mac, and Windows x64 desktop products.
 
 ## Current release
 
-The current release is **Ramrattan IP Scanner v1.0.0 - Discovery Experience
-Release**.  Its functional checkpoint is `9cd37a9`, integrated into `main` by
-merge commit `47d0bc6` and reconciled for release after owner acceptance on
-Intel Mac.  The historical `v1.07` tag remains unchanged as the audited
+The current release is **Ramrattan IP Scanner v1.1.0 - Desktop Application
+Release**.  Its functional checkpoint is `1e87518`, approved after native QA
+of the Intel Mac, Apple silicon Mac, and Windows x64 packages.  The v1.0.0
+Discovery Experience Release remains the protected source-release rollback
+baseline, and the historical `v1.07` tag remains unchanged as the audited
 pre-recovery checkpoint.
 
 The accepted baseline provides:
@@ -40,12 +41,16 @@ The accepted baseline provides:
   state, and right-side Help panel.
 - Automated tests for CIDR handling, adapters, probing, scanning, storage, the
   API health route, and packaged visual assets.
+- Configurable automatic detected-network scans, serialized with manual scans,
+  with explicit freshness and next-run information.
+- A shared desktop controller with single-instance behavior and local-service
+  lifecycle management.
+- Native Intel Mac DMG, Apple silicon Mac DMG, and Windows x64 EXE installer
+  packages.
 
-Version 1.0.0 remains the protected source release.  Version 1.1.0 is under
-review on `develop/v1.1-desktop-apps`.  It adds configurable automatic scans,
-explicit freshness status, a shared desktop controller, and target-native QA
-builds for Intel Mac, Apple silicon Mac, and Windows x64.  The QA packages are
-unsigned and must not be represented as a published production release.
+The v1.1.0 desktop packages are published unsigned.  macOS Gatekeeper and
+Windows SmartScreen may therefore display a warning.  Signing and notarization
+remain a separately governed release-hardening activity.
 
 Start with the [Documentation Guide](docs/README.md).  The guide links the
 accepted current baseline, the audited v1.07 recovery record, result

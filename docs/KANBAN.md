@@ -9,9 +9,7 @@ or approval gate.
 
 ## In Progress
 
-| Priority | Card | Outcome | Done when |
-| --- | --- | --- | --- |
-| 1 | Standalone desktop applications | Package the accepted shared baseline as Intel Mac, Apple silicon Mac, and Windows x64 applications with manual and scheduled collection | Three unsigned QA artifacts build and pass CI smoke tests, then receive target-native owner acceptance |
+No card is actively being implemented at this checkpoint.
 
 ## In Review
 
@@ -33,7 +31,7 @@ No card is awaiting review at this checkpoint.
 | Scan operation | Background jobs, live progress, cancellation, configurable safe concurrency |
 | Monitoring | Change notifications, retention controls, scan reports |
 | Protocol depth | IPv6 discovery, optional expanded service profiles, additional safe identity sources |
-| Release operations | Signing, macOS notarization, checksums, release notes, rollback guidance, and publishing after target-native acceptance |
+| Release hardening | Code signing, macOS notarization, and certificate-backed publisher identity |
 
 ## Done
 
@@ -57,6 +55,8 @@ No card is awaiting review at this checkpoint.
 | 2026-09-21 | IP Scanner v1.0.0 source release | Accepted Python application named, tagged, and published as the Discovery Experience Release; standalone installers remain planned |
 | 2026-09-21 | Scheduled collection foundation | Manual and automatic scans share one coordinator; hourly scheduling is configurable and freshness is explicit |
 | 2026-09-21 | Desktop packaging candidate | Shared controller, single-instance lifecycle, macOS DMG builds, and Windows x64 installer build entered review on `develop/v1.1-desktop-apps` |
+| 2026-09-21 | Target-native desktop QA | Intel Mac, Apple silicon Mac, and Windows x64 packages passed CI smoke tests and owner acceptance |
+| 2026-09-21 | IP Scanner v1.1.0 desktop release | Accepted unsigned DMG and EXE packages published with installation, warning, data-continuity, and rollback guidance |
 
 ## Blocked
 

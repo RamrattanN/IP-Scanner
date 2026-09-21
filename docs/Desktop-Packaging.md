@@ -1,18 +1,19 @@
 # Desktop Packaging
 
-## Candidate scope
+## Release scope
 
 Version 1.1.0 packages the same loopback-only service and browser interface for
 three targets:
 
-| Target | QA artifact |
+| Target | Release artifact |
 | --- | --- |
 | Intel Mac | `IP-Scanner-macOS-Intel-1.1.0.dmg` |
 | Apple silicon Mac | `IP-Scanner-macOS-Apple-Silicon-1.1.0.dmg` |
 | Windows x64 | `IP-Scanner-Windows-x64-1.1.0.exe` |
 
-These are unsigned QA artifacts.  macOS Gatekeeper and Windows SmartScreen may
-warn until signing and notarization are completed in a later release gate.
+These are accepted unsigned release artifacts.  macOS Gatekeeper and Windows
+SmartScreen may warn until signing and notarization are completed in a later
+release-hardening gate.
 
 ## Collection lifecycle
 
