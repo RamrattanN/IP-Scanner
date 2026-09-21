@@ -78,10 +78,6 @@
                 <label><input type="radio" name="history-chart-type" value="area" /> Area</label>
               </fieldset>
             </div>
-            <div class="history-chart-key" hidden>
-              <div class="chart-legend" aria-hidden="true"><span></span>Total devices</div>
-              <ul id="history-device-type-legend" class="history-type-legend" aria-label="Historical device type categories"></ul>
-            </div>
             <div class="chart-stage trend-chart-stage">
               <svg id="history-chart" viewBox="0 0 760 460" role="img" aria-label="Device discovery history by device type"></svg>
               <div id="history-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
@@ -101,10 +97,19 @@
                 <div id="device-type-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
                 <p id="device-type-chart-empty" class="chart-empty" hidden>No device types are available for this scan.</p>
               </div>
-              <ul id="device-type-legend" class="type-chart-legend" aria-label="Device type totals"></ul>
             </div>
           </div>
         </div>
+        <section id="device-summary-card" class="device-summary-card" aria-labelledby="device-summary-heading" hidden>
+          <div class="device-summary-toolbar">
+            <div>
+              <p class="eyebrow">DEVICE TYPE KEY</p>
+              <h3 id="device-summary-heading">Latest scan breakdown</h3>
+            </div>
+            <p class="device-summary-total"><span id="total-line-swatch" class="total-line-swatch" aria-hidden="true" hidden></span><strong id="latest-device-total">0</strong><span class="device-summary-total-label">total devices</span></p>
+          </div>
+          <ul id="device-summary-grid" class="device-summary-grid" aria-label="Latest scan device type totals"></ul>
+        </section>
         <div class="table-card">
           <div class="table-scroll">
             <table id="history-table">
@@ -249,6 +254,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260921.11"></script>
+    <script src="/app.js?v=20260921.12"></script>
   </body>
 </html>

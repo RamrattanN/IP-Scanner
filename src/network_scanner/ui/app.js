@@ -18,12 +18,13 @@ const historyChart = document.getElementById('history-chart');
 const historyChartEmpty = document.getElementById('history-chart-empty');
 const historyChartTooltip = document.getElementById('history-chart-tooltip');
 const historyChartTypeInputs = [...document.querySelectorAll('input[name="history-chart-type"]')];
-const historyChartKey = document.querySelector('.history-chart-key');
-const historyDeviceTypeLegend = document.getElementById('history-device-type-legend');
 const deviceTypeChart = document.getElementById('device-type-chart');
 const deviceTypeChartEmpty = document.getElementById('device-type-chart-empty');
 const deviceTypeChartTooltip = document.getElementById('device-type-chart-tooltip');
-const deviceTypeLegend = document.getElementById('device-type-legend');
+const deviceSummaryCard = document.getElementById('device-summary-card');
+const deviceSummaryGrid = document.getElementById('device-summary-grid');
+const latestDeviceTotal = document.getElementById('latest-device-total');
+const totalLineSwatch = document.getElementById('total-line-swatch');
 
 let selectedScanId = null;
 let chartScans = [];
@@ -91,7 +92,7 @@ const DEVICE_TYPE_COLORS = {
   NAS: '#5e7b96',
   Mobile: '#8aae4f',
   IoT: '#c2a23a',
-  Other: '#8794a0',
+  Other: '#9fc8e8',
   Unclassified: '#b7c0c8',
 };
 
@@ -291,26 +292,6 @@ const scanBreakdownMetric = (types, breakdown) => {
   return lines.join('\n');
 };
 
-function renderHistoryTypeLegend(types) {
-  historyDeviceTypeLegend.replaceChildren();
-  types.forEach((type) => {
-    const color = DEVICE_TYPE_COLORS[type] || DEVICE_TYPE_COLORS.Other;
-    const item = document.createElement('li');
-    const icon = document.createElement('span');
-    icon.className = 'history-type-icon';
-    icon.style.color = color;
-    icon.setAttribute('aria-hidden', 'true');
-    const iconSvg = document.createElementNS(SVG_NS, 'svg');
-    iconSvg.setAttribute('viewBox', '0 0 24 24');
-    iconSvg.innerHTML = DEVICE_ICONS[type] || DEVICE_ICONS.Other;
-    icon.appendChild(iconSvg);
-    const name = document.createElement('span');
-    name.textContent = type;
-    item.append(icon, name);
-    historyDeviceTypeLegend.appendChild(item);
-  });
-}
-
 function updateSelectedChartMarks() {
   document.querySelectorAll('.chart-scan-mark').forEach((mark) => {
     mark.classList.toggle('is-selected', mark.dataset.scanId === String(selectedScanId));
@@ -363,21 +344,16 @@ function renderHistoryChart() {
   historyChart.replaceChildren();
   historyChartTypeInputs.forEach((input) => { input.checked = input.value === historyChartType; });
   if (!chartScans.length) {
-    historyDeviceTypeLegend.replaceChildren();
-    historyChartKey.hidden = true;
+    totalLineSwatch.hidden = true;
     historyChart.hidden = true;
     historyChartEmpty.hidden = false;
-    return;
+    return [];
   }
   historyChart.hidden = false;
   historyChartEmpty.hidden = true;
-  historyChartKey.hidden = false;
+  totalLineSwatch.hidden = historyChartType !== 'area';
   const breakdowns = chartScans.map(scanTypeBreakdown);
   const types = activeDeviceTypes(breakdowns);
-  renderHistoryTypeLegend(types);
-
-  const totalLegend = historyChartKey.querySelector('.chart-legend');
-  totalLegend.hidden = historyChartType !== 'area';
 
   const width = 760;
   const height = 460;
@@ -482,6 +458,7 @@ function renderHistoryChart() {
     'aria-label',
     `Device discovery history with ${chartScans.length} scans stacked across ${types.length} device type categories. Latest result: ${values[values.length - 1]} devices found.`,
   );
+  return types;
 }
 
 const polarPoint = (centerX, centerY, radius, angle) => {
@@ -499,15 +476,9 @@ const pieSlicePath = (centerX, centerY, radius, startAngle, endAngle) => {
 function renderDeviceTypeChart(scan) {
   hideChartTooltip(deviceTypeChartTooltip);
   deviceTypeChart.replaceChildren();
-  deviceTypeLegend.replaceChildren();
-  const hosts = Array.isArray(scan?.hosts) ? scan.hosts : [];
-  const counts = new Map();
-  hosts.forEach((host) => {
-    const type = host.device_type || 'Other';
-    counts.set(type, (counts.get(type) || 0) + 1);
-  });
-  const entries = [...counts.entries()].sort((left, right) => right[1] - left[1]);
-  const total = hosts.length;
+  const breakdown = scan ? scanTypeBreakdown(scan) : {counts: new Map(), total: 0};
+  const entries = [...breakdown.counts.entries()].sort((left, right) => right[1] - left[1]);
+  const total = breakdown.total;
   if (!total) {
     deviceTypeChart.hidden = true;
     deviceTypeChartEmpty.hidden = false;
@@ -534,27 +505,59 @@ function renderDeviceTypeChart(scan) {
     attachChartTooltip(slice, deviceTypeChartTooltip, type, metric);
     deviceTypeChart.appendChild(slice);
     angle += sweep;
+  });
+  deviceTypeChart.setAttribute('aria-label', `Latest scan device types. ${total} devices across ${entries.length} categories.`);
+}
 
+function renderDeviceSummary(scan, historicalTypes = []) {
+  deviceSummaryGrid.replaceChildren();
+  if (!scan) {
+    deviceSummaryCard.hidden = true;
+    latestDeviceTotal.textContent = '0';
+    return;
+  }
+  const breakdown = scanTypeBreakdown(scan);
+  const union = new Map(historicalTypes.map((type) => [type, 1]));
+  breakdown.counts.forEach((_count, type) => union.set(type, 1));
+  const types = activeDeviceTypes([{counts: union}]);
+  latestDeviceTotal.textContent = breakdown.total;
+  deviceSummaryCard.hidden = false;
+
+  types.forEach((type) => {
+    const count = breakdown.counts.get(type) || 0;
+    const share = breakdown.total ? (count / breakdown.total) * 100 : 0;
+    const shareLabel = Number.isInteger(share) ? `${share}%` : `${share.toFixed(1)}%`;
+    const color = DEVICE_TYPE_COLORS[type] || DEVICE_TYPE_COLORS.Other;
     const item = document.createElement('li');
+    item.className = 'device-summary-item';
+    item.style.setProperty('--device-color', color);
+    item.setAttribute('aria-label', `${type}: ${count} devices, ${shareLabel} of latest scan`);
+
     const icon = document.createElement('span');
-    icon.className = 'type-chart-icon';
-    icon.style.color = color;
+    icon.className = 'device-summary-icon';
     icon.setAttribute('aria-hidden', 'true');
     const iconSvg = document.createElementNS(SVG_NS, 'svg');
     iconSvg.setAttribute('viewBox', '0 0 24 24');
     iconSvg.innerHTML = DEVICE_ICONS[type] || DEVICE_ICONS.Other;
     icon.appendChild(iconSvg);
+
+    const copy = document.createElement('span');
+    copy.className = 'device-summary-copy';
     const name = document.createElement('span');
-    name.className = 'type-chart-name';
+    name.className = 'device-summary-name';
     name.textContent = type;
     name.title = type;
-    const amount = document.createElement('span');
-    amount.className = 'type-chart-count';
+    const percentage = document.createElement('span');
+    percentage.className = 'device-summary-share';
+    percentage.textContent = `${shareLabel} of latest scan`;
+    copy.append(name, percentage);
+
+    const amount = document.createElement('strong');
+    amount.className = 'device-summary-count';
     amount.textContent = count;
-    item.append(icon, name, amount);
-    deviceTypeLegend.appendChild(item);
+    item.append(icon, copy, amount);
+    deviceSummaryGrid.appendChild(item);
   });
-  deviceTypeChart.setAttribute('aria-label', `Latest scan device types. ${total} devices across ${entries.length} categories.`);
 }
 
 function renderResults(scan) {
@@ -609,9 +612,10 @@ async function loadHistory() {
     const difference = Date.parse(left.timestamp_utc) - Date.parse(right.timestamp_utc);
     return Number.isFinite(difference) ? difference : 0;
   });
-  renderHistoryChart();
+  const historicalTypes = renderHistoryChart();
   const scans = [...savedScans].reverse();
   renderDeviceTypeChart(scans[0]);
+  renderDeviceSummary(scans[0], historicalTypes);
   resetTableSort('history-table');
   historyBody.replaceChildren();
   let selected = null;

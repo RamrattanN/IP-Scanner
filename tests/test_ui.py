@@ -21,7 +21,11 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert 'id="device-type-chart-tooltip"' in html
     assert 'name="history-chart-type"' in html
     assert 'value="area"' in html
-    assert 'id="history-device-type-legend"' in html
+    assert 'id="device-summary-card"' in html
+    assert 'id="device-summary-grid"' in html
+    assert 'id="latest-device-total"' in html
+    assert 'id="history-device-type-legend"' not in html
+    assert 'id="device-type-legend"' not in html
     assert "Devices found over time" in html
     assert "Device types" in html
     assert "inclusive starting and ending IPv4 addresses" in html
@@ -42,15 +46,17 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "renderDeviceTypeChart(scans[0])" in javascript
     assert "scanDeviceCount" in javascript
     assert "scanTypeBreakdown" in javascript
-    assert "renderHistoryTypeLegend" in javascript
+    assert "renderDeviceSummary" in javascript
+    assert "renderDeviceSummary(scans[0], historicalTypes)" in javascript
     assert "Unclassified" in javascript
     assert "chart-area" in javascript
     assert "activateChartScan" in javascript
     assert "ip-scanner-history-chart-type" in javascript
     assert "Scan time (local)" in javascript
     assert "DEVICE_TYPE_COLORS" in javascript
+    assert "Other: '#9fc8e8'" in javascript
     assert "icon.style.color = color" in javascript
-    assert "type-chart-icon" in javascript
+    assert "device-summary-icon" in javascript
     assert "DEVICE_ICONS[type] || DEVICE_ICONS.Other" in javascript
     assert "attachChartTooltip" in javascript
     assert "pointerenter" in javascript
