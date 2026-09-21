@@ -5,13 +5,13 @@ uses a FastAPI service and a shared browser interface, stores scan history
 locally, and now provides the accepted shared baseline for Intel Mac, Apple
 silicon Mac, and Windows x64 desktop products.
 
-## Current accepted development baseline
+## Current release
 
-The current functional checkpoint is **Discovery Experience Baseline
-2026.09.21** at commit `9cd37a9`, integrated into `main` by merge commit
-`47d0bc6`.  The owner accepted it after reviewing discovery accuracy, device
-intelligence, charts, and table interactions on Intel Mac.  It is not a
-production release.  The historical `v1.07` tag remains unchanged.
+The current release is **Ramrattan IP Scanner v1.0.0 - Discovery Experience
+Release**.  Its functional checkpoint is `9cd37a9`, integrated into `main` by
+merge commit `47d0bc6` and reconciled for release after owner acceptance on
+Intel Mac.  The historical `v1.07` tag remains unchanged as the audited
+pre-recovery checkpoint.
 
 The accepted baseline provides:
 
@@ -41,10 +41,11 @@ The accepted baseline provides:
 - Automated tests for CIDR handling, adapters, probing, scanning, storage, the
   API health route, and packaged visual assets.
 
+Version 1.0.0 is a source release that runs through Python and the documented
+local development command.  It does not include standalone installers.
 Standalone Intel Mac, Apple silicon Mac, and Windows x64 applications are the
 next delivery priority.  IPv6 discovery, CSV export, background progress, and
-cancellation remain planned work.  These capabilities must
-not be represented as available until implemented and accepted.
+cancellation remain planned work and must not be represented as available.
 
 Start with the [Documentation Guide](docs/README.md).  The guide links the
 accepted current baseline, the audited v1.07 recovery record, result

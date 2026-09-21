@@ -4,14 +4,16 @@
 
 | Field | Value |
 | --- | --- |
-| Name | Discovery Experience Baseline 2026.09.21 |
+| Name | Ramrattan IP Scanner v1.0.0 - Discovery Experience Release |
+| Release tag | `v1.0.0` |
 | Functional commit | `9cd37a98525acda67278d9902c6afcc28be638c4` |
 | Main integration commit | `47d0bc66e7af4c979e5a3c281d70148ff5f7cddb` |
+| Documentation integration commit | `856fea31658159ec36f0c18fff9a1337c63428d3` |
 | Prior accepted baseline | Recovery Baseline 2026.09.21 at `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
 | Baseline branch | `main` |
 | Review vehicle | Pull request #1, merged 2026-09-21 |
 | Historical base | `v1.07` at `fc50a2bbde29c63afb2c2fe443f3bc454c641ad9` |
-| Product state | Owner-accepted development baseline, not a production release |
+| Product state | Owner-accepted v1.0.0 source release; standalone installers are not included |
 
 Documentation commits after the functional commit may clarify the checkpoint
 without changing the functional identity above.  Any later behavioral change
@@ -92,12 +94,12 @@ installers still require hands-on acceptance on each target product.
   observed heuristics.  They are not ownership or security assertions.
 - Scans currently run as one request without progress reporting or cancellation.
 - Scan history is not a persistent reconciled device inventory.
-- Standalone desktop applications, CSV export, IPv6 discovery, signed
-  installers, and release publishing are not available in this baseline.
+- Standalone desktop applications, CSV export, IPv6 discovery, and signed
+  installers are not available in this source release.
 
 ## Change control
 
-- Treat merge commit `47d0bc6` on `main` as the protected starting point for
+- Treat release tag `v1.0.0` on `main` as the protected starting point for
   subsequent work.  Preserve `v1.07` as the audited historical checkpoint.
 - Develop material changes on focused branches and merge them only after tests,
   CI, documentation reconciliation, and owner approval.
