@@ -42,6 +42,8 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "ip-scanner-history-chart-type" in javascript
     assert "Scan time (local)" in javascript
     assert "DEVICE_TYPE_COLORS" in javascript
+    assert "type-chart-icon" in javascript
+    assert "DEVICE_ICONS[type] || DEVICE_ICONS.Other" in javascript
     assert "attachChartTooltip" in javascript
     assert "pointerenter" in javascript
     assert "pointermove" in javascript

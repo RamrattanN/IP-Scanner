@@ -402,9 +402,14 @@ function renderDeviceTypeChart(scan) {
     angle += sweep;
 
     const item = document.createElement('li');
-    const swatch = document.createElement('span');
-    swatch.className = 'type-chart-swatch';
-    swatch.style.backgroundColor = color;
+    const icon = document.createElement('span');
+    icon.className = 'type-chart-icon';
+    icon.style.color = color;
+    icon.setAttribute('aria-hidden', 'true');
+    const iconSvg = document.createElementNS(SVG_NS, 'svg');
+    iconSvg.setAttribute('viewBox', '0 0 24 24');
+    iconSvg.innerHTML = DEVICE_ICONS[type] || DEVICE_ICONS.Other;
+    icon.appendChild(iconSvg);
     const name = document.createElement('span');
     name.className = 'type-chart-name';
     name.textContent = type;
@@ -412,7 +417,7 @@ function renderDeviceTypeChart(scan) {
     const amount = document.createElement('span');
     amount.className = 'type-chart-count';
     amount.textContent = count;
-    item.append(swatch, name, amount);
+    item.append(icon, name, amount);
     deviceTypeLegend.appendChild(item);
   });
   deviceTypeChart.setAttribute('aria-label', `Latest scan device types. ${total} devices across ${entries.length} categories.`);
