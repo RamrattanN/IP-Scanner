@@ -4,12 +4,13 @@
 
 | Field | Value |
 | --- | --- |
-| Name | Recovery Baseline 2026.09.21 |
-| Functional commit | `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
+| Name | Inventory Baseline Candidate 2026.09.21 |
+| Functional commit | `7b1602dfc4123e5159e54e3b6a7347f7741e8d2e` |
+| Prior accepted checkpoint | Recovery Baseline 2026.09.21 at `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
 | Development branch | `recovery/cross-platform-desktop` |
 | Review vehicle | Draft pull request #1 |
 | Historical base | `v1.07` at `fc50a2bbde29c63afb2c2fe443f3bc454c641ad9` |
-| Product state | Development baseline, not a production release |
+| Product state | Development candidate awaiting inventory acceptance, not a production release |
 
 Documentation commits after the functional commit may clarify the checkpoint
 without changing the functional identity above.  Any later behavioral change
@@ -61,14 +62,14 @@ must establish a new functional checkpoint.
 
 ## Verification evidence
 
-- Nineteen functional tests pass on the functional commit.  The documentation
-  checkpoint expands the local suite to twenty-one tests.
+- Thirty-one automated tests pass locally and in the operating-system CI matrix.
 - Source compilation, JavaScript syntax validation, wheel build, and isolated
   wheel installation pass.
-- GitHub Actions run 6 passed all seven jobs for the functional commit:
+- GitHub Actions push run 9 and pull-request run 10 each passed all seven jobs:
   Ubuntu, macOS, and Windows on Python 3.11 and 3.12, plus package smoke test.
-- Owner review on Intel Mac accepted the refreshed interface and discovery
-  results before this documentation checkpoint.
+- Owner review on Intel Mac accepted the refreshed discovery interface and
+  results.  Inventory layout, seeding, repeat counts, and label editing remain
+  open for owner acceptance.
 
 CI validates the shared source and package contents.  Native behavior and final
 installers still require hands-on acceptance on each target product.

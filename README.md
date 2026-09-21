@@ -5,12 +5,13 @@ uses a FastAPI service and a shared browser interface, stores scan history
 locally, and is being recovered as one codebase for Intel Mac, Apple silicon
 Mac, and Windows x64 desktop products.
 
-## Accepted recovery baseline
+## Current recovery checkpoint
 
-The accepted functional checkpoint is **Recovery Baseline 2026.09.21**, recorded
-on the draft recovery pull request at commit `22f2b6e`.  It is a development
-baseline, not a production release.  The historical `main` branch and `v1.07`
-tag remain unchanged.
+The current review candidate is **Inventory Baseline Candidate 2026.09.21** at
+functional commit `7b1602d`.  It extends the owner-accepted discovery baseline
+with persistent inventory and user labels.  Inventory acceptance remains open.
+This is not a production release.  The historical `main` branch and `v1.07` tag
+remain unchanged.
 
 The recovery branch provides:
 

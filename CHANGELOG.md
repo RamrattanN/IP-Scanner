@@ -9,6 +9,8 @@
 ### Baseline
 - Accepted `Recovery Baseline 2026.09.21` as the current functional checkpoint
   on the draft recovery pull request.
+- Established `Inventory Baseline Candidate 2026.09.21` for owner review at
+  functional commit `7b1602d` after local and cross-platform CI validation.
 - Added a documentation guide, current-baseline specification, working Kanban
   board, and origin-to-date roadmap.
 - Updated in-application Help to explain inclusive coverage, confirmed versus
