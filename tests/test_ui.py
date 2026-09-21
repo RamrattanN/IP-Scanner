@@ -15,6 +15,11 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert 'id="summary-confirmed"' in html
     assert 'id="summary-observed"' in html
     assert 'id="results-body"' in html
+    assert 'id="history-chart"' in html
+    assert 'id="device-type-chart"' in html
+    assert 'name="history-chart-type"' in html
+    assert "Devices found over time" in html
+    assert "Device types" in html
     assert "inclusive starting and ending IPv4 addresses" in html
     assert "Why some values are unknown" in html
     assert "MAC status" in html
@@ -28,6 +33,13 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "Shared/proxy responder" in javascript
     assert "makeSortable('history-table')" in javascript
     assert "makeSortable('results-table')" in javascript
+    assert "renderHistoryChart" in javascript
+    assert "renderDeviceTypeChart" in javascript
+    assert "renderDeviceTypeChart(scans[0])" in javascript
+    assert "scanDeviceCount" in javascript
+    assert "ip-scanner-history-chart-type" in javascript
+    assert "Scan time (local)" in javascript
+    assert "DEVICE_TYPE_COLORS" in javascript
     assert "not an exhaustive port scan" in html
     assert "/app.js?v=" in html
     assert "Known devices" not in html

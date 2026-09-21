@@ -65,6 +65,41 @@
           <h2 id="history-heading">Previous network scans</h2>
           <p>Results remain on this computer and are ordered by scan time.</p>
         </div>
+        <div class="history-visuals">
+          <div class="chart-card trend-chart-card" aria-labelledby="history-chart-heading">
+            <div class="chart-toolbar">
+              <div>
+                <p class="eyebrow">DISCOVERY TREND</p>
+                <h3 id="history-chart-heading">Devices found over time</h3>
+              </div>
+              <fieldset class="chart-type-control">
+                <legend>Chart type</legend>
+                <label><input type="radio" name="history-chart-type" value="bar" /> Bar</label>
+                <label><input type="radio" name="history-chart-type" value="line" checked /> Line</label>
+              </fieldset>
+            </div>
+            <div class="chart-legend" aria-hidden="true"><span></span>Devices found</div>
+            <div class="chart-stage trend-chart-stage">
+              <svg id="history-chart" viewBox="0 0 760 320" role="img" aria-label="Device discovery history"></svg>
+              <p id="history-chart-empty" class="chart-empty" hidden>Run a scan to begin the discovery trend.</p>
+            </div>
+          </div>
+          <div class="chart-card type-chart-card" aria-labelledby="type-chart-heading">
+            <div class="chart-toolbar">
+              <div>
+                <p class="eyebrow">LATEST SCAN MIX</p>
+                <h3 id="type-chart-heading">Device types</h3>
+              </div>
+            </div>
+            <div class="type-chart-layout">
+              <div class="chart-stage type-chart-stage">
+                <svg id="device-type-chart" viewBox="0 0 300 260" role="img" aria-label="Device types in selected scan"></svg>
+                <p id="device-type-chart-empty" class="chart-empty" hidden>No device types are available for this scan.</p>
+              </div>
+              <ul id="device-type-legend" class="type-chart-legend" aria-label="Device type totals"></ul>
+            </div>
+          </div>
+        </div>
         <div class="table-card">
           <div class="table-scroll">
             <table id="history-table">
@@ -209,6 +244,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260921.7"></script>
+    <script src="/app.js?v=20260921.8"></script>
   </body>
 </html>
