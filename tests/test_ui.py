@@ -48,6 +48,7 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "scanTypeBreakdown" in javascript
     assert "renderDeviceSummary" in javascript
     assert "renderDeviceSummary(scans[0], historicalTypes)" in javascript
+    assert "percentage.textContent = shareLabel" in javascript
     assert "Unclassified" in javascript
     assert "chart-area" in javascript
     assert "activateChartScan" in javascript

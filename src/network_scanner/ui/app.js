@@ -549,7 +549,7 @@ function renderDeviceSummary(scan, historicalTypes = []) {
     name.title = type;
     const percentage = document.createElement('span');
     percentage.className = 'device-summary-share';
-    percentage.textContent = `${shareLabel} of latest scan`;
+    percentage.textContent = shareLabel;
     copy.append(name, percentage);
 
     const amount = document.createElement('strong');
