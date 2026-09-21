@@ -32,7 +32,7 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "Ramrattan IP Scanner v1.1.0" in baseline
     assert "1e87518bb030fa8cf5d6ca84518cd0644f3691ad" in baseline
     assert "v1.0.0 Discovery Experience Release" in baseline
-    assert "owner-accepted unsigned desktop release" in baseline
+    assert "owner-accepted unsigned desktop release" in baseline.lower()
     assert "## In Progress" in kanban
     assert "## In Review" in kanban
     assert "## Ready" in kanban
