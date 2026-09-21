@@ -53,12 +53,13 @@ No card is awaiting review at this checkpoint.
 | 2026-09-21 | Discovery visualization | Owner accepted stacked device history, bar and area modes, latest-scan mix, hover metrics, and the shared icon summary |
 | 2026-09-21 | Discovery Experience Baseline | Functional checkpoint `9cd37a9` recorded with synchronized Help, README, Changelog, roadmap, and baseline documentation |
 | 2026-09-21 | Recovery merged to `main` | PR #1 merged at `47d0bc6`; post-merge CI run 38 passed all seven jobs |
+| 2026-09-21 | IP Scanner v1.0.0 source release | Accepted Python application named, tagged, and published as the Discovery Experience Release; standalone installers remain planned |
 
 ## Blocked
 
 | Card | Blocker | Unblock condition |
 | --- | --- | --- |
-| Signed public release | Signing identities and release policy are outside the current baseline checkpoint | Packaging, signing, notarization, and release checklist approved |
+| Signed desktop release | Signing identities and release policy are outside the current source-release checkpoint | Packaging, signing, notarization, and desktop release checklist approved |
 
 ## Withdrawn
 

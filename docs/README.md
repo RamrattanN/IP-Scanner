@@ -23,7 +23,9 @@ available features.
 - **Available** means implemented in source and exercised by automated or
   documented manual verification.
 - **Accepted baseline** means suitable as the protected starting point for the
-  next delivery stage.  It does not mean production-ready or generally released.
+  next delivery stage.
+- **Source release** means the tested Python application is tagged and
+  published without standalone desktop installers.
 - **In review** means implemented or documented but still awaiting a named
   acceptance gate.
 - **Planned** means sequenced on the Kanban or roadmap and not yet available.
@@ -35,6 +37,6 @@ available features.
 When behavior changes, update the application Help, Current Baseline, Kanban,
 Roadmap, README, and Changelog as applicable in the same pull request.  Move a
 card to Done only when its stated acceptance evidence exists.  Preserve the
-current `main` baseline and the historical `v1.07` tag.  Implement material
-changes on focused branches and merge them only after the required approval and
-verification gates pass.
+current `main` baseline, release tag `v1.0.0`, and historical `v1.07` tag.
+Implement material changes on focused branches and merge them only after the
+required approval and verification gates pass.

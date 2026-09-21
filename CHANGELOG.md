@@ -5,8 +5,12 @@
 > does not contain several listed features.  See
 > `docs/Recovery-Baseline.md` for the verified baseline and recovery decisions.
 
-## Discovery Experience Baseline 2026.09.21
+## v1.0.0 - Discovery Experience Release (2026-09-21)
 ### Baseline
+- Named and released the accepted cross-platform source baseline as Ramrattan
+  IP Scanner v1.0.0.
+- Published the tested Python application and local browser experience as a
+  source release.  Standalone desktop installers are not included.
 - Established the owner-accepted `Discovery Experience Baseline 2026.09.21` at
   functional commit `9cd37a98525acda67278d9902c6afcc28be638c4`.
 - Merged the accepted recovery into `main` at

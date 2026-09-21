@@ -16,6 +16,7 @@
 | 2026-09-21 | Result usability and visualization | Added local OUI enrichment, device-type intelligence, sortable and resizable result columns, historical stacked bar and area charts, a latest-scan mix chart, hover metrics, and a shared icon summary. |
 | 2026-09-21 | Discovery Experience Baseline | Owner accepted the Intel Mac discovery and review experience at functional commit `9cd37a9`. |
 | 2026-09-21 | Recovery integrated | PR #1 merged the accepted baseline into `main` at `47d0bc6`.  Post-merge CI run 38 passed all seven Ubuntu, macOS, Windows, and package jobs. |
+| 2026-09-21 | v1.0.0 Discovery Experience Release | Named, tagged, and published the accepted Python application as the protected source-release baseline.  Standalone installers are not included. |
 
 The historical changelog remains part of the record.  The
 [Recovery Baseline](Recovery-Baseline.md) identifies which `v1.07` behavior was
