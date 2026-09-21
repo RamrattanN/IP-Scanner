@@ -81,6 +81,7 @@
             <div class="chart-legend" aria-hidden="true"><span></span>Devices found</div>
             <div class="chart-stage trend-chart-stage">
               <svg id="history-chart" viewBox="0 0 760 320" role="img" aria-label="Device discovery history"></svg>
+              <div id="history-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
               <p id="history-chart-empty" class="chart-empty" hidden>Run a scan to begin the discovery trend.</p>
             </div>
           </div>
@@ -93,7 +94,8 @@
             </div>
             <div class="type-chart-layout">
               <div class="chart-stage type-chart-stage">
-                <svg id="device-type-chart" viewBox="0 0 300 260" role="img" aria-label="Device types in selected scan"></svg>
+                <svg id="device-type-chart" viewBox="0 0 300 260" role="img" aria-label="Device types in latest scan"></svg>
+                <div id="device-type-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
                 <p id="device-type-chart-empty" class="chart-empty" hidden>No device types are available for this scan.</p>
               </div>
               <ul id="device-type-legend" class="type-chart-legend" aria-label="Device type totals"></ul>
@@ -244,6 +246,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260921.8"></script>
+    <script src="/app.js?v=20260921.9"></script>
   </body>
 </html>

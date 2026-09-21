@@ -16,9 +16,11 @@ const resultsEmpty = document.getElementById('results-empty');
 const resultsScroll = document.querySelector('#results-table').closest('.table-scroll');
 const historyChart = document.getElementById('history-chart');
 const historyChartEmpty = document.getElementById('history-chart-empty');
+const historyChartTooltip = document.getElementById('history-chart-tooltip');
 const historyChartTypeInputs = [...document.querySelectorAll('input[name="history-chart-type"]')];
 const deviceTypeChart = document.getElementById('device-type-chart');
 const deviceTypeChartEmpty = document.getElementById('device-type-chart-empty');
+const deviceTypeChartTooltip = document.getElementById('device-type-chart-tooltip');
 const deviceTypeLegend = document.getElementById('device-type-legend');
 
 let selectedScanId = null;
@@ -199,6 +201,41 @@ const svgElement = (name, attributes = {}, text = null) => {
   return element;
 };
 
+const hideChartTooltip = (tooltip) => {
+  tooltip.hidden = true;
+  tooltip.setAttribute('aria-hidden', 'true');
+};
+
+const showChartTooltip = (tooltip, stage, heading, metric, event, mark) => {
+  const title = document.createElement('strong');
+  title.textContent = heading;
+  const value = document.createElement('span');
+  value.textContent = metric;
+  tooltip.replaceChildren(title, value);
+  tooltip.hidden = false;
+  tooltip.setAttribute('aria-hidden', 'false');
+
+  const stageBounds = stage.getBoundingClientRect();
+  const markBounds = mark.getBoundingClientRect();
+  const pointerX = Number.isFinite(event?.clientX) ? event.clientX : markBounds.left + (markBounds.width / 2);
+  const pointerY = Number.isFinite(event?.clientY) ? event.clientY : markBounds.top;
+  const halfWidth = (tooltip.offsetWidth / 2) + 6;
+  const x = Math.min(Math.max(pointerX - stageBounds.left, halfWidth), stageBounds.width - halfWidth);
+  const y = Math.max(pointerY - stageBounds.top - 10, tooltip.offsetHeight + 6);
+  tooltip.style.left = `${x}px`;
+  tooltip.style.top = `${y}px`;
+};
+
+const attachChartTooltip = (mark, tooltip, heading, metric) => {
+  const stage = tooltip.closest('.chart-stage');
+  const show = (event) => showChartTooltip(tooltip, stage, heading, metric, event, mark);
+  mark.addEventListener('pointerenter', show);
+  mark.addEventListener('pointermove', show);
+  mark.addEventListener('pointerleave', () => hideChartTooltip(tooltip));
+  mark.addEventListener('focus', show);
+  mark.addEventListener('blur', () => hideChartTooltip(tooltip));
+};
+
 const scanDeviceCount = (scan) => {
   const total = Number(scan.stats?.hosts_up);
   if (Number.isFinite(total)) return total;
@@ -228,6 +265,7 @@ const niceChartScale = (maximum) => {
 };
 
 function renderHistoryChart() {
+  hideChartTooltip(historyChartTooltip);
   historyChart.replaceChildren();
   historyChartTypeInputs.forEach((input) => { input.checked = input.value === historyChartType; });
   if (!chartScans.length) {
@@ -284,7 +322,9 @@ function renderHistoryChart() {
   }
 
   values.forEach((value, index) => {
-    const accessibleLabel = `${chartTimestamp(chartScans[index].timestamp_utc)}: ${value} devices found`;
+    const time = chartTimestamp(chartScans[index].timestamp_utc);
+    const metric = `${value} device${value === 1 ? '' : 's'} found`;
+    const accessibleLabel = `${time}: ${metric}`;
     let mark;
     if (historyChartType === 'bar') {
       const slotWidth = plotWidth / Math.max(values.length, 1);
@@ -301,6 +341,7 @@ function renderHistoryChart() {
       });
     }
     mark.appendChild(svgElement('title', {}, accessibleLabel));
+    attachChartTooltip(mark, historyChartTooltip, time, metric);
     historyChart.appendChild(mark);
   });
   historyChart.setAttribute(
@@ -322,6 +363,7 @@ const pieSlicePath = (centerX, centerY, radius, startAngle, endAngle) => {
 };
 
 function renderDeviceTypeChart(scan) {
+  hideChartTooltip(deviceTypeChartTooltip);
   deviceTypeChart.replaceChildren();
   deviceTypeLegend.replaceChildren();
   const hosts = Array.isArray(scan?.hosts) ? scan.hosts : [];
@@ -346,7 +388,8 @@ function renderDeviceTypeChart(scan) {
   entries.forEach(([type, count]) => {
     const sweep = (count / total) * 360;
     const color = DEVICE_TYPE_COLORS[type] || DEVICE_TYPE_COLORS.Other;
-    const label = `${type}: ${count} of ${total} devices`;
+    const metric = `${count} device${count === 1 ? '' : 's'}`;
+    const label = `${type}: ${metric}`;
     const slice = entries.length === 1
       ? svgElement('circle', {cx: centerX, cy: centerY, r: radius, fill: color, class: 'pie-slice'})
       : svgElement('path', {d: pieSlicePath(centerX, centerY, radius, angle, angle + sweep), fill: color, class: 'pie-slice'});
@@ -354,6 +397,7 @@ function renderDeviceTypeChart(scan) {
     slice.setAttribute('role', 'img');
     slice.setAttribute('aria-label', label);
     slice.appendChild(svgElement('title', {}, label));
+    attachChartTooltip(slice, deviceTypeChartTooltip, type, metric);
     deviceTypeChart.appendChild(slice);
     angle += sweep;
 

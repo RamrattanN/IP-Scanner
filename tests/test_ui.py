@@ -17,6 +17,8 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert 'id="results-body"' in html
     assert 'id="history-chart"' in html
     assert 'id="device-type-chart"' in html
+    assert 'id="history-chart-tooltip"' in html
+    assert 'id="device-type-chart-tooltip"' in html
     assert 'name="history-chart-type"' in html
     assert "Devices found over time" in html
     assert "Device types" in html
@@ -40,6 +42,10 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "ip-scanner-history-chart-type" in javascript
     assert "Scan time (local)" in javascript
     assert "DEVICE_TYPE_COLORS" in javascript
+    assert "attachChartTooltip" in javascript
+    assert "pointerenter" in javascript
+    assert "pointermove" in javascript
+    assert "role=\"tooltip\"" in html
     assert "not an exhaustive port scan" in html
     assert "/app.js?v=" in html
     assert "Known devices" not in html
