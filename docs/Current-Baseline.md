@@ -4,20 +4,18 @@
 
 | Field | Value |
 | --- | --- |
-| Name | Ramrattan IP Scanner v1.0.0 - Discovery Experience Release |
-| Release tag | `v1.0.0` |
-| Functional commit | `9cd37a98525acda67278d9902c6afcc28be638c4` |
-| Main integration commit | `47d0bc66e7af4c979e5a3c281d70148ff5f7cddb` |
-| Documentation integration commit | `856fea31658159ec36f0c18fff9a1337c63428d3` |
-| Prior accepted baseline | Recovery Baseline 2026.09.21 at `22f2b6ec1dbfe8661daf956bc985539f3ef5c03f` |
+| Name | Ramrattan IP Scanner v1.1.0 - Desktop Application Release |
+| Release tag | `v1.1.0` |
+| Functional commit | `1e87518bb030fa8cf5d6ca84518cd0644f3691ad` |
+| Prior accepted baseline | v1.0.0 Discovery Experience Release |
 | Baseline branch | `main` |
-| Review vehicle | Pull request #1, merged 2026-09-21 |
+| Review vehicle | Pull request #4, owner-approved 2026-09-21 |
 | Historical base | `v1.07` at `fc50a2bbde29c63afb2c2fe443f3bc454c641ad9` |
-| Product state | Owner-accepted v1.0.0 source release; standalone installers are not included |
+| Product state | Owner-accepted unsigned desktop release for Intel Mac, Apple silicon Mac, and Windows x64 |
 
-Documentation commits after the functional commit may clarify the checkpoint
-without changing the functional identity above.  Any later behavioral change
-must establish a new functional checkpoint.
+The v1.1.0 release adds scheduled collection and native desktop packaging
+without changing the accepted discovery model.  The v1.0.0 source release
+remains the documented rollback baseline.
 
 ## Available behavior
 
@@ -69,20 +67,25 @@ must establish a new functional checkpoint.
 - Uses a shared device-type key with matched icons, colours, percentages, and
   counts for both discovery charts.
 - Binds the documented application service to the local loopback address.
+- Supports configurable automatic detected-network scans, serialized with
+  manual scans, with explicit freshness and next-run information.
+- Provides a shared single-instance desktop lifecycle on Intel Mac, Apple
+  silicon Mac, and Windows x64.
+- Uses the Ramrattan shield favicon and Apple touch icon shared with Speedtest
+  Monitor.
 - Supports keyboard selection of history rows and keyboard dismissal of Help.
 
 ## Verification evidence
 
-- Twenty-nine automated tests pass locally.
-- Source compilation, JavaScript syntax validation, wheel build, and isolated
-  wheel installation pass.
-- GitHub Actions run 38 passed all seven jobs against the merged `main`: Ubuntu,
-  macOS, and Windows on Python 3.11 and 3.12, plus the package smoke test.
-- Owner review on Intel Mac accepted the refreshed discovery interface,
-  results, visualizations, device-type summary, and table interactions.
+- The automated regression suite, source compilation, JavaScript syntax
+  validation, wheel build, and isolated wheel installation pass.
+- CI run 44 passed at functional checkpoint `1e87518`.
+- The Intel Mac, Apple silicon Mac, and Windows x64 workflows built and
+  smoke-tested their target-native packages successfully.
+- Owner QA accepted all three target packages for publication.
 
-CI validates the shared source and package contents.  Native behavior and final
-installers still require hands-on acceptance on each target product.
+CI validates the shared source and package contents.  Owner QA provides the
+target-native acceptance evidence for this release.
 
 ## Known boundaries
 
@@ -94,13 +97,14 @@ installers still require hands-on acceptance on each target product.
   observed heuristics.  They are not ownership or security assertions.
 - Scans currently run as one request without progress reporting or cancellation.
 - Scan history is not a persistent reconciled device inventory.
-- Standalone desktop applications, CSV export, IPv6 discovery, and signed
-  installers are not available in this source release.
+- CSV export, IPv6 discovery, and signed installers are not available in this
+  release.  The published desktop packages are unsigned.
 
 ## Change control
 
-- Treat release tag `v1.0.0` on `main` as the protected starting point for
-  subsequent work.  Preserve `v1.07` as the audited historical checkpoint.
+- Treat release tag `v1.1.0` on `main` as the current protected starting
+  point.  Preserve `v1.0.0` as the rollback source release and `v1.07` as the
+  audited historical checkpoint.
 - Develop material changes on focused branches and merge them only after tests,
   CI, documentation reconciliation, and owner approval.
 - Record new behavior in tests, Help, Changelog, Kanban, and this baseline.

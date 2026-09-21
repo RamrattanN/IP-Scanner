@@ -7,10 +7,11 @@ silicon Mac, and Windows x64 desktop products.
 
 ## Current release
 
-The current release is **Ramrattan IP Scanner v1.0.0 - Discovery Experience
-Release**.  Its functional checkpoint is `9cd37a9`, integrated into `main` by
-merge commit `47d0bc6` and reconciled for release after owner acceptance on
-Intel Mac.  The historical `v1.07` tag remains unchanged as the audited
+The current release is **Ramrattan IP Scanner v1.1.0 - Desktop Application
+Release**.  Its functional checkpoint is `1e87518`, approved after native QA
+of the Intel Mac, Apple silicon Mac, and Windows x64 packages.  The v1.0.0
+Discovery Experience Release remains the protected source-release rollback
+baseline, and the historical `v1.07` tag remains unchanged as the audited
 pre-recovery checkpoint.
 
 The accepted baseline provides:
@@ -40,12 +41,16 @@ The accepted baseline provides:
   state, and right-side Help panel.
 - Automated tests for CIDR handling, adapters, probing, scanning, storage, the
   API health route, and packaged visual assets.
+- Configurable automatic detected-network scans, serialized with manual scans,
+  with explicit freshness and next-run information.
+- A shared desktop controller with single-instance behavior and local-service
+  lifecycle management.
+- Native Intel Mac DMG, Apple silicon Mac DMG, and Windows x64 EXE installer
+  packages.
 
-Version 1.0.0 is a source release that runs through Python and the documented
-local development command.  It does not include standalone installers.
-Standalone Intel Mac, Apple silicon Mac, and Windows x64 applications are the
-next delivery priority.  IPv6 discovery, CSV export, background progress, and
-cancellation remain planned work and must not be represented as available.
+The v1.1.0 desktop packages are published unsigned.  macOS Gatekeeper and
+Windows SmartScreen may therefore display a warning.  Signing and notarization
+remain a separately governed release-hardening activity.
 
 Start with the [Documentation Guide](docs/README.md).  The guide links the
 accepted current baseline, the audited v1.07 recovery record, result
@@ -79,6 +84,12 @@ python -m uvicorn network_scanner.app:app --host 127.0.0.1 --port 8000
 
 Open <http://127.0.0.1:8000>.  Stop the development server with Control-C.
 
+To exercise the desktop controller from source, run:
+
+```bash
+python -m network_scanner.desktop
+```
+
 ## Data location
 
 The current baseline preserves the legacy data location:
@@ -87,9 +98,9 @@ The current baseline preserves the legacy data location:
 ~/Documents/Network Scanner/history.json
 ```
 
-Application logs are stored in the `logs` folder beneath the same directory.
-The planned desktop applications will preserve user history through upgrades
-and routine uninstallation.
+Automatic scan settings are stored in `settings.json`.  Application logs are
+stored in the `logs` folder beneath the same directory.  Desktop upgrades and
+routine uninstallation preserve this directory.
 
 ## Architecture
 
@@ -102,6 +113,8 @@ src/network_scanner/
 ├── probe.py          # ICMP, TCP service, and reverse-DNS probes
 ├── neighbors.py      # Platform-aware ARP/neighbor-table evidence
 ├── scanner.py        # Concurrent IPv4 range scanning
+├── scan_coordinator.py # Manual and scheduled scan serialization and status
+├── desktop.py        # Shared desktop controller and local service lifecycle
 ├── storage.py        # Local JSON persistence
 ├── vendors.py        # Local bundled IEEE OUI lookup
 └── ui/               # Shared HTML, CSS, JavaScript, and brand assets
@@ -116,10 +129,10 @@ Baseline CI runs tests and source compilation on Python 3.11 and 3.12 across
 Linux, macOS, and Windows.  It also builds and installs the wheel in isolation
 to confirm that the UI and logo are packaged.
 
-Target-native application and installer workflows are next and will follow the
-proven Speedtest Monitor pattern.  The shared scanner and user experience stay
-common while packaging, signing, and platform lifecycle behavior remain
-target-specific.
+Target-native workflows build two macOS disk images and one Windows x64
+installer using the proven Speedtest Monitor pattern.  See
+[Desktop Packaging](docs/Desktop-Packaging.md) for artifact names, local build
+commands, installation, data continuity, and rollback.
 
 The [Kanban board](docs/KANBAN.md) is the working source of truth for delivery
 status.  CI success demonstrates source portability, but it does not replace

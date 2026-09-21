@@ -1,8 +1,13 @@
 from __future__ import annotations
-import json, os, datetime, uuid
+import json, os, datetime
 from pathlib import Path
 
 def get_app_data_dir() -> Path:
+    configured = os.environ.get("IP_SCANNER_DATA_DIR")
+    if configured:
+        data_dir = Path(configured).expanduser()
+        data_dir.mkdir(parents=True, exist_ok=True)
+        return data_dir
     home = Path.home()
     docs = home / "Documents" / "Network Scanner"
     docs.mkdir(parents=True, exist_ok=True)
@@ -10,6 +15,9 @@ def get_app_data_dir() -> Path:
 
 def history_path(base_dir: Path) -> Path:
     return base_dir / "history.json"
+
+def settings_path(base_dir: Path) -> Path:
+    return base_dir / "settings.json"
 
 def ensure_history_file(base_dir: Path) -> None:
     p = history_path(base_dir)
@@ -24,6 +32,27 @@ def load_history(base_dir: Path) -> dict:
 
 def save_history(base_dir: Path, data: dict) -> None:
     p = history_path(base_dir)
+    tmp = p.with_suffix(".tmp")
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    os.replace(tmp, p)
+
+def load_settings(base_dir: Path) -> dict:
+    p = settings_path(base_dir)
+    defaults = {"version": 1, "automatic_scans": True, "interval_minutes": 60}
+    if not p.exists():
+        save_settings(base_dir, defaults)
+        return defaults
+    try:
+        with open(p, "r", encoding="utf-8") as f:
+            saved = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return defaults
+    return {**defaults, **saved}
+
+def save_settings(base_dir: Path, data: dict) -> None:
+    base_dir.mkdir(parents=True, exist_ok=True)
+    p = settings_path(base_dir)
     tmp = p.with_suffix(".tmp")
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)

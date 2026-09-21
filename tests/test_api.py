@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 
 from network_scanner.app import app
 from network_scanner import api
+from network_scanner import scan_coordinator
 from network_scanner.storage import ensure_history_file, save_history
 
 
@@ -13,7 +14,7 @@ def test_health_ping():
 
 def test_custom_range_rejects_reversed_addresses(monkeypatch):
     monkeypatch.setattr(
-        api,
+        scan_coordinator,
         "detect_active_adapter",
         lambda: {"name": "test", "ipv4": "192.168.2.10", "netmask": "255.255.255.0"},
     )
@@ -28,7 +29,7 @@ def test_custom_range_rejects_reversed_addresses(monkeypatch):
 
 def test_custom_range_requires_both_endpoints(monkeypatch):
     monkeypatch.setattr(
-        api,
+        scan_coordinator,
         "detect_active_adapter",
         lambda: {"name": "test", "ipv4": "192.168.2.10", "netmask": "255.255.255.0"},
     )
@@ -138,3 +139,57 @@ def test_history_infers_nintendo_identity_and_game_console_type(monkeypatch, tmp
     assert host["manufacturer"] == "Nintendo Co.,Ltd"
     assert host["mac_vendor"] == "Nintendo Co.,Ltd"
     assert host["device_type"] == "Game Console"
+
+
+def test_schedule_round_trip(monkeypatch, tmp_path):
+    monkeypatch.setattr(api, "get_app_data_dir", lambda: tmp_path)
+    ensure_history_file(tmp_path)
+    client = TestClient(app)
+
+    assert client.get("/api/schedule").json() == {"enabled": True, "interval_minutes": 60}
+    updated = client.put("/api/schedule", json={"enabled": False, "interval_minutes": 180})
+
+    assert updated.json() == {"enabled": False, "interval_minutes": 180}
+    assert client.get("/api/schedule").json() == {"enabled": False, "interval_minutes": 180}
+
+
+def test_schedule_rejects_interval_below_minimum(monkeypatch, tmp_path):
+    monkeypatch.setattr(api, "get_app_data_dir", lambda: tmp_path)
+    ensure_history_file(tmp_path)
+
+    response = TestClient(app).put(
+        "/api/schedule", json={"enabled": True, "interval_minutes": 4}
+    )
+
+    assert response.status_code == 422
+
+
+def test_scan_status_reports_never_without_history(monkeypatch, tmp_path):
+    monkeypatch.setattr(api, "get_app_data_dir", lambda: tmp_path)
+    ensure_history_file(tmp_path)
+    api.coordinator.last_completed_at = None
+    api.coordinator.running = False
+
+    status = TestClient(app).get("/api/scan-status").json()
+
+    assert status["freshness"] == "never"
+    assert status["last_completed_at_utc"] is None
+
+
+def test_history_does_not_present_failed_scan_as_completed(monkeypatch, tmp_path):
+    monkeypatch.setattr(api, "get_app_data_dir", lambda: tmp_path)
+    ensure_history_file(tmp_path)
+    save_history(
+        tmp_path,
+        {
+            "version": 1,
+            "scans": [
+                {"id": "complete", "state": "completed", "hosts": []},
+                {"id": "failed", "state": "failed", "hosts": []},
+            ],
+        },
+    )
+
+    scans = TestClient(app).get("/api/history").json()["scans"]
+
+    assert [scan["id"] for scan in scans] == ["complete"]

@@ -34,6 +34,8 @@ ENV/
 # PyInstaller
 *.manifest
 *.spec
+!IPScanner.spec
+!IPScannerWindows.spec
 
 # Installer logs
 pip-log.txt

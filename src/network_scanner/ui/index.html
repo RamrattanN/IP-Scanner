@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#173f63" />
     <title>Ramrattan IP Scanner</title>
-    <link rel="stylesheet" href="/styles.css?v=20260921.6" />
+    <link rel="icon" type="image/png" href="/ramrattan-logo.png?v=20260921.1" />
+    <link rel="apple-touch-icon" href="/ramrattan-logo.png?v=20260921.1" />
+    <link rel="stylesheet" href="/styles.css?v=20260921.7" />
   </head>
   <body>
     <main class="page-shell">
@@ -55,6 +57,27 @@
             </svg>
             Clear history
           </button>
+          <div class="automatic-scan-control">
+            <label class="switch-label" for="automatic-scans">
+              <input id="automatic-scans" type="checkbox" />
+              <span>Automatic scans</span>
+            </label>
+            <label class="interval-label" for="scan-interval">Every</label>
+            <select id="scan-interval" aria-label="Automatic scan interval">
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="60">1 hour</option>
+              <option value="180">3 hours</option>
+              <option value="360">6 hours</option>
+              <option value="720">12 hours</option>
+              <option value="1440">24 hours</option>
+            </select>
+          </div>
+          <div id="freshness-status" class="freshness-status" data-freshness="never">
+            <span class="freshness-dot" aria-hidden="true"></span>
+            <strong id="freshness-label">No scan recorded</strong>
+            <span id="freshness-detail">Run a scan to establish a current baseline.</span>
+          </div>
           <p id="action-status" class="action-status" role="status" aria-live="polite"></p>
         </div>
       </section>
@@ -206,6 +229,16 @@
         <p class="remember"><strong>Remember:</strong> Scan only networks that you own or are authorized to assess.</p>
       </section>
       <section class="help-card">
+        <h3>Keep results current</h3>
+        <ul>
+          <li>Manual scans run immediately when you select either scan button.</li>
+          <li>Automatic scans use the detected local network at the interval you select.  The installed application must be running.</li>
+          <li>The status beside the controls shows when the latest scan completed and when the next automatic scan is due.</li>
+          <li><strong>Fresh</strong> is within one selected interval.  <strong>Aging</strong> is within two intervals.  <strong>Stale</strong> is older than two intervals.</li>
+          <li>Manual and automatic scans share one coordinator, so a second scan cannot start while one is active.</li>
+        </ul>
+      </section>
+      <section class="help-card">
         <h3>Understand device results</h3>
         <ul>
           <li><strong>Confirmed</strong> devices answered an active check or discovery protocol.  <strong>Observed</strong> devices have only a unique local ARP association.</li>
@@ -247,10 +280,11 @@
       <section class="help-card">
         <h3>About this baseline</h3>
         <ul>
-          <li>This is Ramrattan IP Scanner v1.0.0, the owner-accepted Discovery Experience Release.</li>
-          <li>The source release runs a local service and opens its interface on this computer.  It does not expose the interface to the network.</li>
-          <li>Version 1.0.0 is a Python source release.  Standalone Intel Mac, Apple silicon Mac, and Windows x64 applications are the next planned deliverables and are not included in this release.</li>
-          <li>All three applications will share this interface, discovery behavior, Help, and local data model.</li>
+          <li>This is Ramrattan IP Scanner v1.1.0, the owner-accepted Desktop Application Release.</li>
+          <li>The application runs a local service and opens its interface on this computer.  It does not expose the interface to the network.</li>
+          <li>Version 1.1.0 provides manual and scheduled collection in native Intel Mac, Apple silicon Mac, and Windows x64 packages.</li>
+          <li>The published packages are unsigned, so macOS Gatekeeper or Windows SmartScreen may display a warning.</li>
+          <li>All three applications share this interface, discovery behavior, Help, and local data model.</li>
         </ul>
       </section>
       <section class="help-card">
@@ -265,6 +299,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260921.17"></script>
+    <script src="/app.js?v=20260921.18"></script>
   </body>
 </html>

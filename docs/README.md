@@ -10,6 +10,7 @@ available features.
 | Document | Purpose | Audience |
 | --- | --- | --- |
 | [Current Baseline](Current-Baseline.md) | Defines the accepted functional checkpoint and its acceptance evidence | Owners, developers, testers |
+| [Desktop Packaging](Desktop-Packaging.md) | Defines v1.1 release artifacts, collection lifecycle, build commands, data continuity, and rollback | Owners, developers, testers |
 | [In-application Help](../src/network_scanner/ui/index.html) | Provides operating and troubleshooting guidance without leaving the application | Operators |
 | [Discovery Confidence](Discovery-Confidence.md) | Explains evidence, confidence, unknown values, and artifact controls | Operators, testers |
 | [UX Guidelines](UX-Guidelines.md) | Defines the shared Ramrattan Network Tools visual and interaction system | Designers, developers |
@@ -26,6 +27,8 @@ available features.
   next delivery stage.
 - **Source release** means the tested Python application is tagged and
   published without standalone desktop installers.
+- **Desktop release** means target-native packages passed automated smoke tests
+  and owner QA before publication.  Signing status is stated separately.
 - **In review** means implemented or documented but still awaiting a named
   acceptance gate.
 - **Planned** means sequenced on the Kanban or roadmap and not yet available.
@@ -37,6 +40,7 @@ available features.
 When behavior changes, update the application Help, Current Baseline, Kanban,
 Roadmap, README, and Changelog as applicable in the same pull request.  Move a
 card to Done only when its stated acceptance evidence exists.  Preserve the
-current `main` baseline, release tag `v1.0.0`, and historical `v1.07` tag.
+current `main` baseline, release tag `v1.1.0`, rollback tag `v1.0.0`, and
+historical `v1.07` tag.
 Implement material changes on focused branches and merge them only after the
 required approval and verification gates pass.

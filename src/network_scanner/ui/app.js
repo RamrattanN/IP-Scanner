@@ -25,9 +25,15 @@ const deviceSummaryCard = document.getElementById('device-summary-card');
 const deviceSummaryGrid = document.getElementById('device-summary-grid');
 const latestDeviceTotal = document.getElementById('latest-device-total');
 const totalLineSwatch = document.getElementById('total-line-swatch');
+const automaticScans = document.getElementById('automatic-scans');
+const scanInterval = document.getElementById('scan-interval');
+const freshnessStatus = document.getElementById('freshness-status');
+const freshnessLabel = document.getElementById('freshness-label');
+const freshnessDetail = document.getElementById('freshness-detail');
 
 let selectedScanId = null;
 let chartScans = [];
+let scanWasRunning = false;
 const storedHistoryChartType = localStorage.getItem('ip-scanner-history-chart-type');
 let historyChartType = storedHistoryChartType === 'line' ? 'area' : (storedHistoryChartType || 'bar');
 if (!['bar', 'area'].includes(historyChartType)) historyChartType = 'bar';
@@ -772,6 +778,66 @@ function setBusy(busy, message = '') {
   actionStatus.textContent = message;
 }
 
+function localDateTime(value) {
+  if (!value) return 'not yet';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'});
+}
+
+function freshnessText(status) {
+  if (status.running) return `Started ${localDateTime(status.started_at_utc)} from a ${status.source || 'local'} request.`;
+  const completed = status.last_completed_at_utc ? `Last completed ${localDateTime(status.last_completed_at_utc)}.` : 'No completed scan is available.';
+  const next = status.next_run_at_utc ? ` Next automatic scan ${localDateTime(status.next_run_at_utc)}.` : ' Automatic scans are paused.';
+  return `${completed}${next}`;
+}
+
+async function loadScanStatus() {
+  const response = await fetch('/api/scan-status');
+  if (!response.ok) throw new Error('Scan status could not be loaded.');
+  const status = await response.json();
+  freshnessStatus.dataset.freshness = status.freshness;
+  const labels = {fresh: 'Fresh', aging: 'Aging', stale: 'Stale', scanning: 'Scanning now', never: 'No scan recorded'};
+  freshnessLabel.textContent = labels[status.freshness] || 'Status unavailable';
+  freshnessDetail.textContent = freshnessText(status);
+  scanButton.disabled = status.running;
+  customScanButton.disabled = status.running;
+  clearButton.disabled = status.running;
+  if (scanWasRunning && !status.running) await loadHistory();
+  scanWasRunning = status.running;
+  return status;
+}
+
+async function loadSchedule() {
+  const response = await fetch('/api/schedule');
+  if (!response.ok) throw new Error('Automatic scan settings could not be loaded.');
+  const schedule = await response.json();
+  automaticScans.checked = schedule.enabled;
+  scanInterval.value = String(schedule.interval_minutes);
+  scanInterval.disabled = !schedule.enabled;
+}
+
+async function saveSchedule() {
+  automaticScans.disabled = true;
+  scanInterval.disabled = true;
+  try {
+    const response = await fetch('/api/schedule', {
+      method: 'PUT', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({enabled: automaticScans.checked, interval_minutes: Number(scanInterval.value)}),
+    });
+    if (!response.ok) throw new Error('Automatic scan settings could not be saved.');
+    actionStatus.textContent = automaticScans.checked
+      ? `Automatic scans enabled every ${scanInterval.options[scanInterval.selectedIndex].text.toLowerCase()}.`
+      : 'Automatic scans paused.  Manual scans remain available.';
+    await loadScanStatus();
+  } catch (error) {
+    actionStatus.textContent = error.message;
+    await loadSchedule();
+  } finally {
+    automaticScans.disabled = false;
+    scanInterval.disabled = !automaticScans.checked;
+  }
+}
+
 async function startScan(payload) {
   setBusy(true, 'Interrogating every address in the selected range...');
   try {
@@ -821,6 +887,9 @@ clearButton.addEventListener('click', async () => {
   }
 });
 
+automaticScans.addEventListener('change', saveSchedule);
+scanInterval.addEventListener('change', saveSchedule);
+
 function setHelpPanel(open) {
   helpPanel.classList.toggle('is-open', open);
   helpPanel.setAttribute('aria-hidden', String(!open));
@@ -850,7 +919,10 @@ makeSortable('history-table');
 makeSortable('results-table');
 makeResizable('results-table');
 
-loadHistory().catch((error) => {
+Promise.all([loadHistory(), loadSchedule(), loadScanStatus()]).catch((error) => {
   actionStatus.textContent = error.message;
   historyEmpty.hidden = false;
 });
+window.setInterval(() => {
+  loadScanStatus().catch((error) => { actionStatus.textContent = error.message; });
+}, 2000);

@@ -9,7 +9,12 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
 
     assert "RAMRATTAN NETWORK TOOLS" in html
     assert "Ramrattan IP Scanner" in html
+    assert '<link rel="icon" type="image/png" href="/ramrattan-logo.png?v=20260921.1" />' in html
+    assert '<link rel="apple-touch-icon" href="/ramrattan-logo.png?v=20260921.1" />' in html
     assert 'id="btn-help"' in html
+    assert 'id="automatic-scans"' in html
+    assert 'id="scan-interval"' in html
+    assert 'id="freshness-status"' in html
     assert 'id="help-panel"' in html
     assert 'id="summary-attempted"' in html
     assert 'id="summary-confirmed"' in html
@@ -49,7 +54,7 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert 'class="resizable-table"' in html
     assert "Drag the divider" in html
     assert "About this baseline" in html
-    assert "Standalone Intel Mac, Apple silicon Mac, and Windows x64 applications" in html
+    assert "native Intel Mac, Apple silicon Mac, and Windows x64 packages" in html
     assert ".column-resizer" in css
     assert "renderHistoryChart" in javascript
     assert "renderDeviceTypeChart" in javascript
@@ -80,4 +85,6 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "/api/inventory" not in javascript
     assert "#173f63" in css.lower()
     assert ".action-status:empty" in css
+    assert "loadScanStatus" in javascript
+    assert "saveSchedule" in javascript
     assert ui.joinpath("ramrattan-logo.png").is_file()

@@ -19,8 +19,7 @@ No card is awaiting review at this checkpoint.
 
 | Priority | Card | Outcome | Done when |
 | --- | --- | --- | --- |
-| 1 | Standalone desktop applications | Package the accepted shared baseline as Intel Mac, Apple silicon Mac, and Windows x64 applications with the same look, behavior, and local data model | All three target applications install, launch, scan, retain history, upgrade safely, and pass target-native acceptance |
-| 2 | Scan comparison | Show new, missing, changed, and returning devices between scans | Changes are reproducible and false positives are controlled |
+| 1 | Scan comparison | Show new, missing, changed, and returning devices between scans | Changes are reproducible and false positives are controlled |
 | 3 | Device details panel | Present all names, sources, services, notes, and first/last seen without widening the main table | Keyboard and responsive behavior are accepted |
 | 4 | Search and filter | Find devices by IP, identity, vendor, service, confidence, or change state | Controls work with keyboard and preserve numeric IP sorting |
 | 5 | Export | Export the selected scan or comparison to documented local formats | CSV schema, escaping, tests, and Help are accepted |
@@ -30,9 +29,9 @@ No card is awaiting review at this checkpoint.
 | Stage | Cards |
 | --- | --- |
 | Scan operation | Background jobs, live progress, cancellation, configurable safe concurrency |
-| Monitoring | Scheduled scans, change notifications, retention controls, scan reports |
+| Monitoring | Change notifications, retention controls, scan reports |
 | Protocol depth | IPv6 discovery, optional expanded service profiles, additional safe identity sources |
-| Release operations | Signing, macOS notarization, checksums, release notes, rollback guidance, and publishing after target-native acceptance |
+| Release hardening | Code signing, macOS notarization, and certificate-backed publisher identity |
 
 ## Done
 
@@ -54,6 +53,10 @@ No card is awaiting review at this checkpoint.
 | 2026-09-21 | Discovery Experience Baseline | Functional checkpoint `9cd37a9` recorded with synchronized Help, README, Changelog, roadmap, and baseline documentation |
 | 2026-09-21 | Recovery merged to `main` | PR #1 merged at `47d0bc6`; post-merge CI run 38 passed all seven jobs |
 | 2026-09-21 | IP Scanner v1.0.0 source release | Accepted Python application named, tagged, and published as the Discovery Experience Release; standalone installers remain planned |
+| 2026-09-21 | Scheduled collection foundation | Manual and automatic scans share one coordinator; hourly scheduling is configurable and freshness is explicit |
+| 2026-09-21 | Desktop packaging candidate | Shared controller, single-instance lifecycle, macOS DMG builds, and Windows x64 installer build entered review on `develop/v1.1-desktop-apps` |
+| 2026-09-21 | Target-native desktop QA | Intel Mac, Apple silicon Mac, and Windows x64 packages passed CI smoke tests and owner acceptance |
+| 2026-09-21 | IP Scanner v1.1.0 desktop release | Accepted unsigned DMG and EXE packages published with installation, warning, data-continuity, and rollback guidance |
 
 ## Blocked
 
