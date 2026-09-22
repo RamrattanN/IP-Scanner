@@ -70,9 +70,11 @@ jobs:
           cleanup() { kill "$PID" 2>/dev/null || true; wait "$PID" 2>/dev/null || true; }
           trap cleanup EXIT
           for attempt in {1..60}; do
-            if curl --fail --silent http://127.0.0.1:8765/api/ping | grep -q '"ok"'; then
-              curl --fail --silent http://127.0.0.1:8765/api/schedule | grep -q 'interval_minutes'
-              curl --fail --silent http://127.0.0.1:8765/ | grep -qi '<!doctype html'
+            if PING_RESPONSE="$(curl --fail --silent http://127.0.0.1:8765/api/ping)" && grep -q '"ok"' <<<"$PING_RESPONSE"; then
+              SCHEDULE_RESPONSE="$(curl --fail --silent http://127.0.0.1:8765/api/schedule)"
+              grep -q 'interval_minutes' <<<"$SCHEDULE_RESPONSE"
+              PAGE_RESPONSE="$(curl --fail --silent http://127.0.0.1:8765/)"
+              grep -qi '<!doctype html' <<<"$PAGE_RESPONSE"
               exit 0
             fi
             if ! kill -0 "$PID" 2>/dev/null; then break; fi
