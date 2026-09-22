@@ -1,6 +1,6 @@
 # IP Scanner Kanban
 
-Last re-baselined: 2026-09-21
+Last re-baselined: 2026-09-21.  Working board updated: 2026-09-22.
 
 This repository-tracked board is the working delivery source of truth.  Cards
 move from Ready to In Progress to In Review to Done.  Later holds sequenced work
@@ -9,7 +9,9 @@ or approval gate.
 
 ## In Progress
 
-No card is actively being implemented at this checkpoint.
+| Priority | Card | Outcome | Done when |
+| --- | --- | --- | --- |
+| 1 | v1.1.1 packaged discovery hotfix | Restore packaged Intel Mac discovery parity, preserve shared/proxy observations, prevent orphan services, and correct the app icon | Automated checks and target-native workflows pass, Intel Mac packaged scan has no abnormal probe-error volume, results are comparable with the source run, and owner approves publication |
 
 ## In Review
 
@@ -57,6 +59,9 @@ No card is awaiting review at this checkpoint.
 | 2026-09-21 | Desktop packaging candidate | Shared controller, single-instance lifecycle, macOS DMG builds, and Windows x64 installer build entered review on `develop/v1.1-desktop-apps` |
 | 2026-09-21 | Target-native desktop QA | Intel Mac, Apple silicon Mac, and Windows x64 packages passed CI smoke tests and owner acceptance |
 | 2026-09-21 | IP Scanner v1.1.0 desktop release | Accepted unsigned DMG and EXE packages published with installation, warning, data-continuity, and rollback guidance |
+
+The v1.1.0 release remains the rollback-safe current baseline while the v1.1.1
+hotfix card is active.
 
 ## Blocked
 

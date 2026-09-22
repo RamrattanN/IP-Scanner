@@ -280,9 +280,10 @@
       <section class="help-card">
         <h3>About this baseline</h3>
         <ul>
-          <li>This is Ramrattan IP Scanner v1.1.0, the owner-accepted Desktop Application Release.</li>
+          <li>This is the Ramrattan IP Scanner v1.1.1 Desktop Discovery Hotfix candidate.  Version 1.1.0 remains the accepted rollback release until packaged QA is approved.</li>
           <li>The application runs a local service and opens its interface on this computer.  It does not expose the interface to the network.</li>
-          <li>Version 1.1.0 provides manual and scheduled collection in native Intel Mac, Apple silicon Mac, and Windows x64 packages.</li>
+          <li>The candidate uses the same interface and behavior in native Intel Mac, Apple silicon Mac, and Windows x64 packages.</li>
+          <li>Version 1.1.1 bounds packaged scan resources, retries unanswered addresses, improves diagnostics, preserves labelled shared/proxy observations, and corrects desktop service cleanup.</li>
           <li>The published packages are unsigned, so macOS Gatekeeper or Windows SmartScreen may display a warning.</li>
           <li>All three applications share this interface, discovery behavior, Help, and local data model.</li>
         </ul>
@@ -292,6 +293,7 @@
         <ul>
           <li><strong>No adapter detected:</strong> Confirm that Wi-Fi or Ethernet is connected.</li>
           <li><strong>No devices found:</strong> Confirm that the requested range is on the locally connected network.  Client isolation can prevent local discovery.</li>
+          <li><strong>Probe errors:</strong> Review <code>~/Documents/Network Scanner/logs/app.log</code>.  Version 1.1.1 records the address and error type for failed active probes.</li>
           <li><strong>Few device names:</strong> Confirm that local multicast is allowed.  Firewalls, guest networks, and disabled Bonjour, UPnP, or NetBIOS can limit identity details.</li>
           <li><strong>Old interface after an update:</strong> Relaunch the application or refresh the page while holding Shift.</li>
           <li><strong>Page does not respond:</strong> Confirm that the IP Scanner service is still running.</li>
@@ -299,6 +301,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260921.18"></script>
+    <script src="/app.js?v=20260922.1"></script>
   </body>
 </html>

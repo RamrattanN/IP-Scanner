@@ -5,6 +5,33 @@
 > does not contain several listed features.  See
 > `docs/Recovery-Baseline.md` for the verified baseline and recovery decisions.
 
+## v1.1.1 - Desktop Discovery Hotfix Candidate (Unreleased)
+### Fixed
+- Bounded host and TCP concurrency so Finder-launched macOS applications do
+  not exhaust their lower open-file limit during a 255-address scan.
+- Added a second paced pass for addresses that did not answer the first pass
+  and merged neighbor-table snapshots across both passes.
+- Counted a TCP refusal or reset as presence evidence without claiming that
+  the rejected port is open.
+- Used absolute paths for the macOS `ping` and `arp` system utilities.
+- Preserved shared/proxy ARP responses as labelled observations instead of
+  removing the address rows.
+- Associated the background scanner service with its desktop controller so an
+  abnormal controller exit does not leave an orphan service running.
+- Enlarged the generated macOS and Windows application icons to match the
+  Speedtest Monitor treatment.
+
+### Added
+- Added macOS local-network and Bonjour purpose declarations to the app bundle.
+- Added final probe-error types, active probe-attempt counts, and scanner log
+  messages for native-command, passive-discovery, and per-address failures.
+- Added regression tests for retry recovery, TCP refusal evidence, controller
+  association, shared/proxy preservation, and platform command paths.
+
+### QA gate
+- The v1.1.0 release remains the accepted rollback point.  v1.1.1 requires
+  packaged Intel Mac discovery comparison and owner approval before release.
+
 ## v1.1.0 - Desktop Application Release (2026-09-21)
 ### Added
 - Configurable automatic detected-network scans alongside existing manual and

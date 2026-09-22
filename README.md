@@ -52,6 +52,15 @@ The v1.1.0 desktop packages are published unsigned.  macOS Gatekeeper and
 Windows SmartScreen may therefore display a warning.  Signing and notarization
 remain a separately governed release-hardening activity.
 
+## Development status
+
+The `fix/v1.1.1-macos-discovery` branch contains an unreleased desktop discovery
+hotfix candidate.  It bounds packaged-app resource use, retries unanswered
+addresses, improves response evidence and diagnostics, prevents orphaned
+services, adds the macOS local-network declarations, and corrects the undersized
+application icon.  v1.1.0 remains the accepted release until packaged Intel Mac
+QA passes and the owner approves publication.
+
 Start with the [Documentation Guide](docs/README.md).  The guide links the
 accepted current baseline, the audited v1.07 recovery record, result
 interpretation, UX standard, Kanban board, and origin-to-date roadmap.

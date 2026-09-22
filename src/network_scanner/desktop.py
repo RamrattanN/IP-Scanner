@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
+import logging
 import os
 from pathlib import Path
 import socket
@@ -18,6 +20,7 @@ APP_NAME = "IP Scanner"
 DEFAULT_PORT = 8000
 DATA_DIR_ENV = "IP_SCANNER_DATA_DIR"
 _SERVICE_LOG_HANDLE = None
+logger = logging.getLogger(__name__)
 
 
 def is_frozen() -> bool:
@@ -34,8 +37,15 @@ def available_port(preferred: int = DEFAULT_PORT) -> int:
             return int(probe.getsockname()[1])
 
 
-def service_command(port: int, data_dir: Path) -> list[str]:
+def service_command(
+    port: int,
+    data_dir: Path,
+    *,
+    parent_pid: int | None = None,
+) -> list[str]:
     args = ["--service", "--port", str(port), "--data-dir", str(data_dir)]
+    if parent_pid is not None:
+        args.extend(["--parent-pid", str(parent_pid)])
     if is_frozen():
         return [sys.executable, *args]
     return [sys.executable, "-m", "network_scanner.desktop", *args]
@@ -60,13 +70,57 @@ def ensure_service_output(data_dir: Path) -> None:
         sys.stderr = sys.stdout
 
 
-def run_service(port: int, data_dir: Path) -> None:
-    os.environ[DATA_DIR_ENV] = str(data_dir)
-    ensure_service_output(data_dir)
-    from uvicorn import run
+def ensure_file_descriptor_budget(minimum: int = 1024) -> None:
+    """Raise a low Finder-launch descriptor limit when macOS permits it."""
+    if os.name == "nt":
+        return
+    try:
+        import resource
+
+        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+        target = min(max(soft, minimum), hard)
+        if target > soft:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (target, hard))
+    except (ImportError, OSError, ValueError):
+        logger.exception("Unable to raise the open-file limit")
+
+
+async def _serve(port: int, parent_pid: int | None) -> None:
+    import psutil
+    import uvicorn
     from network_scanner.app import app
 
-    run(app, host="127.0.0.1", port=port, log_level="info")
+    server = uvicorn.Server(
+        uvicorn.Config(app, host="127.0.0.1", port=port, log_level="info")
+    )
+
+    async def watch_parent() -> None:
+        if parent_pid is None:
+            return
+        while not server.should_exit:
+            await asyncio.sleep(1)
+            if not psutil.pid_exists(parent_pid):
+                logger.warning("Desktop controller %s exited; stopping service", parent_pid)
+                server.should_exit = True
+                return
+
+    watcher = asyncio.create_task(watch_parent()) if parent_pid is not None else None
+    try:
+        await server.serve()
+    finally:
+        if watcher is not None:
+            watcher.cancel()
+            try:
+                await watcher
+            except asyncio.CancelledError:
+                pass
+
+
+def run_service(port: int, data_dir: Path, parent_pid: int | None = None) -> None:
+    os.environ[DATA_DIR_ENV] = str(data_dir)
+    ensure_service_output(data_dir)
+    ensure_file_descriptor_budget()
+    asyncio.run(_serve(port, parent_pid))
 
 
 class InstanceLock:
@@ -137,7 +191,6 @@ def run_controller(requested_port: int, data_dir: Path) -> None:
     port = available_port(requested_port)
     url = f"http://127.0.0.1:{port}"
     state_path = data_dir / "instance.json"
-    state_path.write_text(json.dumps({"url": url, "pid": os.getpid()}), encoding="utf-8")
     logs = data_dir / "logs"
     logs.mkdir(parents=True, exist_ok=True)
     log_handle = (logs / "desktop.log").open("a", encoding="utf-8")
@@ -147,11 +200,21 @@ def run_controller(requested_port: int, data_dir: Path) -> None:
     if os.name == "nt":
         popen_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
     child = subprocess.Popen(
-        service_command(port, data_dir),
+        service_command(port, data_dir, parent_pid=os.getpid()),
         env=child_env,
         stdout=log_handle,
         stderr=subprocess.STDOUT,
         **popen_kwargs,
+    )
+    state_path.write_text(
+        json.dumps(
+            {
+                "url": url,
+                "controller_pid": os.getpid(),
+                "service_pid": child.pid,
+            }
+        ),
+        encoding="utf-8",
     )
 
     root = tk.Tk()
@@ -216,10 +279,11 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--service", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     parser.add_argument("--data-dir")
+    parser.add_argument("--parent-pid", type=int, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     data_dir = Path(args.data_dir).expanduser() if args.data_dir else Path.home() / "Documents" / "Network Scanner"
     if args.service:
-        run_service(args.port, data_dir)
+        run_service(args.port, data_dir, args.parent_pid)
     else:
         run_controller(args.port, data_dir)
 

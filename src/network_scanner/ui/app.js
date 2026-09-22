@@ -853,8 +853,9 @@ async function startScan(payload) {
     selectedScanId = result.scan_id;
     await loadHistory();
     const stats = result.stats || {};
-    const exclusions = (stats.proxy_arp_ignored || 0) + (stats.reserved_ignored || 0);
-    actionStatus.textContent = `Scan completed.  Attempted ${stats.addresses_attempted} of ${stats.addresses_requested} addresses.  Confirmed ${stats.confirmed_devices} devices and retained ${stats.observed_devices} ARP-only observations.  Excluded ${exclusions} proxy or reserved artifacts.`;
+    const shared = stats.proxy_arp_observed || 0;
+    const reserved = stats.reserved_ignored || 0;
+    actionStatus.textContent = `Scan completed.  Attempted ${stats.addresses_attempted} of ${stats.addresses_requested} addresses.  Confirmed ${stats.confirmed_devices} devices and retained ${stats.observed_devices} ARP-only observations, including ${shared} shared/proxy responses.  Excluded ${reserved} reserved address${reserved === 1 ? '' : 'es'}.`;
   } catch (error) {
     actionStatus.textContent = error.message;
   } finally {

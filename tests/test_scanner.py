@@ -15,7 +15,7 @@ def disable_passive_discovery(monkeypatch):
 
 
 def test_scanner_keeps_reachable_hosts_and_marks_gateway(monkeypatch):
-    async def fake_probe(ip):
+    async def fake_probe(ip, **_kwargs):
         reachable = ip in {"192.0.2.1", "192.0.2.2"}
         return {
             "ip": ip,
@@ -45,7 +45,9 @@ def test_scanner_keeps_reachable_hosts_and_marks_gateway(monkeypatch):
         "adapter": {"gateway": "192.0.2.1"},
     }
 
-    result = asyncio.run(scanner.Scanner(scanner.ScannerConfig(concurrency=2)).run(record))
+    result = asyncio.run(
+        scanner.Scanner(scanner.ScannerConfig(concurrency=2, passes=1)).run(record)
+    )
 
     assert [host["ip"] for host in result["hosts"]] == ["192.0.2.1", "192.0.2.2", "192.0.2.3"]
     assert result["hosts"][0]["flags"]["G"] is True
@@ -64,7 +66,7 @@ def test_scanner_keeps_reachable_hosts_and_marks_gateway(monkeypatch):
 def test_scanner_attempts_custom_range_inclusively(monkeypatch):
     attempted = []
 
-    async def fake_probe(ip):
+    async def fake_probe(ip, **_kwargs):
         attempted.append(ip)
         return {"ip": ip, "reachable": False}
 
@@ -77,7 +79,9 @@ def test_scanner_attempts_custom_range_inclusively(monkeypatch):
         "adapter": {},
     }
 
-    result = asyncio.run(scanner.Scanner(scanner.ScannerConfig(concurrency=16)).run(record))
+    result = asyncio.run(
+        scanner.Scanner(scanner.ScannerConfig(concurrency=16, passes=1)).run(record)
+    )
 
     assert len(attempted) == 255
     assert set(attempted) == {f"192.168.2.{last}" for last in range(1, 256)}
@@ -87,7 +91,7 @@ def test_scanner_attempts_custom_range_inclusively(monkeypatch):
 
 
 def test_scanner_enriches_identity_and_filters_proxy_arp(monkeypatch):
-    async def fake_probe(ip):
+    async def fake_probe(ip, **_kwargs):
         last = int(ip.rsplit(".", 1)[1])
         active = last in {1, 2, 7}
         evidence = ["ICMP"] if last in {1, 7} else (["TCP"] if last == 2 else [])
@@ -134,10 +138,17 @@ def test_scanner_enriches_identity_and_filters_proxy_arp(monkeypatch):
         "adapter": {"gateway": "192.0.2.1"},
     }
 
-    result = asyncio.run(scanner.Scanner(scanner.ScannerConfig(concurrency=4)).run(record))
+    result = asyncio.run(
+        scanner.Scanner(scanner.ScannerConfig(concurrency=4, passes=1)).run(record)
+    )
 
     assert [host["ip"] for host in result["hosts"]] == [
-        "192.0.2.1", "192.0.2.2", "192.0.2.3", "192.0.2.4"
+        "192.0.2.1",
+        "192.0.2.2",
+        "192.0.2.3",
+        "192.0.2.4",
+        "192.0.2.5",
+        "192.0.2.6",
     ]
     by_ip = {host["ip"]: host for host in result["hosts"]}
     assert by_ip["192.0.2.1"]["name"] == "DESKTOP"
@@ -148,5 +159,43 @@ def test_scanner_enriches_identity_and_filters_proxy_arp(monkeypatch):
     assert by_ip["192.0.2.2"]["mac"] is None
     assert by_ip["192.0.2.2"]["name"] is None
     assert by_ip["192.0.2.2"]["device_type"] == "Other"
-    assert result["stats"]["proxy_arp_ignored"] == 4
+    assert result["stats"]["proxy_arp_observed"] == 5
+    assert result["stats"]["proxy_arp_ignored"] == 0
     assert result["stats"]["reserved_ignored"] == 1
+
+
+def test_scanner_retries_unanswered_addresses_and_clears_transient_errors(monkeypatch):
+    calls = {}
+
+    async def fake_probe(ip, **_kwargs):
+        calls[ip] = calls.get(ip, 0) + 1
+        if ip == "192.0.2.1" and calls[ip] == 1:
+            raise OSError("temporary descriptor pressure")
+        return {
+            "ip": ip,
+            "reachable": ip == "192.0.2.1",
+            "evidence": ["TCP"] if ip == "192.0.2.1" else [],
+            "flags": {"P": False, "W": False},
+        }
+
+    monkeypatch.setattr(scanner, "probe_host", fake_probe)
+    monkeypatch.setattr(scanner, "get_neighbor_table", lambda: {})
+    disable_passive_discovery(monkeypatch)
+    record = {
+        "cidr": "192.0.2.0/30",
+        "range": {"start": "192.0.2.1", "end": "192.0.2.2"},
+        "adapter": {},
+    }
+
+    result = asyncio.run(
+        scanner.Scanner(
+            scanner.ScannerConfig(concurrency=2, passes=2, retry_delay_seconds=0)
+        ).run(record)
+    )
+
+    assert [host["ip"] for host in result["hosts"]] == ["192.0.2.1"]
+    assert calls == {"192.0.2.1": 2, "192.0.2.2": 2}
+    assert result["stats"]["addresses_attempted"] == 2
+    assert result["stats"]["active_probe_attempts"] == 4
+    assert result["stats"]["probe_errors"] == 0
+    assert result["stats"]["probe_error_types"] == {}

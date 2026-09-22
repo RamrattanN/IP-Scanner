@@ -23,7 +23,7 @@ case "$MACOS_ARCH" in
 esac
 IP_SCANNER_MACOS_TARGET_ARCH="$MACOS_ARCH" python -m PyInstaller --clean --noconfirm IPScanner.spec
 RELEASE_DIR="$PROJECT_ROOT/dist/release"
-DMG_PATH="$PROJECT_ROOT/dist/IP-Scanner-macOS-${PACKAGE_ARCH}-1.1.0.dmg"
+DMG_PATH="$PROJECT_ROOT/dist/IP-Scanner-macOS-${PACKAGE_ARCH}-1.1.1.dmg"
 rm -rf "$RELEASE_DIR" "$DMG_PATH"
 mkdir -p "$RELEASE_DIR"
 cp -R "$PROJECT_ROOT/dist/IP Scanner.app" "$RELEASE_DIR/"

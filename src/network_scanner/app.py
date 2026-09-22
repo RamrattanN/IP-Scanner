@@ -23,7 +23,7 @@ async def lifespan(_: FastAPI):
         await coordinator.stop_scheduler()
 
 
-app = FastAPI(title="Ramrattan IP Scanner", version="1.1.0", lifespan=lifespan)
+app = FastAPI(title="Ramrattan IP Scanner", version="1.1.1", lifespan=lifespan)
 
 # API
 app.include_router(api_router, prefix="/api")

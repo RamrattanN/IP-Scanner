@@ -11,6 +11,8 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "Ramrattan IP Scanner" in html
     assert '<link rel="icon" type="image/png" href="/ramrattan-logo.png?v=20260921.1" />' in html
     assert '<link rel="apple-touch-icon" href="/ramrattan-logo.png?v=20260921.1" />' in html
+    assert "v1.1.1 Desktop Discovery Hotfix candidate" in html
+    assert "Probe errors:" in html
     assert 'id="btn-help"' in html
     assert 'id="automatic-scans"' in html
     assert 'id="scan-interval"' in html

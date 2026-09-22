@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import ipaddress
+import logging
 import time
 from collections import Counter
 from dataclasses import dataclass
@@ -25,11 +26,18 @@ from .device_intelligence import infer_identity_from_direct_vendor
 FLAGS = {"G": False, "W": False, "U": False, "B": False, "P": False, "6": False}
 NAME_PRIORITY = {"UPnP": 0, "mDNS": 1, "NetBIOS": 2, "Reverse DNS": 3, "Web title": 4}
 PROXY_MAC_THRESHOLD = 4
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class ScannerConfig:
-    concurrency: int = 64
+    # Finder-launched macOS applications commonly have a 256 descriptor soft
+    # limit.  Bound host and TCP work independently so 14 ports per host cannot
+    # exhaust that limit.
+    concurrency: int = 32
+    tcp_concurrency: int = 96
+    passes: int = 2
+    retry_delay_seconds: float = 0.2
 
 
 def _empty_host(ip: str) -> Dict[str, Any]:
@@ -53,6 +61,7 @@ def _safe_passive_discovery(discover) -> dict[str, dict[str, Any]]:
     try:
         return discover()
     except Exception:
+        logger.exception("Passive discovery failed in %s", getattr(discover, "__name__", discover))
         return {}
 
 
@@ -128,9 +137,12 @@ class Scanner:
 
         t0 = time.perf_counter()
         sem = asyncio.Semaphore(self.config.concurrency)
+        tcp_sem = asyncio.Semaphore(self.config.tcp_concurrency)
         results_by_ip: dict[str, Dict[str, Any]] = {}
-        attempted = 0
-        probe_errors = 0
+        attempted_ips: set[str] = set()
+        probe_attempts = 0
+        probe_errors_by_ip: dict[str, str] = {}
+        neighbor_snapshots: list[dict[str, str]] = []
 
         mdns_task = asyncio.create_task(
             asyncio.to_thread(_safe_passive_discovery, discover_mdns)
@@ -140,34 +152,57 @@ class Scanner:
         )
 
         async def worker(ip: str) -> None:
-            nonlocal attempted, probe_errors
+            nonlocal probe_attempts
             async with sem:
-                attempted += 1
+                attempted_ips.add(ip)
+                probe_attempts += 1
                 try:
-                    host = await probe_host(ip)
-                except Exception:
-                    probe_errors += 1
+                    host = await probe_host(ip, tcp_semaphore=tcp_sem)
+                    probe_errors_by_ip.pop(ip, None)
+                except Exception as exc:
+                    probe_errors_by_ip[ip] = type(exc).__name__
+                    logger.warning(
+                        "Active probe failed for %s: %s: %s",
+                        ip,
+                        type(exc).__name__,
+                        exc,
+                    )
                     return
                 if host.get("reachable") and ip not in reserved:
                     results_by_ip[ip] = _normalise_host(host)
 
-        await asyncio.gather(*(worker(ip) for ip in ips))
+        for pass_number in range(max(1, self.config.passes)):
+            candidates = ips if pass_number == 0 else [
+                ip for ip in ips if ip not in results_by_ip and ip not in reserved
+            ]
+            if not candidates:
+                break
+            if pass_number:
+                await asyncio.sleep(self.config.retry_delay_seconds)
+            await asyncio.gather(*(worker(ip) for ip in candidates))
+            neighbor_snapshots.append(get_neighbor_table())
+
         mdns_devices, upnp_devices = await asyncio.gather(mdns_task, upnp_task)
 
+        merged_neighbors: dict[str, str] = {}
+        for snapshot in neighbor_snapshots:
+            merged_neighbors.update(snapshot)
         neighbor_table = {
             ip: format_mac_address(mac)
-            for ip, mac in get_neighbor_table().items()
+            for ip, mac in merged_neighbors.items()
             if ip in requested and ip not in reserved and is_valid_unicast_mac(mac)
         }
         mac_counts = Counter(neighbor_table.values())
-        proxy_arp_ignored = 0
+        proxy_arp_observed = 0
         for ip, mac in neighbor_table.items():
             shared_mac = mac_counts[mac] >= PROXY_MAC_THRESHOLD
             host = results_by_ip.get(ip)
             if shared_mac:
                 if host is None:
-                    proxy_arp_ignored += 1
-                    continue
+                    host = _empty_host(ip)
+                    host["evidence"].append("ARP")
+                    results_by_ip[ip] = host
+                proxy_arp_observed += 1
                 host["notes"]["shared_proxy_mac"] = mac
                 shared_vendor = lookup_mac_vendor(mac)
                 if shared_vendor:
@@ -230,14 +265,18 @@ class Scanner:
         scan_record["hosts"] = results
         scan_record["stats"] = {
             "addresses_requested": len(ips),
-            "addresses_attempted": attempted,
-            "probe_errors": probe_errors,
+            "addresses_attempted": len(attempted_ips),
+            "active_probe_attempts": probe_attempts,
+            "probe_errors": len(probe_errors_by_ip),
+            "probe_error_types": dict(Counter(probe_errors_by_ip.values())),
             "hosts_up": len(results),
             "confirmed_devices": confirmed,
             "observed_devices": observed,
             "ping_replies": sum(1 for host in results if host["flags"].get("P")),
             "neighbor_only": observed,
-            "proxy_arp_ignored": proxy_arp_ignored,
+            "proxy_arp_observed": proxy_arp_observed,
+            # Retained for compatibility with existing history readers.
+            "proxy_arp_ignored": 0,
             "reserved_ignored": len(requested.intersection(reserved)),
             "website": sum(1 for host in results if host["flags"].get("W")),
             "upnp": sum(1 for host in results if host["flags"].get("U")),

@@ -15,6 +15,22 @@ These are accepted unsigned release artifacts.  macOS Gatekeeper and Windows
 SmartScreen may warn until signing and notarization are completed in a later
 release-hardening gate.
 
+## v1.1.1 QA candidate
+
+The current corrective branch produces the following test artifacts.  These
+are not release assets until target-native QA and owner approval are complete.
+
+| Target | QA artifact |
+| --- | --- |
+| Intel Mac | `IP-Scanner-macOS-Intel-1.1.1.dmg` |
+| Apple silicon Mac | `IP-Scanner-macOS-Apple-Silicon-1.1.1.dmg` |
+| Windows x64 | `IP-Scanner-Windows-x64-1.1.1.exe` |
+
+The candidate keeps TCP work below the Finder-launch descriptor budget, makes
+two paced discovery passes, declares local-network and Bonjour use, records
+probe error types, keeps the service tied to the desktop controller, and builds
+the Ramrattan shield at the same visual scale as Speedtest Monitor.
+
 ## Collection lifecycle
 
 - Manual detected-network and custom-range scans remain available.

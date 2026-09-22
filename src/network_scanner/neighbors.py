@@ -1,18 +1,22 @@
 from __future__ import annotations
 
 import re
+import logging
 import subprocess
 import sys
 
 
 IPV4_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 MAC_RE = re.compile(r"\b(?:[0-9a-f]{1,2}[:-]){5}[0-9a-f]{1,2}\b", re.IGNORECASE)
+logger = logging.getLogger(__name__)
 
 
 def neighbor_command(platform: str | None = None) -> list[str]:
     platform = platform or sys.platform
     if platform == "win32":
         return ["arp", "-a"]
+    if platform == "darwin":
+        return ["/usr/sbin/arp", "-an"]
     return ["arp", "-an"]
 
 
@@ -38,6 +42,7 @@ def get_neighbor_table(platform: str | None = None) -> dict[str, str]:
         output = subprocess.check_output(
             neighbor_command(platform), text=True, encoding="utf-8", errors="ignore"
         )
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError) as exc:
+        logger.warning("Neighbor-table read failed: %s: %s", type(exc).__name__, exc)
         return {}
     return parse_neighbor_table(output)
