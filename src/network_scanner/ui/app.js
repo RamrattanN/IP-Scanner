@@ -18,6 +18,7 @@ const historyChart = document.getElementById('history-chart');
 const historyChartEmpty = document.getElementById('history-chart-empty');
 const historyChartTooltip = document.getElementById('history-chart-tooltip');
 const historyChartTypeInputs = [...document.querySelectorAll('input[name="history-chart-type"]')];
+const resetHistoryZoomButton = document.getElementById('btn-reset-history-zoom');
 const deviceTypeChart = document.getElementById('device-type-chart');
 const deviceTypeChartEmpty = document.getElementById('device-type-chart-empty');
 const deviceTypeChartTooltip = document.getElementById('device-type-chart-tooltip');
@@ -34,6 +35,10 @@ const freshnessDetail = document.getElementById('freshness-detail');
 let selectedScanId = null;
 let chartScans = [];
 let scanWasRunning = false;
+let historyZoomRange = null;
+let historyZoomDrag = null;
+let historyChartGeometry = null;
+let suppressChartClick = false;
 const storedHistoryChartType = localStorage.getItem('ip-scanner-history-chart-type');
 let historyChartType = storedHistoryChartType === 'line' ? 'area' : (storedHistoryChartType || 'bar');
 if (!['bar', 'area'].includes(historyChartType)) historyChartType = 'bar';
@@ -453,7 +458,10 @@ const makeChartScanInteractive = (mark, scan, accessibleLabel, time, metric) => 
   mark.setAttribute('aria-label', accessibleLabel);
   mark.appendChild(svgElement('title', {}, accessibleLabel));
   attachChartTooltip(mark, historyChartTooltip, time, metric);
-  mark.addEventListener('click', () => activateChartScan(scan));
+  mark.addEventListener('click', () => {
+    if (suppressChartClick) return;
+    activateChartScan(scan);
+  });
   mark.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -484,6 +492,9 @@ function renderHistoryChart() {
   historyChart.replaceChildren();
   historyChartTypeInputs.forEach((input) => { input.checked = input.value === historyChartType; });
   if (!chartScans.length) {
+    historyZoomRange = null;
+    historyChartGeometry = null;
+    resetHistoryZoomButton.hidden = true;
     totalLineSwatch.hidden = true;
     historyChart.hidden = true;
     historyChartEmpty.hidden = false;
@@ -491,9 +502,15 @@ function renderHistoryChart() {
   }
   historyChart.hidden = false;
   historyChartEmpty.hidden = true;
+  if (historyZoomRange && historyZoomRange.end >= chartScans.length) historyZoomRange = null;
+  const visibleStart = historyZoomRange?.start ?? 0;
+  const visibleEnd = historyZoomRange?.end ?? (chartScans.length - 1);
+  const visibleScans = chartScans.slice(visibleStart, visibleEnd + 1);
+  resetHistoryZoomButton.hidden = !historyZoomRange;
   totalLineSwatch.hidden = historyChartType !== 'area';
-  const breakdowns = chartScans.map(scanTypeBreakdown);
-  const types = activeDeviceTypes(breakdowns);
+  const allBreakdowns = chartScans.map(scanTypeBreakdown);
+  const breakdowns = allBreakdowns.slice(visibleStart, visibleEnd + 1);
+  const types = activeDeviceTypes(allBreakdowns);
 
   const width = 760;
   const height = 460;
@@ -501,13 +518,14 @@ function renderHistoryChart() {
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
   const values = breakdowns.map(({total}) => total);
-  const scale = niceChartScale(Math.max(...values));
+  const allValues = allBreakdowns.map(({total}) => total);
+  const scale = niceChartScale(Math.max(...allValues));
   const x = (index) => {
-    if (chartScans.length === 1) return margin.left + (plotWidth / 2);
+    if (visibleScans.length === 1) return margin.left + (plotWidth / 2);
     if (historyChartType === 'bar') {
-      return margin.left + (((index + .5) / chartScans.length) * plotWidth);
+      return margin.left + (((index + .5) / visibleScans.length) * plotWidth);
     }
-    return margin.left + ((index / (chartScans.length - 1)) * plotWidth);
+    return margin.left + ((index / (visibleScans.length - 1)) * plotWidth);
   };
   const y = (value) => margin.top + plotHeight - ((value / scale.maximum) * plotHeight);
 
@@ -525,14 +543,28 @@ function renderHistoryChart() {
     svgElement('text', {x: margin.left + (plotWidth / 2), y: height - 8, 'text-anchor': 'middle', class: 'chart-axis-title'}, 'Scan time (local)'),
   );
 
-  const labelCount = Math.min(5, chartScans.length);
+  const zoomSelection = svgElement('rect', {
+    id: 'history-chart-zoom-selection', x: margin.left, y: margin.top,
+    width: 0, height: plotHeight, class: 'chart-zoom-selection', hidden: 'hidden',
+  });
+  historyChart.appendChild(zoomSelection);
+  historyChartGeometry = {
+    marginLeft: margin.left,
+    plotWidth,
+    plotTop: margin.top,
+    plotHeight,
+    visibleStart,
+    visibleCount: visibleScans.length,
+  };
+
+  const labelCount = Math.min(5, visibleScans.length);
   const labelIndexes = new Set(Array.from({length: labelCount}, (_, index) => (
-    labelCount === 1 ? 0 : Math.round(index * (chartScans.length - 1) / (labelCount - 1))
+    labelCount === 1 ? 0 : Math.round(index * (visibleScans.length - 1) / (labelCount - 1))
   )));
   labelIndexes.forEach((index) => {
     historyChart.append(svgElement('text', {
       x: x(index), y: margin.top + plotHeight + 24, 'text-anchor': 'middle', class: 'chart-label',
-    }, chartTimestamp(chartScans[index].timestamp_utc)));
+    }, chartTimestamp(visibleScans[index].timestamp_utc)));
   });
 
   if (historyChartType === 'bar') {
@@ -540,7 +572,7 @@ function renderHistoryChart() {
     const barWidth = Math.max(5, Math.min(62, slotWidth * .7));
     breakdowns.forEach((breakdown, index) => {
       let cumulative = 0;
-      const time = chartTimestamp(chartScans[index].timestamp_utc);
+      const time = chartTimestamp(visibleScans[index].timestamp_utc);
       const metric = scanBreakdownMetric(types, breakdown);
       const accessibleLabel = `${time}. ${metric.replaceAll('\n', '. ')}`;
       types.forEach((type) => {
@@ -559,11 +591,11 @@ function renderHistoryChart() {
         x: x(index) - (barWidth / 2), y: y(breakdown.total), width: barWidth,
         height: Math.max(1, y(0) - y(breakdown.total)), class: 'chart-bar',
       });
-      makeChartScanInteractive(mark, chartScans[index], accessibleLabel, time, metric);
+      makeChartScanInteractive(mark, visibleScans[index], accessibleLabel, time, metric);
       historyChart.appendChild(mark);
     });
   } else {
-    const cumulative = Array(chartScans.length).fill(0);
+    const cumulative = Array(visibleScans.length).fill(0);
     types.forEach((type) => {
       const lower = [...cumulative];
       const upper = cumulative.map((value, index) => value + (breakdowns[index].counts.get(type) || 0));
@@ -580,26 +612,127 @@ function renderHistoryChart() {
       upper.forEach((value, index) => { cumulative[index] = value; });
     });
 
-    if (chartScans.length > 1) {
+    if (visibleScans.length > 1) {
       const path = values.map((value, index) => `${index ? 'L' : 'M'} ${x(index)} ${y(value)}`).join(' ');
       historyChart.append(svgElement('path', {d: path, class: 'chart-line'}));
     }
     values.forEach((value, index) => {
-      const time = chartTimestamp(chartScans[index].timestamp_utc);
+      const time = chartTimestamp(visibleScans[index].timestamp_utc);
       const metric = scanBreakdownMetric(types, breakdowns[index]);
       const accessibleLabel = `${time}. ${metric.replaceAll('\n', '. ')}`;
       const mark = svgElement('circle', {cx: x(index), cy: y(value), r: 5.5, class: 'chart-point'});
-      makeChartScanInteractive(mark, chartScans[index], accessibleLabel, time, metric);
+      makeChartScanInteractive(mark, visibleScans[index], accessibleLabel, time, metric);
       historyChart.appendChild(mark);
     });
   }
   updateSelectedChartMarks();
   historyChart.setAttribute(
     'aria-label',
-    `Device discovery history with ${chartScans.length} scans stacked across ${types.length} device type categories. Latest result: ${values[values.length - 1]} devices found.`,
+    `Direct-device discovery history showing ${visibleScans.length} of ${chartScans.length} scans across ${types.length} device type categories. The device-count axis is fixed. Latest visible result: ${values[values.length - 1]} devices found.`,
   );
   return types;
 }
+
+const chartPointerPosition = (event) => {
+  const bounds = historyChart.getBoundingClientRect();
+  if (!bounds.width || !bounds.height) return null;
+  return {
+    x: ((event.clientX - bounds.left) / bounds.width) * 760,
+    y: ((event.clientY - bounds.top) / bounds.height) * 460,
+  };
+};
+
+const resetHistoryZoom = () => {
+  if (!historyZoomRange) return;
+  historyZoomRange = null;
+  renderHistoryChart();
+};
+
+const finishHistoryZoom = (event) => {
+  if (!historyZoomDrag || !historyChartGeometry) return;
+  const drag = historyZoomDrag;
+  historyZoomDrag = null;
+  const selection = document.getElementById('history-chart-zoom-selection');
+  if (selection) selection.setAttribute('hidden', 'hidden');
+  historyChart.classList.remove('is-zooming');
+  if (historyChart.hasPointerCapture?.(event.pointerId)) {
+    historyChart.releasePointerCapture(event.pointerId);
+  }
+  if (!drag.moved) return;
+
+  const geometry = historyChartGeometry;
+  const left = Math.max(geometry.marginLeft, Math.min(drag.startX, drag.currentX));
+  const right = Math.min(
+    geometry.marginLeft + geometry.plotWidth,
+    Math.max(drag.startX, drag.currentX),
+  );
+  const startRatio = (left - geometry.marginLeft) / geometry.plotWidth;
+  const endRatio = (right - geometry.marginLeft) / geometry.plotWidth;
+  const localStart = Math.min(
+    geometry.visibleCount - 1,
+    Math.floor(startRatio * geometry.visibleCount),
+  );
+  const localEnd = Math.min(
+    geometry.visibleCount - 1,
+    Math.max(localStart, Math.ceil(endRatio * geometry.visibleCount) - 1),
+  );
+  if (localStart === 0 && localEnd === geometry.visibleCount - 1) return;
+  historyZoomRange = {
+    start: geometry.visibleStart + localStart,
+    end: geometry.visibleStart + localEnd,
+  };
+  suppressChartClick = true;
+  window.setTimeout(() => { suppressChartClick = false; }, 0);
+  renderHistoryChart();
+};
+
+historyChart.addEventListener('pointerdown', (event) => {
+  if (event.button !== 0 || !historyChartGeometry || historyChartGeometry.visibleCount < 2) return;
+  const position = chartPointerPosition(event);
+  if (!position) return;
+  const geometry = historyChartGeometry;
+  const withinPlot = position.x >= geometry.marginLeft
+    && position.x <= geometry.marginLeft + geometry.plotWidth
+    && position.y >= geometry.plotTop
+    && position.y <= geometry.plotTop + geometry.plotHeight;
+  if (!withinPlot) return;
+  historyZoomDrag = {startX: position.x, currentX: position.x, moved: false};
+  historyChart.setPointerCapture?.(event.pointerId);
+});
+
+historyChart.addEventListener('pointermove', (event) => {
+  if (!historyZoomDrag || !historyChartGeometry) return;
+  const position = chartPointerPosition(event);
+  if (!position) return;
+  const geometry = historyChartGeometry;
+  historyZoomDrag.currentX = Math.max(
+    geometry.marginLeft,
+    Math.min(position.x, geometry.marginLeft + geometry.plotWidth),
+  );
+  historyZoomDrag.moved = historyZoomDrag.moved
+    || Math.abs(historyZoomDrag.currentX - historyZoomDrag.startX) >= 6;
+  if (!historyZoomDrag.moved) return;
+  event.preventDefault();
+  hideChartTooltip(historyChartTooltip);
+  historyChart.classList.add('is-zooming');
+  const selection = document.getElementById('history-chart-zoom-selection');
+  if (selection) {
+    selection.removeAttribute('hidden');
+    selection.setAttribute('x', Math.min(historyZoomDrag.startX, historyZoomDrag.currentX));
+    selection.setAttribute('width', Math.abs(historyZoomDrag.currentX - historyZoomDrag.startX));
+  }
+});
+
+historyChart.addEventListener('pointerup', finishHistoryZoom);
+historyChart.addEventListener('pointercancel', finishHistoryZoom);
+historyChart.addEventListener('dblclick', resetHistoryZoom);
+historyChart.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && historyZoomRange) {
+    event.preventDefault();
+    resetHistoryZoom();
+  }
+});
+resetHistoryZoomButton.addEventListener('click', resetHistoryZoom);
 
 const polarPoint = (centerX, centerY, radius, angle) => {
   const radians = ((angle - 90) * Math.PI) / 180;
