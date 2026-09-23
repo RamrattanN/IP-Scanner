@@ -44,7 +44,20 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "Shared/proxy</button>" in html
     assert "isSharedProxyObservation" in javascript
     assert "scanDirectCounts" in javascript
-    assert html.index('id="results-section"') < html.index('id="history-heading"')
+    assert html.index('id="history-overview-section"') < html.index('id="results-section"')
+    assert html.index('id="results-section"') < html.index('id="history-data-section"')
+    assert 'id="btn-reset-history-zoom"' in html
+    assert 'id="history-chart"' in html and 'tabindex="0"' in html
+    assert "historyZoomRange" in javascript
+    assert "chartPointerPosition" in javascript
+    assert "finishHistoryZoom" in javascript
+    assert "The device-count axis is fixed" in javascript
+    assert "niceChartScale(Math.max(...allValues))" in javascript
+    assert "pointerdown" in javascript
+    assert "dblclick" in javascript
+    assert "Reset zoom" in html
+    assert ".chart-zoom-selection" in css
+    assert "touch-action: none" in css
     assert "Arrange and interpret device results" in html
     assert "data-sort-type" in html
     assert "DEVICE_ICONS" in javascript
