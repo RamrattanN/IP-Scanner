@@ -82,87 +82,6 @@
         </div>
       </section>
 
-      <section class="section-block" aria-labelledby="history-heading">
-        <div class="section-heading">
-          <p class="eyebrow">SCAN HISTORY</p>
-          <h2 id="history-heading">Previous network scans</h2>
-          <p>Results remain on this computer and are ordered by scan time.</p>
-        </div>
-        <div class="history-visuals">
-          <div class="chart-card trend-chart-card" aria-labelledby="history-chart-heading">
-            <div class="chart-toolbar">
-              <div>
-                <p class="eyebrow">DISCOVERY TREND</p>
-                <h3 id="history-chart-heading">Devices found over time</h3>
-              </div>
-              <fieldset class="chart-type-control">
-                <legend>Chart type</legend>
-                <label><input type="radio" name="history-chart-type" value="bar" checked /> Bar</label>
-                <label><input type="radio" name="history-chart-type" value="area" /> Area</label>
-              </fieldset>
-            </div>
-            <div class="chart-stage trend-chart-stage">
-              <svg id="history-chart" viewBox="0 0 760 460" role="img" aria-label="Device discovery history by device type"></svg>
-              <div id="history-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
-              <p id="history-chart-empty" class="chart-empty" hidden>Run a scan to begin the discovery trend.</p>
-            </div>
-          </div>
-          <div class="chart-card type-chart-card" aria-labelledby="type-chart-heading">
-            <div class="chart-toolbar">
-              <div>
-                <p class="eyebrow">LATEST SCAN MIX</p>
-                <h3 id="type-chart-heading">Device types</h3>
-              </div>
-            </div>
-            <div class="type-chart-layout">
-              <div class="chart-stage type-chart-stage">
-                <svg id="device-type-chart" viewBox="0 0 300 300" role="img" aria-label="Device types in latest scan"></svg>
-                <div id="device-type-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
-                <p id="device-type-chart-empty" class="chart-empty" hidden>No device types are available for this scan.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <section id="device-summary-card" class="device-summary-card" aria-labelledby="device-summary-heading" hidden>
-          <div class="device-summary-toolbar">
-            <div>
-              <p class="eyebrow">DEVICE TYPE KEY</p>
-              <h3 id="device-summary-heading">Latest scan breakdown</h3>
-            </div>
-            <p class="device-summary-total"><span id="total-line-swatch" class="total-line-swatch" aria-hidden="true" hidden></span><strong id="latest-device-total">0</strong><span class="device-summary-total-label">total devices</span></p>
-          </div>
-          <ul id="device-summary-grid" class="device-summary-grid" aria-label="Latest scan device type totals"></ul>
-        </section>
-        <div class="table-card">
-          <div class="table-scroll">
-            <table id="history-table">
-              <thead><tr>
-                <th><button class="sort-button" data-sort-type="date">Timestamp</button></th>
-                <th><button class="sort-button" data-sort-type="text">Network</button></th>
-                <th><button class="sort-button" data-sort-type="ip">Range</button></th>
-                <th><button class="sort-button" data-sort-type="number">Duration</button></th>
-                <th><button class="sort-button" data-sort-type="number">Requested</button></th>
-                <th><button class="sort-button" data-sort-type="number">Attempted</button></th>
-                <th><button class="sort-button" data-sort-type="number">Confirmed</button></th>
-                <th><button class="sort-button" data-sort-type="number">Observed</button></th>
-                <th><button class="sort-button" data-sort-type="number">Web</button></th>
-              </tr></thead>
-              <tbody id="history-body"></tbody>
-            </table>
-          </div>
-          <div id="history-empty" class="empty-state" hidden>
-            <div class="empty-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M4.9 4.9a10 10 0 0 1 14.2 0M7.8 7.8a6 6 0 0 1 8.4 0"></path>
-              </svg>
-            </div>
-            <h3>No scans recorded</h3>
-            <p>Start with Scan detected network when you are ready.</p>
-          </div>
-        </div>
-      </section>
-
       <section id="results-section" class="section-block" aria-labelledby="results-heading" hidden>
         <div class="section-heading">
           <p class="eyebrow">DEVICE RESULTS</p>
@@ -174,6 +93,7 @@
           <div class="summary-card"><span>Attempted</span><strong id="summary-attempted">0</strong></div>
           <div class="summary-card"><span>Confirmed</span><strong id="summary-confirmed">0</strong></div>
           <div class="summary-card"><span>Observed</span><strong id="summary-observed">0</strong></div>
+          <div class="summary-card"><span>Shared/proxy</span><strong id="summary-shared">0</strong></div>
           <div class="summary-card"><span>Probe errors</span><strong id="summary-errors">0</strong></div>
         </div>
         <div class="table-card results-card">
@@ -198,6 +118,88 @@
           <div id="results-empty" class="empty-state" hidden>
             <h3>No devices answered</h3>
             <p>Every requested address was attempted, but none returned ICMP, TCP, or ARP evidence.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-block" aria-labelledby="history-heading">
+        <div class="section-heading">
+          <p class="eyebrow">SCAN HISTORY</p>
+          <h2 id="history-heading">Previous network scans</h2>
+          <p>Results remain on this computer and are ordered by scan time.</p>
+        </div>
+        <div class="history-visuals">
+          <div class="chart-card trend-chart-card" aria-labelledby="history-chart-heading">
+            <div class="chart-toolbar">
+              <div>
+                <p class="eyebrow">DISCOVERY TREND</p>
+                <h3 id="history-chart-heading">Direct devices found over time</h3>
+              </div>
+              <fieldset class="chart-type-control">
+                <legend>Chart type</legend>
+                <label><input type="radio" name="history-chart-type" value="bar" checked /> Bar</label>
+                <label><input type="radio" name="history-chart-type" value="area" /> Area</label>
+              </fieldset>
+            </div>
+            <div class="chart-stage trend-chart-stage">
+              <svg id="history-chart" viewBox="0 0 760 460" role="img" aria-label="Direct-device discovery history by device type"></svg>
+              <div id="history-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
+              <p id="history-chart-empty" class="chart-empty" hidden>Run a scan to begin the discovery trend.</p>
+            </div>
+          </div>
+          <div class="chart-card type-chart-card" aria-labelledby="type-chart-heading">
+            <div class="chart-toolbar">
+              <div>
+                <p class="eyebrow">LATEST SCAN MIX</p>
+                <h3 id="type-chart-heading">Device types</h3>
+              </div>
+            </div>
+            <div class="type-chart-layout">
+              <div class="chart-stage type-chart-stage">
+                <svg id="device-type-chart" viewBox="0 0 300 300" role="img" aria-label="Direct device types in latest scan"></svg>
+                <div id="device-type-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
+                <p id="device-type-chart-empty" class="chart-empty" hidden>No direct device types are available for this scan.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <section id="device-summary-card" class="device-summary-card" aria-labelledby="device-summary-heading" hidden>
+          <div class="device-summary-toolbar">
+            <div>
+              <p class="eyebrow">DEVICE TYPE KEY</p>
+              <h3 id="device-summary-heading">Latest scan breakdown</h3>
+            </div>
+            <p class="device-summary-total"><span id="total-line-swatch" class="total-line-swatch" aria-hidden="true" hidden></span><strong id="latest-device-total">0</strong><span class="device-summary-total-label">direct devices</span></p>
+          </div>
+          <ul id="device-summary-grid" class="device-summary-grid" aria-label="Latest scan direct device type totals"></ul>
+        </section>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table id="history-table">
+              <thead><tr>
+                <th><button class="sort-button" data-sort-type="date">Timestamp</button></th>
+                <th><button class="sort-button" data-sort-type="text">Network</button></th>
+                <th><button class="sort-button" data-sort-type="ip">Range</button></th>
+                <th><button class="sort-button" data-sort-type="number">Duration</button></th>
+                <th><button class="sort-button" data-sort-type="number">Requested</button></th>
+                <th><button class="sort-button" data-sort-type="number">Attempted</button></th>
+                <th><button class="sort-button" data-sort-type="number">Confirmed</button></th>
+                <th><button class="sort-button" data-sort-type="number">Observed</button></th>
+                <th><button class="sort-button" data-sort-type="number">Shared/proxy</button></th>
+                <th><button class="sort-button" data-sort-type="number">Web</button></th>
+              </tr></thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+          <div id="history-empty" class="empty-state" hidden>
+            <div class="empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M4.9 4.9a10 10 0 0 1 14.2 0M7.8 7.8a6 6 0 0 1 8.4 0"></path>
+              </svg>
+            </div>
+            <h3>No scans recorded</h3>
+            <p>Start with Scan detected network when you are ready.</p>
           </div>
         </div>
       </section>
@@ -264,7 +266,7 @@
           <li>Drag the divider at the right edge of a Device Results heading to resize that column.  Double-click the divider to restore its original width.  Your widths are retained in this browser.</li>
           <li>With a divider focused, use the Left and Right Arrow keys to resize, or press Home to restore the original width.</li>
           <li>MAC addresses use uppercase colon-separated formatting.</li>
-          <li><strong>Shared/proxy response</strong> means the address was returned for multiple IPs and is not presented as the device's confirmed hardware address.</li>
+          <li><strong>Shared/proxy response</strong> means the address was returned for multiple IPs and is not presented as the device's confirmed hardware address.  These observations remain visible in Device Results but are reported separately from the direct-device total.</li>
           <li>Missing manufacturers are checked against a bundled local IEEE OUI list.  Scanned MAC addresses are not sent to an external service.</li>
           <li>The first Device Results column uses observed evidence to show Router, Computer, Printer, TV, Audio, NAS, Mobile, IoT, or Other.  Other is used when the type cannot be established.</li>
         </ul>
