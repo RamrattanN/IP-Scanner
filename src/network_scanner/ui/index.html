@@ -7,7 +7,7 @@
     <title>Ramrattan IP Scanner</title>
     <link rel="icon" type="image/png" href="/ramrattan-logo.png?v=20260921.1" />
     <link rel="apple-touch-icon" href="/ramrattan-logo.png?v=20260921.1" />
-    <link rel="stylesheet" href="/styles.css?v=20260921.7" />
+    <link rel="stylesheet" href="/styles.css?v=20260923.1" />
   </head>
   <body>
     <main class="page-shell">
@@ -82,6 +82,63 @@
         </div>
       </section>
 
+      <section id="history-overview-section" class="section-block" aria-labelledby="history-heading">
+        <div class="section-heading">
+          <p class="eyebrow">SCAN HISTORY</p>
+          <h2 id="history-heading">Previous network scans</h2>
+          <p>Results remain on this computer and are ordered by scan time.</p>
+        </div>
+        <div class="history-visuals">
+          <div class="chart-card trend-chart-card" aria-labelledby="history-chart-heading">
+            <div class="chart-toolbar">
+              <div>
+                <p class="eyebrow">DISCOVERY TREND</p>
+                <h3 id="history-chart-heading">Direct devices found over time</h3>
+              </div>
+              <div class="chart-controls">
+                <fieldset class="chart-type-control">
+                  <legend>Chart type</legend>
+                  <label><input type="radio" name="history-chart-type" value="bar" checked /> Bar</label>
+                  <label><input type="radio" name="history-chart-type" value="area" /> Area</label>
+                </fieldset>
+                <button id="btn-reset-history-zoom" class="button button-secondary chart-reset-button" type="button" hidden>Reset zoom</button>
+              </div>
+            </div>
+            <div class="chart-stage trend-chart-stage">
+              <svg id="history-chart" viewBox="0 0 760 460" role="img" tabindex="0" aria-label="Direct-device discovery history by device type"></svg>
+              <div id="history-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
+              <p id="history-chart-empty" class="chart-empty" hidden>Run a scan to begin the discovery trend.</p>
+            </div>
+            <p class="chart-zoom-help">Drag across the chart to zoom into a time span.  The device-count axis remains fixed.  Double-click the chart or use Reset zoom to restore the full history.</p>
+          </div>
+          <div class="chart-card type-chart-card" aria-labelledby="type-chart-heading">
+            <div class="chart-toolbar">
+              <div>
+                <p class="eyebrow">LATEST SCAN MIX</p>
+                <h3 id="type-chart-heading">Device types</h3>
+              </div>
+            </div>
+            <div class="type-chart-layout">
+              <div class="chart-stage type-chart-stage">
+                <svg id="device-type-chart" viewBox="0 0 300 300" role="img" aria-label="Direct device types in latest scan"></svg>
+                <div id="device-type-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
+                <p id="device-type-chart-empty" class="chart-empty" hidden>No direct device types are available for this scan.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <section id="device-summary-card" class="device-summary-card" aria-labelledby="device-summary-heading" hidden>
+          <div class="device-summary-toolbar">
+            <div>
+              <p class="eyebrow">DEVICE TYPE KEY</p>
+              <h3 id="device-summary-heading">Latest scan breakdown</h3>
+            </div>
+            <p class="device-summary-total"><span id="total-line-swatch" class="total-line-swatch" aria-hidden="true" hidden></span><strong id="latest-device-total">0</strong><span class="device-summary-total-label">direct devices</span></p>
+          </div>
+          <ul id="device-summary-grid" class="device-summary-grid" aria-label="Latest scan direct device type totals"></ul>
+        </section>
+      </section>
+
       <section id="results-section" class="section-block" aria-labelledby="results-heading" hidden>
         <div class="section-heading">
           <p class="eyebrow">DEVICE RESULTS</p>
@@ -122,57 +179,12 @@
         </div>
       </section>
 
-      <section class="section-block" aria-labelledby="history-heading">
+      <section id="history-data-section" class="section-block" aria-labelledby="history-data-heading">
         <div class="section-heading">
-          <p class="eyebrow">SCAN HISTORY</p>
-          <h2 id="history-heading">Previous network scans</h2>
-          <p>Results remain on this computer and are ordered by scan time.</p>
+          <p class="eyebrow">SCAN DATA</p>
+          <h2 id="history-data-heading">Recorded scans</h2>
+          <p>Select a row to review its device results.</p>
         </div>
-        <div class="history-visuals">
-          <div class="chart-card trend-chart-card" aria-labelledby="history-chart-heading">
-            <div class="chart-toolbar">
-              <div>
-                <p class="eyebrow">DISCOVERY TREND</p>
-                <h3 id="history-chart-heading">Direct devices found over time</h3>
-              </div>
-              <fieldset class="chart-type-control">
-                <legend>Chart type</legend>
-                <label><input type="radio" name="history-chart-type" value="bar" checked /> Bar</label>
-                <label><input type="radio" name="history-chart-type" value="area" /> Area</label>
-              </fieldset>
-            </div>
-            <div class="chart-stage trend-chart-stage">
-              <svg id="history-chart" viewBox="0 0 760 460" role="img" aria-label="Direct-device discovery history by device type"></svg>
-              <div id="history-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
-              <p id="history-chart-empty" class="chart-empty" hidden>Run a scan to begin the discovery trend.</p>
-            </div>
-          </div>
-          <div class="chart-card type-chart-card" aria-labelledby="type-chart-heading">
-            <div class="chart-toolbar">
-              <div>
-                <p class="eyebrow">LATEST SCAN MIX</p>
-                <h3 id="type-chart-heading">Device types</h3>
-              </div>
-            </div>
-            <div class="type-chart-layout">
-              <div class="chart-stage type-chart-stage">
-                <svg id="device-type-chart" viewBox="0 0 300 300" role="img" aria-label="Direct device types in latest scan"></svg>
-                <div id="device-type-chart-tooltip" class="chart-tooltip" role="tooltip" aria-hidden="true" hidden></div>
-                <p id="device-type-chart-empty" class="chart-empty" hidden>No direct device types are available for this scan.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <section id="device-summary-card" class="device-summary-card" aria-labelledby="device-summary-heading" hidden>
-          <div class="device-summary-toolbar">
-            <div>
-              <p class="eyebrow">DEVICE TYPE KEY</p>
-              <h3 id="device-summary-heading">Latest scan breakdown</h3>
-            </div>
-            <p class="device-summary-total"><span id="total-line-swatch" class="total-line-swatch" aria-hidden="true" hidden></span><strong id="latest-device-total">0</strong><span class="device-summary-total-label">direct devices</span></p>
-          </div>
-          <ul id="device-summary-grid" class="device-summary-grid" aria-label="Latest scan direct device type totals"></ul>
-        </section>
         <div class="table-card">
           <div class="table-scroll">
             <table id="history-table">
@@ -262,6 +274,7 @@
       <section class="help-card">
         <h3>Arrange and interpret device results</h3>
         <ul>
+          <li>Drag horizontally across the discovery chart to zoom into a time span.  The device-count axis stays fixed.  Double-click the chart, press Escape while it is focused, or use Reset zoom to restore the full history.</li>
           <li>Select any column heading to sort that table.  Select it again to reverse the order.</li>
           <li>Drag the divider at the right edge of a Device Results heading to resize that column.  Double-click the divider to restore its original width.  Your widths are retained in this browser.</li>
           <li>With a divider focused, use the Left and Right Arrow keys to resize, or press Home to restore the original width.</li>
@@ -303,6 +316,6 @@
       </section>
       <p class="help-credit"><strong>Ramrattan IP Scanner</strong><br />Built and maintained by Ramrattan.com.</p>
     </aside>
-    <script src="/app.js?v=20260922.1"></script>
+    <script src="/app.js?v=20260923.1"></script>
   </body>
 </html>
