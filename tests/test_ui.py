@@ -33,13 +33,18 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert 'id="latest-device-total"' in html
     assert 'id="history-device-type-legend"' not in html
     assert 'id="device-type-legend"' not in html
-    assert "Devices found over time" in html
+    assert "Direct devices found over time" in html
     assert "Device types" in html
     assert "inclusive starting and ending IPv4 addresses" in html
     assert "Why some values are unknown" in html
     assert "MAC status" in html
     assert "MAC vendor" in html
     assert "Shared/proxy response" in javascript
+    assert 'id="summary-shared"' in html
+    assert "Shared/proxy</button>" in html
+    assert "isSharedProxyObservation" in javascript
+    assert "scanDirectCounts" in javascript
+    assert html.index('id="results-section"') < html.index('id="history-heading"')
     assert "Arrange and interpret device results" in html
     assert "data-sort-type" in html
     assert "DEVICE_ICONS" in javascript
