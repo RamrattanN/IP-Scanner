@@ -21,6 +21,7 @@
 | 2026-09-21 | Target-native desktop acceptance | Intel Mac, Apple silicon Mac, and Windows x64 packages passed CI smoke tests and owner QA. |
 | 2026-09-21 | v1.1.0 Desktop Application Release | Published the accepted unsigned DMG and EXE packages with data-continuity, rollback, Gatekeeper, and SmartScreen guidance. |
 | 2026-09-22 | Packaged discovery investigation | A clean Intel Mac comparison found 236 packaged probe errors versus none in the Terminal source run.  The hotfix candidate bounds socket concurrency, adds retries and diagnostics, preserves shared/proxy observations, corrects service lifecycle and macOS declarations, and restores the full-size application icon. |
+| 2026-09-23 | v1.1.1 Desktop Discovery Maintenance Release | Owner accepted the corrected Intel Mac discovery behavior, history-first presentation, fixed-axis chart zoom, and improved application icon.  All source and target-native packaging workflows passed before publication. |
 
 The historical changelog remains part of the record.  The
 [Recovery Baseline](Recovery-Baseline.md) identifies which `v1.07` behavior was
@@ -61,7 +62,7 @@ Exit criteria:
 
 ### Stage 3 - Operational scanning
 
-The v1.1 candidate establishes safe interval scheduling and prevents scan
+The v1.1 release line establishes safe interval scheduling and prevents scan
 overlap.  Continue with non-blocking background jobs, live progress,
 cancellation, retention controls, and optional local change notifications.
 
@@ -86,5 +87,5 @@ Exit criteria:
 The [Kanban board](KANBAN.md) controls current delivery status.  This roadmap
 controls sequencing and outcomes.  A stage may be refined as evidence changes,
 but unavailable work must not be represented as shipped.  Standalone desktop
-applications were delivered in v1.1.0; change awareness is the next governed
-delivery stage after the v1.1.1 packaged discovery hotfix clears physical QA.
+applications were delivered in v1.1.0 and stabilized in v1.1.1.  Change
+awareness is the next governed delivery stage.

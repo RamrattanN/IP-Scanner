@@ -40,7 +40,7 @@ available features.
 When behavior changes, update the application Help, Current Baseline, Kanban,
 Roadmap, README, and Changelog as applicable in the same pull request.  Move a
 card to Done only when its stated acceptance evidence exists.  Preserve the
-current `main` baseline, release tag `v1.1.0`, rollback tag `v1.0.0`, and
-historical `v1.07` tag.
+current `main` baseline, release tag `v1.1.1`, immediate desktop rollback tag
+`v1.1.0`, source rollback tag `v1.0.0`, and historical `v1.07` tag.
 Implement material changes on focused branches and merge them only after the
 required approval and verification gates pass.

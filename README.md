@@ -7,10 +7,11 @@ silicon Mac, and Windows x64 desktop products.
 
 ## Current release
 
-The current release is **Ramrattan IP Scanner v1.1.0 - Desktop Application
-Release**.  Its functional checkpoint is `1e87518`, approved after native QA
-of the Intel Mac, Apple silicon Mac, and Windows x64 packages.  The v1.0.0
-Discovery Experience Release remains the protected source-release rollback
+The current release is **Ramrattan IP Scanner v1.1.1 - Desktop Discovery
+Maintenance Release**.  Its functional checkpoint is `7ee0d65`, approved after
+native QA of the Intel Mac discovery fix and successful Intel Mac, Apple silicon
+Mac, and Windows x64 packaging workflows.  Version 1.1.0 remains the immediate
+desktop rollback release, v1.0.0 remains the protected source-release rollback
 baseline, and the historical `v1.07` tag remains unchanged as the audited
 pre-recovery checkpoint.
 
@@ -48,18 +49,17 @@ The accepted baseline provides:
 - Native Intel Mac DMG, Apple silicon Mac DMG, and Windows x64 EXE installer
   packages.
 
-The v1.1.0 desktop packages are published unsigned.  macOS Gatekeeper and
+The v1.1.1 desktop packages are published unsigned.  macOS Gatekeeper and
 Windows SmartScreen may therefore display a warning.  Signing and notarization
 remain a separately governed release-hardening activity.
 
-## Development status
+## Maintenance release
 
-The `fix/v1.1.1-macos-discovery` branch contains an unreleased desktop discovery
-hotfix candidate.  It bounds packaged-app resource use, retries unanswered
-addresses, improves response evidence and diagnostics, prevents orphaned
-services, adds the macOS local-network declarations, and corrects the undersized
-application icon.  v1.1.0 remains the accepted release until packaged Intel Mac
-QA passes and the owner approves publication.
+Version 1.1.1 bounds packaged-app resource use, retries unanswered addresses,
+improves response evidence and diagnostics, prevents orphaned services, adds
+the macOS local-network declarations, corrects the application icon scale,
+places scan analytics before device results, and supports horizontal timeline
+zoom while preserving the chart's device-count axis.
 
 Start with the [Documentation Guide](docs/README.md).  The guide links the
 accepted current baseline, the audited v1.07 recovery record, result
