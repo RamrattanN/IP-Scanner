@@ -60,7 +60,11 @@ def test_scanner_keeps_reachable_hosts_and_marks_gateway(monkeypatch):
     assert result["stats"]["neighbor_only"] == 1
     assert result["stats"]["confirmed_devices"] == 2
     assert result["stats"]["observed_devices"] == 1
+    assert result["stats"]["shared_proxy_observations"] == 0
+    assert result["stats"]["observations_total"] == 3
     assert result["stats"]["website"] == 1
+    assert result["diagnostics"]["passes"][0]["new_active_responses"] == 2
+    assert result["diagnostics"]["passes"][0]["requested_neighbors_observed"] == 1
 
 
 def test_scanner_attempts_custom_range_inclusively(monkeypatch):
@@ -160,6 +164,9 @@ def test_scanner_enriches_identity_and_filters_proxy_arp(monkeypatch):
     assert by_ip["192.0.2.2"]["name"] is None
     assert by_ip["192.0.2.2"]["device_type"] == "Other"
     assert result["stats"]["proxy_arp_observed"] == 5
+    assert result["stats"]["shared_proxy_observations"] == 5
+    assert result["stats"]["hosts_up"] == 1
+    assert result["stats"]["observations_total"] == 6
     assert result["stats"]["proxy_arp_ignored"] == 0
     assert result["stats"]["reserved_ignored"] == 1
 
@@ -199,3 +206,58 @@ def test_scanner_retries_unanswered_addresses_and_clears_transient_errors(monkey
     assert result["stats"]["active_probe_attempts"] == 4
     assert result["stats"]["probe_errors"] == 0
     assert result["stats"]["probe_error_types"] == {}
+    assert [item["new_active_responses"] for item in result["diagnostics"]["passes"]] == [0, 1]
+
+
+def test_scanner_unions_settled_neighbor_snapshots(monkeypatch):
+    async def fake_probe(ip, **_kwargs):
+        return {"ip": ip, "reachable": False}
+
+    snapshots = iter(
+        [
+            {},
+            {"192.0.2.1": "00:11:22:33:44:55"},
+            {"192.0.2.2": "00:11:22:33:44:66"},
+        ]
+    )
+    monkeypatch.setattr(scanner, "probe_host", fake_probe)
+    monkeypatch.setattr(scanner, "get_neighbor_table", lambda: next(snapshots))
+    disable_passive_discovery(monkeypatch)
+    record = {
+        "cidr": "192.0.2.0/30",
+        "range": {"start": "192.0.2.1", "end": "192.0.2.2"},
+        "adapter": {},
+    }
+
+    result = asyncio.run(
+        scanner.Scanner(
+            scanner.ScannerConfig(
+                concurrency=2,
+                passes=1,
+                neighbor_settle_seconds=0,
+                neighbor_snapshot_count=2,
+                neighbor_snapshot_interval_seconds=0,
+            )
+        ).run(record)
+    )
+
+    assert [host["ip"] for host in result["hosts"]] == ["192.0.2.1", "192.0.2.2"]
+    assert result["stats"]["hosts_up"] == 2
+    assert result["diagnostics"] == {
+        "initial_requested_neighbors": 0,
+        "passes": [
+            {
+                "pass": 1,
+                "addresses_probed": 2,
+                "new_active_responses": 0,
+                "active_responses_total": 0,
+                "requested_neighbors_observed": 2,
+                "neighbor_snapshots": 2,
+                "probe_errors_outstanding": 0,
+            }
+        ],
+        "neighbor_snapshots": 2,
+        "merged_requested_neighbors": 2,
+        "mdns_devices": 0,
+        "upnp_devices": 0,
+    }
