@@ -369,26 +369,45 @@ const attachChartTooltip = (mark, tooltip, heading, metric) => {
   mark.addEventListener('blur', () => hideChartTooltip(tooltip));
 };
 
-const scanDeviceCount = (scan) => {
+const isSharedProxyObservation = (host) => Boolean(host?.notes?.shared_proxy_mac);
+
+const scanDirectCounts = (scan) => {
+  const hosts = Array.isArray(scan.hosts) ? scan.hosts : [];
+  if (hosts.length) {
+    const directHosts = hosts.filter((host) => !isSharedProxyObservation(host));
+    return {
+      confirmed: directHosts.filter((host) => ['High', 'Medium'].includes(host.confidence)).length,
+      observed: directHosts.filter((host) => host.confidence === 'Observed').length,
+      shared: hosts.length - directHosts.length,
+      total: directHosts.length,
+    };
+  }
   const total = Number(scan.stats?.hosts_up);
-  if (Number.isFinite(total)) return total;
   const confirmed = Number(scan.stats?.confirmed_devices);
   const observed = Number(scan.stats?.observed_devices);
-  if (Number.isFinite(confirmed) || Number.isFinite(observed)) {
-    return (Number.isFinite(confirmed) ? confirmed : 0) + (Number.isFinite(observed) ? observed : 0);
-  }
-  return Array.isArray(scan.hosts) ? scan.hosts.length : 0;
+  const shared = Number(scan.stats?.shared_proxy_observations ?? scan.stats?.proxy_arp_observed);
+  return {
+    confirmed: Number.isFinite(confirmed) ? confirmed : 0,
+    observed: Number.isFinite(observed) ? observed : 0,
+    shared: Number.isFinite(shared) ? shared : 0,
+    total: Number.isFinite(total)
+      ? total
+      : (Number.isFinite(confirmed) ? confirmed : 0) + (Number.isFinite(observed) ? observed : 0),
+  };
 };
+
+const scanDeviceCount = (scan) => scanDirectCounts(scan).total;
 
 const scanTypeBreakdown = (scan) => {
   const counts = new Map();
-  const hosts = Array.isArray(scan.hosts) ? scan.hosts : [];
+  const hosts = (Array.isArray(scan.hosts) ? scan.hosts : [])
+    .filter((host) => !isSharedProxyObservation(host));
   hosts.forEach((host) => {
     const type = host.device_type || 'Unclassified';
     counts.set(type, (counts.get(type) || 0) + 1);
   });
   const hostTotal = [...counts.values()].reduce((total, count) => total + count, 0);
-  const total = Math.max(scanDeviceCount(scan), hostTotal);
+  const total = hosts.length ? hostTotal : scanDeviceCount(scan);
   if (total > hostTotal) counts.set('Unclassified', (counts.get('Unclassified') || 0) + total - hostTotal);
   return {counts, total};
 };
@@ -690,8 +709,10 @@ function renderResults(scan) {
   resultsRange.textContent = `${scanRange(scan)}.  Select a history row to review that scan.`;
   document.getElementById('summary-requested').textContent = scan.stats?.addresses_requested ?? 'Not recorded';
   document.getElementById('summary-attempted').textContent = scan.stats?.addresses_attempted ?? 'Not recorded';
-  document.getElementById('summary-confirmed').textContent = scan.stats?.confirmed_devices ?? 'Not recorded';
-  document.getElementById('summary-observed').textContent = scan.stats?.observed_devices ?? 'Not recorded';
+  const directCounts = scanDirectCounts(scan);
+  document.getElementById('summary-confirmed').textContent = directCounts.confirmed;
+  document.getElementById('summary-observed').textContent = directCounts.observed;
+  document.getElementById('summary-shared').textContent = directCounts.shared;
   document.getElementById('summary-errors').textContent = scan.stats?.probe_errors ?? 'Not recorded';
 
   const hosts = Array.isArray(scan.hosts) ? scan.hosts : [];
@@ -741,6 +762,7 @@ async function loadHistory() {
   historyBody.replaceChildren();
   let selected = null;
   for (const scan of scans) {
+    const directCounts = scanDirectCounts(scan);
     const row = document.createElement('tr');
     row.className = 'history-row';
     row.dataset.scanKey = chartScanKey(scan);
@@ -751,8 +773,9 @@ async function loadHistory() {
       cell(durationLabel(scan.stats?.duration_ms), scan.stats?.duration_ms),
       cell(scan.stats?.addresses_requested ?? 'Not recorded', scan.stats?.addresses_requested),
       cell(scan.stats?.addresses_attempted ?? 'Not recorded', scan.stats?.addresses_attempted),
-      cell(scan.stats?.confirmed_devices ?? 'Not recorded', scan.stats?.confirmed_devices),
-      cell(scan.stats?.observed_devices ?? 'Not recorded', scan.stats?.observed_devices),
+      cell(directCounts.confirmed, directCounts.confirmed),
+      cell(directCounts.observed, directCounts.observed),
+      cell(directCounts.shared, directCounts.shared),
       cell(scan.stats?.website ?? 'Not recorded', scan.stats?.website),
     );
     row.addEventListener('click', () => selectScan(scan, row));
@@ -853,9 +876,9 @@ async function startScan(payload) {
     selectedScanId = result.scan_id;
     await loadHistory();
     const stats = result.stats || {};
-    const shared = stats.proxy_arp_observed || 0;
+    const shared = stats.shared_proxy_observations ?? stats.proxy_arp_observed ?? 0;
     const reserved = stats.reserved_ignored || 0;
-    actionStatus.textContent = `Scan completed.  Attempted ${stats.addresses_attempted} of ${stats.addresses_requested} addresses.  Confirmed ${stats.confirmed_devices} devices and retained ${stats.observed_devices} ARP-only observations, including ${shared} shared/proxy responses.  Excluded ${reserved} reserved address${reserved === 1 ? '' : 'es'}.`;
+    actionStatus.textContent = `Scan completed.  Attempted ${stats.addresses_attempted} of ${stats.addresses_requested} addresses.  Found ${stats.hosts_up} direct devices and retained ${shared} separately labelled shared/proxy observations.  Excluded ${reserved} reserved address${reserved === 1 ? '' : 'es'}.`;
   } catch (error) {
     actionStatus.textContent = error.message;
   } finally {
