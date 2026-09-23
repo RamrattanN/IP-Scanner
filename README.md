@@ -61,9 +61,10 @@ the macOS local-network declarations, corrects the application icon scale,
 places scan analytics before device results, and supports horizontal timeline
 zoom while preserving the chart's device-count axis.
 
-Start with the [Documentation Guide](docs/README.md).  The guide links the
-accepted current baseline, the audited v1.07 recovery record, result
-interpretation, UX standard, Kanban board, and origin-to-date roadmap.
+Start with the [Wiki Home](docs/WIKI.md) or the
+[Documentation Guide](docs/README.md).  They link the accepted current
+baseline, the audited v1.07 recovery record, result interpretation, UX
+standard, Kanban board, and origin-to-date roadmap.
 
 ## Developer setup
 
@@ -129,8 +130,8 @@ src/network_scanner/
 └── ui/               # Shared HTML, CSS, JavaScript, and brand assets
 ```
 
-The three desktop products will share this application core and UI.  Only the
-platform controller, packaging, and installer layers may differ.
+The three desktop products share this application core and UI.  Only the
+platform controller, packaging, and installer layers differ.
 
 ## CI and release direction
 

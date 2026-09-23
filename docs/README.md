@@ -9,6 +9,7 @@ available features.
 
 | Document | Purpose | Audience |
 | --- | --- | --- |
+| [Wiki Home](WIKI.md) | Provides the public documentation entry point and links to the canonical project record | Operators, owners, contributors |
 | [Current Baseline](Current-Baseline.md) | Defines the accepted functional checkpoint and its acceptance evidence | Owners, developers, testers |
 | [Desktop Packaging](Desktop-Packaging.md) | Defines v1.1 release artifacts, collection lifecycle, build commands, data continuity, and rollback | Owners, developers, testers |
 | [In-application Help](../src/network_scanner/ui/index.html) | Provides operating and troubleshooting guidance without leaving the application | Operators |
@@ -38,8 +39,10 @@ available features.
 ## Updating the record
 
 When behavior changes, update the application Help, Current Baseline, Kanban,
-Roadmap, README, and Changelog as applicable in the same pull request.  Move a
-card to Done only when its stated acceptance evidence exists.  Preserve the
+Roadmap, README, Changelog, and Wiki source as applicable in the same pull
+request.  The GitHub Wiki home mirrors `WIKI.md`; repository documents remain
+canonical.  Move a card to Done only when its stated acceptance evidence
+exists.  Preserve the
 current `main` baseline, release tag `v1.1.1`, immediate desktop rollback tag
 `v1.1.0`, source rollback tag `v1.0.0`, and historical `v1.07` tag.
 Implement material changes on focused branches and merge them only after the

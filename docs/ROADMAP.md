@@ -22,6 +22,7 @@
 | 2026-09-21 | v1.1.0 Desktop Application Release | Published the accepted unsigned DMG and EXE packages with data-continuity, rollback, Gatekeeper, and SmartScreen guidance. |
 | 2026-09-22 | Packaged discovery investigation | A clean Intel Mac comparison found 236 packaged probe errors versus none in the Terminal source run.  The hotfix candidate bounds socket concurrency, adds retries and diagnostics, preserves shared/proxy observations, corrects service lifecycle and macOS declarations, and restores the full-size application icon. |
 | 2026-09-23 | v1.1.1 Desktop Discovery Maintenance Release | Owner accepted the corrected Intel Mac discovery behavior, history-first presentation, fixed-axis chart zoom, and improved application icon.  All source and target-native packaging workflows passed before publication. |
+| 2026-09-23 | Public Wiki launched | Added a public navigation page backed by the version-controlled documentation set.  Repository documents remain the canonical project record. |
 
 The historical changelog remains part of the record.  The
 [Recovery Baseline](Recovery-Baseline.md) identifies which `v1.07` behavior was
