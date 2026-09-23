@@ -1,5 +1,5 @@
 #define AppName "IP Scanner"
-#define AppVersion "1.1.0"
+#define AppVersion "1.1.1"
 #define AppExeName "IP Scanner.exe"
 
 [Setup]
@@ -14,7 +14,7 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\..\dist
-OutputBaseFilename=IP-Scanner-Windows-x64-1.1.0
+OutputBaseFilename=IP-Scanner-Windows-x64-1.1.1
 SetupIconFile=..\..\build\windows-icon\IPScanner.ico
 Compression=lzma2
 SolidCompression=yes

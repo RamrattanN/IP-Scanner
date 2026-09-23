@@ -42,6 +42,22 @@ jobs:
         run: pytest -q
       - name: Build unsigned application and disk image
         run: bash scripts/build_macos_release.sh
+      - name: Verify macOS metadata and icon scale
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLIST="dist/IP Scanner.app/Contents/Info.plist"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :NSLocalNetworkUsageDescription' "$PLIST")" != ""
+          /usr/libexec/PlistBuddy -c 'Print :NSBonjourServices' "$PLIST" | grep -q '_http._tcp'
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          image = Image.open(Path("build/macos-icon/source.png")).convert("RGBA")
+          bounds = image.getchannel("A").getbbox()
+          assert bounds is not None
+          assert bounds[2] - bounds[0] >= 600
+          assert bounds[3] - bounds[1] >= 800
+          PY
       - name: Smoke-test packaged service and scheduler API
         shell: bash
         run: |
@@ -54,9 +70,11 @@ jobs:
           cleanup() { kill "$PID" 2>/dev/null || true; wait "$PID" 2>/dev/null || true; }
           trap cleanup EXIT
           for attempt in {1..60}; do
-            if curl --fail --silent http://127.0.0.1:8765/api/ping | grep -q '"ok"'; then
-              curl --fail --silent http://127.0.0.1:8765/api/schedule | grep -q 'interval_minutes'
-              curl --fail --silent http://127.0.0.1:8765/ | grep -qi '<!doctype html'
+            if PING_RESPONSE="$(curl --fail --silent http://127.0.0.1:8765/api/ping)" && grep -q '"ok"' <<<"$PING_RESPONSE"; then
+              SCHEDULE_RESPONSE="$(curl --fail --silent http://127.0.0.1:8765/api/schedule)"
+              grep -q 'interval_minutes' <<<"$SCHEDULE_RESPONSE"
+              PAGE_RESPONSE="$(curl --fail --silent http://127.0.0.1:8765/)"
+              grep -qi '<!doctype html' <<<"$PAGE_RESPONSE"
               exit 0
             fi
             if ! kill -0 "$PID" 2>/dev/null; then break; fi
@@ -66,7 +84,7 @@ jobs:
           exit 1
       - uses: actions/upload-artifact@v4
         with:
-          name: IP-Scanner-macOS-${{ matrix.package_arch }}-1.1.0
-          path: dist/IP-Scanner-macOS-${{ matrix.package_arch }}-1.1.0.dmg
+          name: IP-Scanner-macOS-${{ matrix.package_arch }}-1.1.1
+          path: dist/IP-Scanner-macOS-${{ matrix.package_arch }}-1.1.1.dmg
           if-no-files-found: error
           retention-days: 14

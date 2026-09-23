@@ -18,6 +18,7 @@ const historyChart = document.getElementById('history-chart');
 const historyChartEmpty = document.getElementById('history-chart-empty');
 const historyChartTooltip = document.getElementById('history-chart-tooltip');
 const historyChartTypeInputs = [...document.querySelectorAll('input[name="history-chart-type"]')];
+const resetHistoryZoomButton = document.getElementById('btn-reset-history-zoom');
 const deviceTypeChart = document.getElementById('device-type-chart');
 const deviceTypeChartEmpty = document.getElementById('device-type-chart-empty');
 const deviceTypeChartTooltip = document.getElementById('device-type-chart-tooltip');
@@ -34,6 +35,10 @@ const freshnessDetail = document.getElementById('freshness-detail');
 let selectedScanId = null;
 let chartScans = [];
 let scanWasRunning = false;
+let historyZoomRange = null;
+let historyZoomDrag = null;
+let historyChartGeometry = null;
+let suppressChartClick = false;
 const storedHistoryChartType = localStorage.getItem('ip-scanner-history-chart-type');
 let historyChartType = storedHistoryChartType === 'line' ? 'area' : (storedHistoryChartType || 'bar');
 if (!['bar', 'area'].includes(historyChartType)) historyChartType = 'bar';
@@ -369,26 +374,45 @@ const attachChartTooltip = (mark, tooltip, heading, metric) => {
   mark.addEventListener('blur', () => hideChartTooltip(tooltip));
 };
 
-const scanDeviceCount = (scan) => {
+const isSharedProxyObservation = (host) => Boolean(host?.notes?.shared_proxy_mac);
+
+const scanDirectCounts = (scan) => {
+  const hosts = Array.isArray(scan.hosts) ? scan.hosts : [];
+  if (hosts.length) {
+    const directHosts = hosts.filter((host) => !isSharedProxyObservation(host));
+    return {
+      confirmed: directHosts.filter((host) => ['High', 'Medium'].includes(host.confidence)).length,
+      observed: directHosts.filter((host) => host.confidence === 'Observed').length,
+      shared: hosts.length - directHosts.length,
+      total: directHosts.length,
+    };
+  }
   const total = Number(scan.stats?.hosts_up);
-  if (Number.isFinite(total)) return total;
   const confirmed = Number(scan.stats?.confirmed_devices);
   const observed = Number(scan.stats?.observed_devices);
-  if (Number.isFinite(confirmed) || Number.isFinite(observed)) {
-    return (Number.isFinite(confirmed) ? confirmed : 0) + (Number.isFinite(observed) ? observed : 0);
-  }
-  return Array.isArray(scan.hosts) ? scan.hosts.length : 0;
+  const shared = Number(scan.stats?.shared_proxy_observations ?? scan.stats?.proxy_arp_observed);
+  return {
+    confirmed: Number.isFinite(confirmed) ? confirmed : 0,
+    observed: Number.isFinite(observed) ? observed : 0,
+    shared: Number.isFinite(shared) ? shared : 0,
+    total: Number.isFinite(total)
+      ? total
+      : (Number.isFinite(confirmed) ? confirmed : 0) + (Number.isFinite(observed) ? observed : 0),
+  };
 };
+
+const scanDeviceCount = (scan) => scanDirectCounts(scan).total;
 
 const scanTypeBreakdown = (scan) => {
   const counts = new Map();
-  const hosts = Array.isArray(scan.hosts) ? scan.hosts : [];
+  const hosts = (Array.isArray(scan.hosts) ? scan.hosts : [])
+    .filter((host) => !isSharedProxyObservation(host));
   hosts.forEach((host) => {
     const type = host.device_type || 'Unclassified';
     counts.set(type, (counts.get(type) || 0) + 1);
   });
   const hostTotal = [...counts.values()].reduce((total, count) => total + count, 0);
-  const total = Math.max(scanDeviceCount(scan), hostTotal);
+  const total = hosts.length ? hostTotal : scanDeviceCount(scan);
   if (total > hostTotal) counts.set('Unclassified', (counts.get('Unclassified') || 0) + total - hostTotal);
   return {counts, total};
 };
@@ -434,7 +458,10 @@ const makeChartScanInteractive = (mark, scan, accessibleLabel, time, metric) => 
   mark.setAttribute('aria-label', accessibleLabel);
   mark.appendChild(svgElement('title', {}, accessibleLabel));
   attachChartTooltip(mark, historyChartTooltip, time, metric);
-  mark.addEventListener('click', () => activateChartScan(scan));
+  mark.addEventListener('click', () => {
+    if (suppressChartClick) return;
+    activateChartScan(scan);
+  });
   mark.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -465,6 +492,9 @@ function renderHistoryChart() {
   historyChart.replaceChildren();
   historyChartTypeInputs.forEach((input) => { input.checked = input.value === historyChartType; });
   if (!chartScans.length) {
+    historyZoomRange = null;
+    historyChartGeometry = null;
+    resetHistoryZoomButton.hidden = true;
     totalLineSwatch.hidden = true;
     historyChart.hidden = true;
     historyChartEmpty.hidden = false;
@@ -472,9 +502,15 @@ function renderHistoryChart() {
   }
   historyChart.hidden = false;
   historyChartEmpty.hidden = true;
+  if (historyZoomRange && historyZoomRange.end >= chartScans.length) historyZoomRange = null;
+  const visibleStart = historyZoomRange?.start ?? 0;
+  const visibleEnd = historyZoomRange?.end ?? (chartScans.length - 1);
+  const visibleScans = chartScans.slice(visibleStart, visibleEnd + 1);
+  resetHistoryZoomButton.hidden = !historyZoomRange;
   totalLineSwatch.hidden = historyChartType !== 'area';
-  const breakdowns = chartScans.map(scanTypeBreakdown);
-  const types = activeDeviceTypes(breakdowns);
+  const allBreakdowns = chartScans.map(scanTypeBreakdown);
+  const breakdowns = allBreakdowns.slice(visibleStart, visibleEnd + 1);
+  const types = activeDeviceTypes(allBreakdowns);
 
   const width = 760;
   const height = 460;
@@ -482,13 +518,14 @@ function renderHistoryChart() {
   const plotWidth = width - margin.left - margin.right;
   const plotHeight = height - margin.top - margin.bottom;
   const values = breakdowns.map(({total}) => total);
-  const scale = niceChartScale(Math.max(...values));
+  const allValues = allBreakdowns.map(({total}) => total);
+  const scale = niceChartScale(Math.max(...allValues));
   const x = (index) => {
-    if (chartScans.length === 1) return margin.left + (plotWidth / 2);
+    if (visibleScans.length === 1) return margin.left + (plotWidth / 2);
     if (historyChartType === 'bar') {
-      return margin.left + (((index + .5) / chartScans.length) * plotWidth);
+      return margin.left + (((index + .5) / visibleScans.length) * plotWidth);
     }
-    return margin.left + ((index / (chartScans.length - 1)) * plotWidth);
+    return margin.left + ((index / (visibleScans.length - 1)) * plotWidth);
   };
   const y = (value) => margin.top + plotHeight - ((value / scale.maximum) * plotHeight);
 
@@ -506,14 +543,28 @@ function renderHistoryChart() {
     svgElement('text', {x: margin.left + (plotWidth / 2), y: height - 8, 'text-anchor': 'middle', class: 'chart-axis-title'}, 'Scan time (local)'),
   );
 
-  const labelCount = Math.min(5, chartScans.length);
+  const zoomSelection = svgElement('rect', {
+    id: 'history-chart-zoom-selection', x: margin.left, y: margin.top,
+    width: 0, height: plotHeight, class: 'chart-zoom-selection', hidden: 'hidden',
+  });
+  historyChart.appendChild(zoomSelection);
+  historyChartGeometry = {
+    marginLeft: margin.left,
+    plotWidth,
+    plotTop: margin.top,
+    plotHeight,
+    visibleStart,
+    visibleCount: visibleScans.length,
+  };
+
+  const labelCount = Math.min(5, visibleScans.length);
   const labelIndexes = new Set(Array.from({length: labelCount}, (_, index) => (
-    labelCount === 1 ? 0 : Math.round(index * (chartScans.length - 1) / (labelCount - 1))
+    labelCount === 1 ? 0 : Math.round(index * (visibleScans.length - 1) / (labelCount - 1))
   )));
   labelIndexes.forEach((index) => {
     historyChart.append(svgElement('text', {
       x: x(index), y: margin.top + plotHeight + 24, 'text-anchor': 'middle', class: 'chart-label',
-    }, chartTimestamp(chartScans[index].timestamp_utc)));
+    }, chartTimestamp(visibleScans[index].timestamp_utc)));
   });
 
   if (historyChartType === 'bar') {
@@ -521,7 +572,7 @@ function renderHistoryChart() {
     const barWidth = Math.max(5, Math.min(62, slotWidth * .7));
     breakdowns.forEach((breakdown, index) => {
       let cumulative = 0;
-      const time = chartTimestamp(chartScans[index].timestamp_utc);
+      const time = chartTimestamp(visibleScans[index].timestamp_utc);
       const metric = scanBreakdownMetric(types, breakdown);
       const accessibleLabel = `${time}. ${metric.replaceAll('\n', '. ')}`;
       types.forEach((type) => {
@@ -540,11 +591,11 @@ function renderHistoryChart() {
         x: x(index) - (barWidth / 2), y: y(breakdown.total), width: barWidth,
         height: Math.max(1, y(0) - y(breakdown.total)), class: 'chart-bar',
       });
-      makeChartScanInteractive(mark, chartScans[index], accessibleLabel, time, metric);
+      makeChartScanInteractive(mark, visibleScans[index], accessibleLabel, time, metric);
       historyChart.appendChild(mark);
     });
   } else {
-    const cumulative = Array(chartScans.length).fill(0);
+    const cumulative = Array(visibleScans.length).fill(0);
     types.forEach((type) => {
       const lower = [...cumulative];
       const upper = cumulative.map((value, index) => value + (breakdowns[index].counts.get(type) || 0));
@@ -561,26 +612,127 @@ function renderHistoryChart() {
       upper.forEach((value, index) => { cumulative[index] = value; });
     });
 
-    if (chartScans.length > 1) {
+    if (visibleScans.length > 1) {
       const path = values.map((value, index) => `${index ? 'L' : 'M'} ${x(index)} ${y(value)}`).join(' ');
       historyChart.append(svgElement('path', {d: path, class: 'chart-line'}));
     }
     values.forEach((value, index) => {
-      const time = chartTimestamp(chartScans[index].timestamp_utc);
+      const time = chartTimestamp(visibleScans[index].timestamp_utc);
       const metric = scanBreakdownMetric(types, breakdowns[index]);
       const accessibleLabel = `${time}. ${metric.replaceAll('\n', '. ')}`;
       const mark = svgElement('circle', {cx: x(index), cy: y(value), r: 5.5, class: 'chart-point'});
-      makeChartScanInteractive(mark, chartScans[index], accessibleLabel, time, metric);
+      makeChartScanInteractive(mark, visibleScans[index], accessibleLabel, time, metric);
       historyChart.appendChild(mark);
     });
   }
   updateSelectedChartMarks();
   historyChart.setAttribute(
     'aria-label',
-    `Device discovery history with ${chartScans.length} scans stacked across ${types.length} device type categories. Latest result: ${values[values.length - 1]} devices found.`,
+    `Direct-device discovery history showing ${visibleScans.length} of ${chartScans.length} scans across ${types.length} device type categories. The device-count axis is fixed. Latest visible result: ${values[values.length - 1]} devices found.`,
   );
   return types;
 }
+
+const chartPointerPosition = (event) => {
+  const bounds = historyChart.getBoundingClientRect();
+  if (!bounds.width || !bounds.height) return null;
+  return {
+    x: ((event.clientX - bounds.left) / bounds.width) * 760,
+    y: ((event.clientY - bounds.top) / bounds.height) * 460,
+  };
+};
+
+const resetHistoryZoom = () => {
+  if (!historyZoomRange) return;
+  historyZoomRange = null;
+  renderHistoryChart();
+};
+
+const finishHistoryZoom = (event) => {
+  if (!historyZoomDrag || !historyChartGeometry) return;
+  const drag = historyZoomDrag;
+  historyZoomDrag = null;
+  const selection = document.getElementById('history-chart-zoom-selection');
+  if (selection) selection.setAttribute('hidden', 'hidden');
+  historyChart.classList.remove('is-zooming');
+  if (historyChart.hasPointerCapture?.(event.pointerId)) {
+    historyChart.releasePointerCapture(event.pointerId);
+  }
+  if (!drag.moved) return;
+
+  const geometry = historyChartGeometry;
+  const left = Math.max(geometry.marginLeft, Math.min(drag.startX, drag.currentX));
+  const right = Math.min(
+    geometry.marginLeft + geometry.plotWidth,
+    Math.max(drag.startX, drag.currentX),
+  );
+  const startRatio = (left - geometry.marginLeft) / geometry.plotWidth;
+  const endRatio = (right - geometry.marginLeft) / geometry.plotWidth;
+  const localStart = Math.min(
+    geometry.visibleCount - 1,
+    Math.floor(startRatio * geometry.visibleCount),
+  );
+  const localEnd = Math.min(
+    geometry.visibleCount - 1,
+    Math.max(localStart, Math.ceil(endRatio * geometry.visibleCount) - 1),
+  );
+  if (localStart === 0 && localEnd === geometry.visibleCount - 1) return;
+  historyZoomRange = {
+    start: geometry.visibleStart + localStart,
+    end: geometry.visibleStart + localEnd,
+  };
+  suppressChartClick = true;
+  window.setTimeout(() => { suppressChartClick = false; }, 0);
+  renderHistoryChart();
+};
+
+historyChart.addEventListener('pointerdown', (event) => {
+  if (event.button !== 0 || !historyChartGeometry || historyChartGeometry.visibleCount < 2) return;
+  const position = chartPointerPosition(event);
+  if (!position) return;
+  const geometry = historyChartGeometry;
+  const withinPlot = position.x >= geometry.marginLeft
+    && position.x <= geometry.marginLeft + geometry.plotWidth
+    && position.y >= geometry.plotTop
+    && position.y <= geometry.plotTop + geometry.plotHeight;
+  if (!withinPlot) return;
+  historyZoomDrag = {startX: position.x, currentX: position.x, moved: false};
+  historyChart.setPointerCapture?.(event.pointerId);
+});
+
+historyChart.addEventListener('pointermove', (event) => {
+  if (!historyZoomDrag || !historyChartGeometry) return;
+  const position = chartPointerPosition(event);
+  if (!position) return;
+  const geometry = historyChartGeometry;
+  historyZoomDrag.currentX = Math.max(
+    geometry.marginLeft,
+    Math.min(position.x, geometry.marginLeft + geometry.plotWidth),
+  );
+  historyZoomDrag.moved = historyZoomDrag.moved
+    || Math.abs(historyZoomDrag.currentX - historyZoomDrag.startX) >= 6;
+  if (!historyZoomDrag.moved) return;
+  event.preventDefault();
+  hideChartTooltip(historyChartTooltip);
+  historyChart.classList.add('is-zooming');
+  const selection = document.getElementById('history-chart-zoom-selection');
+  if (selection) {
+    selection.removeAttribute('hidden');
+    selection.setAttribute('x', Math.min(historyZoomDrag.startX, historyZoomDrag.currentX));
+    selection.setAttribute('width', Math.abs(historyZoomDrag.currentX - historyZoomDrag.startX));
+  }
+});
+
+historyChart.addEventListener('pointerup', finishHistoryZoom);
+historyChart.addEventListener('pointercancel', finishHistoryZoom);
+historyChart.addEventListener('dblclick', resetHistoryZoom);
+historyChart.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && historyZoomRange) {
+    event.preventDefault();
+    resetHistoryZoom();
+  }
+});
+resetHistoryZoomButton.addEventListener('click', resetHistoryZoom);
 
 const polarPoint = (centerX, centerY, radius, angle) => {
   const radians = ((angle - 90) * Math.PI) / 180;
@@ -690,8 +842,10 @@ function renderResults(scan) {
   resultsRange.textContent = `${scanRange(scan)}.  Select a history row to review that scan.`;
   document.getElementById('summary-requested').textContent = scan.stats?.addresses_requested ?? 'Not recorded';
   document.getElementById('summary-attempted').textContent = scan.stats?.addresses_attempted ?? 'Not recorded';
-  document.getElementById('summary-confirmed').textContent = scan.stats?.confirmed_devices ?? 'Not recorded';
-  document.getElementById('summary-observed').textContent = scan.stats?.observed_devices ?? 'Not recorded';
+  const directCounts = scanDirectCounts(scan);
+  document.getElementById('summary-confirmed').textContent = directCounts.confirmed;
+  document.getElementById('summary-observed').textContent = directCounts.observed;
+  document.getElementById('summary-shared').textContent = directCounts.shared;
   document.getElementById('summary-errors').textContent = scan.stats?.probe_errors ?? 'Not recorded';
 
   const hosts = Array.isArray(scan.hosts) ? scan.hosts : [];
@@ -741,6 +895,7 @@ async function loadHistory() {
   historyBody.replaceChildren();
   let selected = null;
   for (const scan of scans) {
+    const directCounts = scanDirectCounts(scan);
     const row = document.createElement('tr');
     row.className = 'history-row';
     row.dataset.scanKey = chartScanKey(scan);
@@ -751,8 +906,9 @@ async function loadHistory() {
       cell(durationLabel(scan.stats?.duration_ms), scan.stats?.duration_ms),
       cell(scan.stats?.addresses_requested ?? 'Not recorded', scan.stats?.addresses_requested),
       cell(scan.stats?.addresses_attempted ?? 'Not recorded', scan.stats?.addresses_attempted),
-      cell(scan.stats?.confirmed_devices ?? 'Not recorded', scan.stats?.confirmed_devices),
-      cell(scan.stats?.observed_devices ?? 'Not recorded', scan.stats?.observed_devices),
+      cell(directCounts.confirmed, directCounts.confirmed),
+      cell(directCounts.observed, directCounts.observed),
+      cell(directCounts.shared, directCounts.shared),
       cell(scan.stats?.website ?? 'Not recorded', scan.stats?.website),
     );
     row.addEventListener('click', () => selectScan(scan, row));
@@ -853,8 +1009,9 @@ async function startScan(payload) {
     selectedScanId = result.scan_id;
     await loadHistory();
     const stats = result.stats || {};
-    const exclusions = (stats.proxy_arp_ignored || 0) + (stats.reserved_ignored || 0);
-    actionStatus.textContent = `Scan completed.  Attempted ${stats.addresses_attempted} of ${stats.addresses_requested} addresses.  Confirmed ${stats.confirmed_devices} devices and retained ${stats.observed_devices} ARP-only observations.  Excluded ${exclusions} proxy or reserved artifacts.`;
+    const shared = stats.shared_proxy_observations ?? stats.proxy_arp_observed ?? 0;
+    const reserved = stats.reserved_ignored || 0;
+    actionStatus.textContent = `Scan completed.  Attempted ${stats.addresses_attempted} of ${stats.addresses_requested} addresses.  Found ${stats.hosts_up} direct devices and retained ${shared} separately labelled shared/proxy observations.  Excluded ${reserved} reserved address${reserved === 1 ? '' : 'es'}.`;
   } catch (error) {
     actionStatus.textContent = error.message;
   } finally {

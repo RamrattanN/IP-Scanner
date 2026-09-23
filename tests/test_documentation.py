@@ -47,7 +47,8 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "Discovery Experience Baseline" in roadmap
     assert "Standalone desktop applications" in roadmap
     assert "IP Scanner v1.1.0 desktop release" in kanban
-    assert "No card is actively being implemented" in kanban
+    assert "v1.1.1 packaged discovery hotfix" in kanban
+    assert "236 packaged probe errors" in roadmap
 
 
 def test_desktop_packaging_documents_all_three_targets():
@@ -55,5 +56,8 @@ def test_desktop_packaging_documents_all_three_targets():
     assert "IP-Scanner-macOS-Intel-1.1.0.dmg" in packaging
     assert "IP-Scanner-macOS-Apple-Silicon-1.1.0.dmg" in packaging
     assert "IP-Scanner-Windows-x64-1.1.0.exe" in packaging
+    assert "IP-Scanner-macOS-Intel-1.1.1.dmg" in packaging
+    assert "IP-Scanner-macOS-Apple-Silicon-1.1.1.dmg" in packaging
+    assert "IP-Scanner-Windows-x64-1.1.1.exe" in packaging
     assert "Automatic scans" in packaging
     assert "rollback" in packaging.lower()

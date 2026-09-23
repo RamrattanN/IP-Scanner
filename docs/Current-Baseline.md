@@ -17,6 +17,14 @@ The v1.1.0 release adds scheduled collection and native desktop packaging
 without changing the accepted discovery model.  The v1.0.0 source release
 remains the documented rollback baseline.
 
+## Active corrective candidate
+
+Testing on 2026-09-22 found that the Finder-launched Intel Mac v1.1.0 package
+recorded 236 probe errors across a 255-address scan, while the same source run
+from Terminal recorded no probe errors.  The accepted v1.1.0 tag remains
+unchanged.  Corrective work is isolated on `fix/v1.1.1-macos-discovery` and is
+not a new baseline until packaged Intel Mac QA and owner approval are complete.
+
 ## Available behavior
 
 ### Scan coverage
@@ -97,6 +105,9 @@ target-native acceptance evidence for this release.
   observed heuristics.  They are not ownership or security assertions.
 - Scans currently run as one request without progress reporting or cancellation.
 - Scan history is not a persistent reconciled device inventory.
+- The published Intel Mac v1.1.0 package can exhaust the lower open-file limit
+  of a Finder-launched process on a broad scan.  Use the source version for the
+  most complete discovery until the v1.1.1 candidate is accepted.
 - CSV export, IPv6 discovery, and signed installers are not available in this
   release.  The published desktop packages are unsigned.
 

@@ -2,7 +2,7 @@ from network_scanner.neighbors import neighbor_command, parse_neighbor_table
 
 
 def test_neighbor_command_is_platform_specific():
-    assert neighbor_command("darwin") == ["arp", "-an"]
+    assert neighbor_command("darwin") == ["/usr/sbin/arp", "-an"]
     assert neighbor_command("linux") == ["arp", "-an"]
     assert neighbor_command("win32") == ["arp", "-a"]
 

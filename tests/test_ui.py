@@ -11,6 +11,8 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert "Ramrattan IP Scanner" in html
     assert '<link rel="icon" type="image/png" href="/ramrattan-logo.png?v=20260921.1" />' in html
     assert '<link rel="apple-touch-icon" href="/ramrattan-logo.png?v=20260921.1" />' in html
+    assert "v1.1.1 Desktop Discovery Hotfix candidate" in html
+    assert "Probe errors:" in html
     assert 'id="btn-help"' in html
     assert 'id="automatic-scans"' in html
     assert 'id="scan-interval"' in html
@@ -31,13 +33,31 @@ def test_shared_ramrattan_network_tools_shell_is_packaged():
     assert 'id="latest-device-total"' in html
     assert 'id="history-device-type-legend"' not in html
     assert 'id="device-type-legend"' not in html
-    assert "Devices found over time" in html
+    assert "Direct devices found over time" in html
     assert "Device types" in html
     assert "inclusive starting and ending IPv4 addresses" in html
     assert "Why some values are unknown" in html
     assert "MAC status" in html
     assert "MAC vendor" in html
     assert "Shared/proxy response" in javascript
+    assert 'id="summary-shared"' in html
+    assert "Shared/proxy</button>" in html
+    assert "isSharedProxyObservation" in javascript
+    assert "scanDirectCounts" in javascript
+    assert html.index('id="history-overview-section"') < html.index('id="results-section"')
+    assert html.index('id="results-section"') < html.index('id="history-data-section"')
+    assert 'id="btn-reset-history-zoom"' in html
+    assert 'id="history-chart"' in html and 'tabindex="0"' in html
+    assert "historyZoomRange" in javascript
+    assert "chartPointerPosition" in javascript
+    assert "finishHistoryZoom" in javascript
+    assert "The device-count axis is fixed" in javascript
+    assert "niceChartScale(Math.max(...allValues))" in javascript
+    assert "pointerdown" in javascript
+    assert "dblclick" in javascript
+    assert "Reset zoom" in html
+    assert ".chart-zoom-selection" in css
+    assert "touch-action: none" in css
     assert "Arrange and interpret device results" in html
     assert "data-sort-type" in html
     assert "DEVICE_ICONS" in javascript

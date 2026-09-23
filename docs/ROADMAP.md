@@ -20,6 +20,7 @@
 | 2026-09-21 | v1.1.0 desktop work opened | Created `develop/v1.1-desktop-apps` from v1.0.0 and implemented configurable scheduled collection, freshness state, shared desktop lifecycle, and three target build definitions. |
 | 2026-09-21 | Target-native desktop acceptance | Intel Mac, Apple silicon Mac, and Windows x64 packages passed CI smoke tests and owner QA. |
 | 2026-09-21 | v1.1.0 Desktop Application Release | Published the accepted unsigned DMG and EXE packages with data-continuity, rollback, Gatekeeper, and SmartScreen guidance. |
+| 2026-09-22 | Packaged discovery investigation | A clean Intel Mac comparison found 236 packaged probe errors versus none in the Terminal source run.  The hotfix candidate bounds socket concurrency, adds retries and diagnostics, preserves shared/proxy observations, corrects service lifecycle and macOS declarations, and restores the full-size application icon. |
 
 The historical changelog remains part of the record.  The
 [Recovery Baseline](Recovery-Baseline.md) identifies which `v1.07` behavior was
@@ -86,4 +87,4 @@ The [Kanban board](KANBAN.md) controls current delivery status.  This roadmap
 controls sequencing and outcomes.  A stage may be refined as evidence changes,
 but unavailable work must not be represented as shipped.  Standalone desktop
 applications were delivered in v1.1.0; change awareness is the next governed
-delivery stage.
+delivery stage after the v1.1.1 packaged discovery hotfix clears physical QA.
