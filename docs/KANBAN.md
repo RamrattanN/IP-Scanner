@@ -20,9 +20,9 @@ No card is awaiting review at this checkpoint.
 | Priority | Card | Outcome | Done when |
 | --- | --- | --- | --- |
 | 1 | Scan comparison | Show new, missing, changed, and returning devices between scans | Changes are reproducible and false positives are controlled |
-| 3 | Device details panel | Present all names, sources, services, notes, and first/last seen without widening the main table | Keyboard and responsive behavior are accepted |
-| 4 | Search and filter | Find devices by IP, identity, vendor, service, confidence, or change state | Controls work with keyboard and preserve numeric IP sorting |
-| 5 | Export | Export the selected scan or comparison to documented local formats | CSV schema, escaping, tests, and Help are accepted |
+| 2 | Device details panel | Present all names, sources, services, notes, and first/last seen without widening the main table | Keyboard and responsive behavior are accepted |
+| 3 | Search and filter | Find devices by IP, identity, vendor, service, confidence, or change state | Controls work with keyboard and preserve numeric IP sorting |
+| 4 | Export | Export the selected scan or comparison to documented local formats | CSV schema, escaping, tests, and Help are accepted |
 
 ## Later
 
@@ -58,6 +58,7 @@ No card is awaiting review at this checkpoint.
 | 2026-09-21 | Target-native desktop QA | Intel Mac, Apple silicon Mac, and Windows x64 packages passed CI smoke tests and owner acceptance |
 | 2026-09-21 | IP Scanner v1.1.0 desktop release | Accepted unsigned DMG and EXE packages published with installation, warning, data-continuity, and rollback guidance |
 | 2026-09-23 | IP Scanner v1.1.1 maintenance release | Corrected packaged discovery resource pressure, added retries and diagnostics, preserved shared/proxy observations, corrected desktop icons and lifecycle, restored history-first layout, added fixed-axis chart zoom, passed all target workflows, and received owner approval |
+| 2026-09-23 | Public Wiki entry point | Added a concise Wiki home backed by the repository documentation set and linked it to the current release, baseline, operating guides, Kanban, and roadmap |
 
 Version 1.1.1 is the current baseline.  Version 1.1.0 remains the immediate
 desktop rollback release.

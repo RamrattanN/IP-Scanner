@@ -15,6 +15,7 @@ def test_recovery_documentation_set_is_complete_and_linked():
         "KANBAN.md",
         "ROADMAP.md",
         "Third-Party-Notices.md",
+        "WIKI.md",
     }
     docs = ROOT / "docs"
     assert expected <= {path.name for path in docs.glob("*.md")}
@@ -49,6 +50,15 @@ def test_current_baseline_distinguishes_available_and_planned_work():
     assert "IP Scanner v1.1.0 desktop release" in kanban
     assert "IP Scanner v1.1.1 maintenance release" in kanban
     assert "236 packaged probe errors" in roadmap
+
+
+def test_wiki_home_tracks_current_release_and_delivery_sources():
+    wiki = (ROOT / "docs" / "WIKI.md").read_text(encoding="utf-8")
+    assert "v1.1.1 - Desktop Discovery Maintenance Release" in wiki
+    assert "/releases/tag/v1.1.1" in wiki
+    assert "/blob/main/docs/KANBAN.md" in wiki
+    assert "/blob/main/docs/ROADMAP.md" in wiki
+    assert "repository documents are the canonical" in wiki.lower()
 
 
 def test_desktop_packaging_documents_all_three_targets():
