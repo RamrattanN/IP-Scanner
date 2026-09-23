@@ -4,26 +4,28 @@
 
 | Field | Value |
 | --- | --- |
-| Name | Ramrattan IP Scanner v1.1.0 - Desktop Application Release |
-| Release tag | `v1.1.0` |
-| Functional commit | `1e87518bb030fa8cf5d6ca84518cd0644f3691ad` |
-| Prior accepted baseline | v1.0.0 Discovery Experience Release |
+| Name | Ramrattan IP Scanner v1.1.1 - Desktop Discovery Maintenance Release |
+| Release tag | `v1.1.1` |
+| Functional commit | `7ee0d6544309b011d9bddc3f59013935edde6e02` |
+| Prior accepted baseline | v1.1.0 Desktop Application Release |
 | Baseline branch | `main` |
-| Review vehicle | Pull request #4, owner-approved 2026-09-21 |
+| Review vehicle | Pull request #5, owner-approved 2026-09-23 |
 | Historical base | `v1.07` at `fc50a2bbde29c63afb2c2fe443f3bc454c641ad9` |
 | Product state | Owner-accepted unsigned desktop release for Intel Mac, Apple silicon Mac, and Windows x64 |
 
-The v1.1.0 release adds scheduled collection and native desktop packaging
-without changing the accepted discovery model.  The v1.0.0 source release
-remains the documented rollback baseline.
+The v1.1.1 release stabilizes packaged discovery and diagnostics, preserves
+shared/proxy observations, corrects desktop lifecycle and icon behavior, and
+adds the accepted history-first layout with fixed-axis chart zoom.  Version
+1.1.0 remains the immediate desktop rollback release.
 
-## Active corrective candidate
+## Resolved corrective investigation
 
 Testing on 2026-09-22 found that the Finder-launched Intel Mac v1.1.0 package
 recorded 236 probe errors across a 255-address scan, while the same source run
-from Terminal recorded no probe errors.  The accepted v1.1.0 tag remains
-unchanged.  Corrective work is isolated on `fix/v1.1.1-macos-discovery` and is
-not a new baseline until packaged Intel Mac QA and owner approval are complete.
+from Terminal recorded no probe errors.  Version 1.1.1 bounds packaged resource
+use, retries unanswered addresses, preserves settled neighbor snapshots, and
+records final probe diagnostics.  Packaged Intel Mac QA confirmed the corrected
+behavior before owner approval and publication.
 
 ## Available behavior
 
@@ -87,7 +89,8 @@ not a new baseline until packaged Intel Mac QA and owner approval are complete.
 
 - The automated regression suite, source compilation, JavaScript syntax
   validation, wheel build, and isolated wheel installation pass.
-- CI run 44 passed at functional checkpoint `1e87518`.
+- CI run 53 passed at functional checkpoint `7c420b8`, which contains the
+  accepted functional changes represented by merge commit `7ee0d65`.
 - The Intel Mac, Apple silicon Mac, and Windows x64 workflows built and
   smoke-tested their target-native packages successfully.
 - Owner QA accepted all three target packages for publication.
@@ -105,17 +108,14 @@ target-native acceptance evidence for this release.
   observed heuristics.  They are not ownership or security assertions.
 - Scans currently run as one request without progress reporting or cancellation.
 - Scan history is not a persistent reconciled device inventory.
-- The published Intel Mac v1.1.0 package can exhaust the lower open-file limit
-  of a Finder-launched process on a broad scan.  Use the source version for the
-  most complete discovery until the v1.1.1 candidate is accepted.
 - CSV export, IPv6 discovery, and signed installers are not available in this
   release.  The published desktop packages are unsigned.
 
 ## Change control
 
-- Treat release tag `v1.1.0` on `main` as the current protected starting
-  point.  Preserve `v1.0.0` as the rollback source release and `v1.07` as the
-  audited historical checkpoint.
+- Treat release tag `v1.1.1` on `main` as the current protected starting point.
+  Preserve `v1.1.0` as the immediate desktop rollback release, `v1.0.0` as the
+  rollback source release, and `v1.07` as the audited historical checkpoint.
 - Develop material changes on focused branches and merge them only after tests,
   CI, documentation reconciliation, and owner approval.
 - Record new behavior in tests, Help, Changelog, Kanban, and this baseline.

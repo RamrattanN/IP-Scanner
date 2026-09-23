@@ -2,34 +2,27 @@
 
 ## Release scope
 
-Version 1.1.0 packages the same loopback-only service and browser interface for
+Version 1.1.1 packages the same loopback-only service and browser interface for
 three targets:
 
 | Target | Release artifact |
-| --- | --- |
-| Intel Mac | `IP-Scanner-macOS-Intel-1.1.0.dmg` |
-| Apple silicon Mac | `IP-Scanner-macOS-Apple-Silicon-1.1.0.dmg` |
-| Windows x64 | `IP-Scanner-Windows-x64-1.1.0.exe` |
-
-These are accepted unsigned release artifacts.  macOS Gatekeeper and Windows
-SmartScreen may warn until signing and notarization are completed in a later
-release-hardening gate.
-
-## v1.1.1 QA candidate
-
-The current corrective branch produces the following test artifacts.  These
-are not release assets until target-native QA and owner approval are complete.
-
-| Target | QA artifact |
 | --- | --- |
 | Intel Mac | `IP-Scanner-macOS-Intel-1.1.1.dmg` |
 | Apple silicon Mac | `IP-Scanner-macOS-Apple-Silicon-1.1.1.dmg` |
 | Windows x64 | `IP-Scanner-Windows-x64-1.1.1.exe` |
 
-The candidate keeps TCP work below the Finder-launch descriptor budget, makes
-two paced discovery passes, declares local-network and Bonjour use, records
-probe error types, keeps the service tied to the desktop controller, and builds
-the Ramrattan shield at the same visual scale as Speedtest Monitor.
+These are accepted unsigned release artifacts.  macOS Gatekeeper and Windows
+SmartScreen may warn until signing and notarization are completed in a later
+release-hardening gate.
+
+## v1.1.1 discovery maintenance
+
+The release keeps TCP work below the Finder-launch descriptor budget, makes two
+paced discovery passes, declares local-network and Bonjour use, records probe
+error types, keeps the service tied to the desktop controller, and builds the
+Ramrattan shield at the same visual scale as Speedtest Monitor.
+
+Version 1.1.0 remains the immediate desktop rollback package.
 
 ## Collection lifecycle
 
@@ -71,9 +64,9 @@ History, scheduling settings, and logs remain under
 `~/Documents/Network Scanner`.  Installing, repairing, upgrading, or
 uninstalling the application does not delete that folder.
 
-To roll back the application, quit IP Scanner, uninstall v1.1.0, and reinstall
-v1.0.0 or run the v1.0.0 source release.  Existing `history.json` remains
-compatible.  The earlier release ignores `settings.json`.
+To roll back the application, quit IP Scanner, uninstall v1.1.1, and reinstall
+v1.1.0.  Existing `history.json` and `settings.json` remain compatible.  The
+v1.0.0 source release remains available as an earlier source rollback point.
 
 Before destructive manual maintenance, copy the entire `Network Scanner`
 folder.  Clearing history from inside the application intentionally removes

@@ -5,7 +5,7 @@
 > does not contain several listed features.  See
 > `docs/Recovery-Baseline.md` for the verified baseline and recovery decisions.
 
-## v1.1.1 - Desktop Discovery Hotfix Candidate (Unreleased)
+## v1.1.1 - Desktop Discovery Maintenance Release (2026-09-23)
 ### Fixed
 - Bounded host and TCP concurrency so Finder-launched macOS applications do
   not exhaust their lower open-file limit during a 255-address scan.
@@ -27,10 +27,18 @@
   messages for native-command, passive-discovery, and per-address failures.
 - Added regression tests for retry recovery, TCP refusal evidence, controller
   association, shared/proxy preservation, and platform command paths.
+- Added horizontal discovery-chart zoom while retaining a fixed device-count
+  axis, with button, double-click, and keyboard reset paths.
+- Restored the accepted page order: scan analytics, device results, then the
+  recorded scan table.
 
-### QA gate
-- The v1.1.0 release remains the accepted rollback point.  v1.1.1 requires
-  packaged Intel Mac discovery comparison and owner approval before release.
+### Acceptance
+- Intel Mac packaged discovery completed without the abnormal probe-error
+  volume seen in v1.1.0 and returned materially improved local results.
+- CI plus the Intel Mac, Apple silicon Mac, and Windows x64 packaging workflows
+  passed at the accepted release head.
+- Owner approved publication on 2026-09-23.  Version 1.1.0 remains the immediate
+  desktop rollback release.
 
 ## v1.1.0 - Desktop Application Release (2026-09-21)
 ### Added
