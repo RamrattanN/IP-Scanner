@@ -38,6 +38,9 @@ class ScannerConfig:
     tcp_concurrency: int = 96
     passes: int = 2
     retry_delay_seconds: float = 0.2
+    neighbor_settle_seconds: float = 0.35
+    neighbor_snapshot_count: int = 3
+    neighbor_snapshot_interval_seconds: float = 0.15
 
 
 def _empty_host(ip: str) -> Dict[str, Any]:
@@ -143,6 +146,8 @@ class Scanner:
         probe_attempts = 0
         probe_errors_by_ip: dict[str, str] = {}
         neighbor_snapshots: list[dict[str, str]] = []
+        initial_neighbors = get_neighbor_table()
+        pass_diagnostics: list[dict[str, int]] = []
 
         mdns_task = asyncio.create_task(
             asyncio.to_thread(_safe_passive_discovery, discover_mdns)
@@ -179,8 +184,34 @@ class Scanner:
                 break
             if pass_number:
                 await asyncio.sleep(self.config.retry_delay_seconds)
+            responses_before = set(results_by_ip)
             await asyncio.gather(*(worker(ip) for ip in candidates))
-            neighbor_snapshots.append(get_neighbor_table())
+            if self.config.neighbor_settle_seconds > 0:
+                await asyncio.sleep(self.config.neighbor_settle_seconds)
+            pass_snapshots: list[dict[str, str]] = []
+            for snapshot_number in range(max(1, self.config.neighbor_snapshot_count)):
+                if snapshot_number and self.config.neighbor_snapshot_interval_seconds > 0:
+                    await asyncio.sleep(self.config.neighbor_snapshot_interval_seconds)
+                snapshot = get_neighbor_table()
+                pass_snapshots.append(snapshot)
+                neighbor_snapshots.append(snapshot)
+            requested_neighbors = {
+                ip
+                for snapshot in pass_snapshots
+                for ip in snapshot
+                if ip in requested and ip not in reserved
+            }
+            pass_diagnostics.append(
+                {
+                    "pass": pass_number + 1,
+                    "addresses_probed": len(candidates),
+                    "new_active_responses": len(set(results_by_ip) - responses_before),
+                    "active_responses_total": len(results_by_ip),
+                    "requested_neighbors_observed": len(requested_neighbors),
+                    "neighbor_snapshots": len(pass_snapshots),
+                    "probe_errors_outstanding": len(probe_errors_by_ip),
+                }
+            )
 
         mdns_devices, upnp_devices = await asyncio.gather(mdns_task, upnp_task)
 
@@ -258,8 +289,15 @@ class Scanner:
 
         results.sort(key=lambda host: ipaddress.IPv4Address(host["ip"]))
         duration_ms = int((time.perf_counter() - t0) * 1000)
-        confirmed = sum(1 for host in results if host["confidence"] in {"High", "Medium"})
-        observed = sum(1 for host in results if host["confidence"] == "Observed")
+        direct_results = [host for host in results if not host["notes"].get("shared_proxy_mac")]
+        shared_proxy_results = [host for host in results if host["notes"].get("shared_proxy_mac")]
+        confirmed = sum(
+            1 for host in direct_results if host["confidence"] in {"High", "Medium"}
+        )
+        observed = sum(1 for host in direct_results if host["confidence"] == "Observed")
+        initial_requested_neighbors = sum(
+            1 for ip in initial_neighbors if ip in requested and ip not in reserved
+        )
 
         scan_record = dict(scan_record)
         scan_record["hosts"] = results
@@ -269,11 +307,13 @@ class Scanner:
             "active_probe_attempts": probe_attempts,
             "probe_errors": len(probe_errors_by_ip),
             "probe_error_types": dict(Counter(probe_errors_by_ip.values())),
-            "hosts_up": len(results),
+            "hosts_up": len(direct_results),
+            "observations_total": len(results),
             "confirmed_devices": confirmed,
             "observed_devices": observed,
             "ping_replies": sum(1 for host in results if host["flags"].get("P")),
             "neighbor_only": observed,
+            "shared_proxy_observations": len(shared_proxy_results),
             "proxy_arp_observed": proxy_arp_observed,
             # Retained for compatibility with existing history readers.
             "proxy_arp_ignored": 0,
@@ -285,4 +325,19 @@ class Scanner:
             "duration_ms": duration_ms,
             "cancelled": False,
         }
+        scan_record["diagnostics"] = {
+            "initial_requested_neighbors": initial_requested_neighbors,
+            "passes": pass_diagnostics,
+            "neighbor_snapshots": len(neighbor_snapshots),
+            "merged_requested_neighbors": len(neighbor_table),
+            "mdns_devices": len(mdns_devices),
+            "upnp_devices": len(upnp_devices),
+        }
+        logger.info(
+            "Scan diagnostics: direct=%s shared_proxy=%s observations=%s passes=%s",
+            len(direct_results),
+            len(shared_proxy_results),
+            len(results),
+            pass_diagnostics,
+        )
         return scan_record
